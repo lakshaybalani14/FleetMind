@@ -1,0 +1,92 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.2
+2 info using node@v24.13.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\laksh\OneDrive\Desktop\FleetMind\.npmrc
+5 silly config load:file:C:\Users\laksh\.npmrc
+6 silly config load:file:C:\Users\laksh\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--loglevel" "warn"
+9 verbose logfile logs-max:10 dir:C:\Users\laksh\OneDrive\Desktop\FleetMind\.npm-cache\_logs\2026-08-25T15_48_35_191Z-
+10 verbose logfile C:\Users\laksh\OneDrive\Desktop\FleetMind\.npm-cache\_logs\2026-08-25T15_48_35_191Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 verbose shrinkwrap failed to load node_modules/.package-lock.json missing from lockfile: node_modules/@emnapi/wasi-threads
+15 silly reify mark retired [
+15 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\next'
+15 silly reify ]
+16 silly reify mark retired [
+16 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript'
+16 silly reify ]
+17 silly reify mark retired [
+17 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array-includes\\node_modules\\es-abstract'
+17 silly reify ]
+18 silly reify mark retired [
+18 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlastindex\\node_modules\\es-abstract'
+18 silly reify ]
+19 silly reify mark retired [
+19 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlast\\node_modules\\es-abstract'
+19 silly reify ]
+20 silly reify mark retired [
+20 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flat\\node_modules\\es-abstract'
+20 silly reify ]
+21 silly reify mark retired [
+21 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flatmap\\node_modules\\es-abstract'
+21 silly reify ]
+22 silly reify mark retired [
+22 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.tosorted\\node_modules\\es-abstract'
+22 silly reify ]
+23 silly reify mark retired [
+23 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\es-iterator-helpers\\node_modules\\es-abstract'
+23 silly reify ]
+24 silly reify mark retired [
+24 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\eslint-plugin-jsx-a11y'
+24 silly reify ]
+25 silly reify mark retired [
+25 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\aria-query'
+25 silly reify ]
+26 silly reify mark retired [
+26 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.fromentries\\node_modules\\es-abstract'
+26 silly reify ]
+27 silly reify mark retired [
+27 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.groupby\\node_modules\\es-abstract'
+27 silly reify ]
+28 silly reify mark retired [
+28 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.matchall\\node_modules\\es-abstract'
+28 silly reify ]
+29 silly reify mark retired [
+29 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.repeat\\node_modules\\es-abstract'
+29 silly reify ]
+30 silly reify moves {
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\next': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.next-qkMe7eqi',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.typescript-rzQn1aDk',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array-includes\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array-includes\\node_modules\\.es-abstract-UlHxtzwA',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlastindex\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlastindex\\node_modules\\.es-abstract-HC3ncUJK',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlast\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.findlast\\node_modules\\.es-abstract-kxqxLRs0',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flat\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flat\\node_modules\\.es-abstract-qPOow34F',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flatmap\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.flatmap\\node_modules\\.es-abstract-IdlHw0DN',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.tosorted\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\array.prototype.tosorted\\node_modules\\.es-abstract-rhCxq9Qz',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\es-iterator-helpers\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\es-iterator-helpers\\node_modules\\.es-abstract-ClyRTAnH',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\eslint-plugin-jsx-a11y': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\.eslint-plugin-jsx-a11y-bJ35c6Ar',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\aria-query': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-config-next\\node_modules\\.aria-query-TY86hZdo',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.fromentries\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.fromentries\\node_modules\\.es-abstract-Q8psjZlN',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.groupby\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\object.groupby\\node_modules\\.es-abstract-IJGE0h3V',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.matchall\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.matchall\\node_modules\\.es-abstract-GrgmE2cG',
+30 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.repeat\\node_modules\\es-abstract': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\string.prototype.repeat\\node_modules\\.es-abstract-wZWInsDw'
+30 silly reify }
+31 verbose stack Error: ENOTEMPTY: directory not empty, rmdir 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\next\dist\compiled'
+32 error code ENOTEMPTY
+33 error syscall rmdir
+34 error path C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\next\dist\compiled
+35 error errno -4051
+36 error ENOTEMPTY: directory not empty, rmdir 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\next\dist\compiled'
+37 silly unfinished npm timer reify 1787672916908
+38 silly unfinished npm timer reify:retireShallow 1787672917504
+39 verbose cwd C:\Users\laksh\OneDrive\Desktop\FleetMind
+40 verbose os Windows_NT 10.0.26200
+41 verbose node v24.13.0
+42 verbose npm  v11.6.2
+43 verbose exit -4051
+44 verbose code -4051
+45 error A complete log of this run can be found in: C:\Users\laksh\OneDrive\Desktop\FleetMind\.npm-cache\_logs\2026-08-25T15_48_35_191Z-debug-0.log

@@ -1,0 +1,15 @@
+
+> fleetmind-dashboard@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1608ms
+ ○ Compiling / ...
+ ✓ Compiled / in 19.1s (1558 modules)
+ GET / 200 in 20034ms
+ ✓ Compiled in 1066ms (782 modules)
+ GET / 200 in 123ms

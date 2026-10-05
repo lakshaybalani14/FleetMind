@@ -1,0 +1,3170 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.2
+2 info using node@v24.13.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\laksh\OneDrive\Desktop\FleetMind\.npmrc
+5 silly config load:file:C:\Users\laksh\.npmrc
+6 silly config load:file:C:\Users\laksh\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--loglevel" "info"
+9 verbose logfile logs-max:10 dir:C:\Users\laksh\OneDrive\Desktop\FleetMind\.npm-cache\_logs\2026-08-25T15_47_15_115Z-
+10 verbose logfile C:\Users\laksh\OneDrive\Desktop\FleetMind\.npm-cache\_logs\2026-08-25T15_47_15_115Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 http fetch GET 200 https://registry.npmjs.org/npm 791ms
+14 silly idealTree buildDeps
+15 silly fetch manifest next@14.2.5
+16 silly packumentCache full:https://registry.npmjs.org/next cache-miss
+17 http fetch GET 200 https://registry.npmjs.org/next 1764ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/next set size:undefined disposed:false
+19 silly fetch manifest @opentelemetry/api@^1.1.0
+20 silly packumentCache full:https://registry.npmjs.org/@opentelemetry%2fapi cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@opentelemetry%2fapi 164ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@opentelemetry%2fapi set size:undefined disposed:false
+23 silly fetch manifest @playwright/test@^1.41.2
+24 silly packumentCache full:https://registry.npmjs.org/@playwright%2ftest cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/@playwright%2ftest 1357ms (cache miss)
+26 silly packumentCache full:https://registry.npmjs.org/@playwright%2ftest set size:undefined disposed:false
+27 silly fetch manifest react@^18.3.1
+28 silly packumentCache full:https://registry.npmjs.org/react cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/react 1237ms (cache miss)
+30 silly packumentCache full:https://registry.npmjs.org/react set size:undefined disposed:false
+31 silly fetch manifest react-dom@^18.3.1
+32 silly packumentCache full:https://registry.npmjs.org/react-dom cache-miss
+33 http fetch GET 200 https://registry.npmjs.org/react-dom 1162ms (cache miss)
+34 silly packumentCache full:https://registry.npmjs.org/react-dom set size:undefined disposed:false
+35 silly fetch manifest sass@^1.3.0
+36 silly packumentCache full:https://registry.npmjs.org/sass cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/sass 309ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/sass set size:undefined disposed:false
+39 silly fetch manifest recharts@^2.12.7
+40 silly packumentCache full:https://registry.npmjs.org/recharts cache-miss
+41 http fetch GET 200 https://registry.npmjs.org/recharts 227ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/recharts set size:undefined disposed:false
+43 silly fetch manifest lucide-react@^0.417.0
+44 silly packumentCache full:https://registry.npmjs.org/lucide-react cache-miss
+45 http fetch GET 200 https://registry.npmjs.org/lucide-react 396ms (cache miss)
+46 silly packumentCache full:https://registry.npmjs.org/lucide-react set size:undefined disposed:false
+47 silly fetch manifest tailwindcss@^3.4.6
+48 silly packumentCache full:https://registry.npmjs.org/tailwindcss cache-miss
+49 http fetch GET 200 https://registry.npmjs.org/tailwindcss 1206ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/tailwindcss set size:undefined disposed:false
+51 silly fetch manifest eslint@^8.57.0
+52 silly packumentCache full:https://registry.npmjs.org/eslint cache-miss
+53 http fetch GET 200 https://registry.npmjs.org/eslint 483ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/eslint set size:undefined disposed:false
+55 silly placeDep ROOT eslint@8.57.1 REPLACE for: fleetmind-dashboard@1.0.0 want: ^8.57.0
+56 silly placeDep ROOT lucide-react@0.417.0 REPLACE for: fleetmind-dashboard@1.0.0 want: ^0.417.0
+57 silly placeDep ROOT next@14.2.5 REPLACE for: fleetmind-dashboard@1.0.0 want: 14.2.5
+58 silly placeDep ROOT recharts@2.15.4 REPLACE for: fleetmind-dashboard@1.0.0 want: ^2.12.7
+59 silly placeDep ROOT tailwindcss@3.4.19 REPLACE for: fleetmind-dashboard@1.0.0 want: ^3.4.6
+60 silly fetch manifest @swc/helpers@0.5.5
+61 silly packumentCache full:https://registry.npmjs.org/@swc%2fhelpers cache-miss
+62 silly fetch manifest caniuse-lite@^1.0.30001579
+63 silly packumentCache full:https://registry.npmjs.org/caniuse-lite cache-miss
+64 silly fetch manifest @next/swc-darwin-x64@14.2.5
+65 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-darwin-x64 cache-miss
+66 silly fetch manifest @next/swc-darwin-arm64@14.2.5
+67 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-darwin-arm64 cache-miss
+68 silly fetch manifest @next/swc-linux-x64-gnu@14.2.5
+69 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-x64-gnu cache-miss
+70 silly fetch manifest @next/swc-linux-x64-musl@14.2.5
+71 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-x64-musl cache-miss
+72 silly fetch manifest @next/swc-linux-arm64-gnu@14.2.5
+73 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-arm64-gnu cache-miss
+74 silly fetch manifest @next/swc-win32-ia32-msvc@14.2.5
+75 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-win32-ia32-msvc cache-miss
+76 silly fetch manifest @next/swc-linux-arm64-musl@14.2.5
+77 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-arm64-musl cache-miss
+78 silly fetch manifest @next/swc-win32-arm64-msvc@14.2.5
+79 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-win32-arm64-msvc cache-miss
+80 silly fetch manifest lodash@^4.17.21
+81 silly packumentCache full:https://registry.npmjs.org/lodash cache-miss
+82 silly fetch manifest victory-vendor@^36.6.8
+83 silly packumentCache full:https://registry.npmjs.org/victory-vendor cache-miss
+84 http fetch GET 200 https://registry.npmjs.org/@swc%2fhelpers 318ms (cache miss)
+85 silly packumentCache full:https://registry.npmjs.org/@swc%2fhelpers set size:undefined disposed:false
+86 http fetch GET 200 https://registry.npmjs.org/victory-vendor 779ms (cache miss)
+87 silly packumentCache full:https://registry.npmjs.org/victory-vendor set size:undefined disposed:false
+88 http fetch GET 200 https://registry.npmjs.org/lodash 838ms (cache miss)
+89 silly packumentCache full:https://registry.npmjs.org/lodash set size:undefined disposed:false
+90 http fetch GET 200 https://registry.npmjs.org/caniuse-lite 3219ms (cache miss)
+91 silly packumentCache full:https://registry.npmjs.org/caniuse-lite set size:undefined disposed:false
+92 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-linux-x64-musl 3464ms (cache miss)
+93 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-x64-musl set size:undefined disposed:false
+94 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-linux-x64-gnu 3713ms (cache miss)
+95 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-x64-gnu set size:undefined disposed:false
+96 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-win32-arm64-msvc 3843ms (cache miss)
+97 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-win32-arm64-msvc set size:undefined disposed:false
+98 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-win32-ia32-msvc 4007ms (cache miss)
+99 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-win32-ia32-msvc set size:undefined disposed:false
+100 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-darwin-arm64 5183ms (cache miss)
+101 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-darwin-arm64 set size:undefined disposed:false
+102 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-darwin-x64 5292ms (cache miss)
+103 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-darwin-x64 set size:undefined disposed:false
+104 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-linux-arm64-gnu 5604ms (cache miss)
+105 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-arm64-gnu set size:undefined disposed:false
+106 http fetch GET 200 https://registry.npmjs.org/@next%2fswc-linux-arm64-musl 5640ms (cache miss)
+107 silly packumentCache full:https://registry.npmjs.org/@next%2fswc-linux-arm64-musl set size:undefined disposed:false
+108 silly fetch manifest es-abstract@^1.24.0
+109 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-miss
+110 http fetch GET 200 https://registry.npmjs.org/es-abstract 387ms (cache miss)
+111 silly packumentCache full:https://registry.npmjs.org/es-abstract set size:undefined disposed:false
+112 silly placeDep node_modules/array-includes es-abstract@1.24.2 OK for: array-includes@3.1.9 want: ^1.24.0
+113 silly fetch manifest es-abstract@^1.23.2
+114 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-miss
+115 http cache https://registry.npmjs.org/es-abstract 11ms (cache hit)
+116 silly packumentCache full:https://registry.npmjs.org/es-abstract set size:384124 disposed:false
+117 silly placeDep node_modules/array.prototype.findlast es-abstract@1.24.2 OK for: array.prototype.findlast@1.2.5 want: ^1.23.2
+118 silly fetch manifest es-abstract@^1.23.9
+119 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+120 silly placeDep node_modules/array.prototype.findlastindex es-abstract@1.24.2 OK for: array.prototype.findlastindex@1.2.6 want: ^1.23.9
+121 silly fetch manifest es-abstract@^1.23.5
+122 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+123 silly placeDep node_modules/array.prototype.flat es-abstract@1.24.2 OK for: array.prototype.flat@1.3.3 want: ^1.23.5
+124 silly placeDep node_modules/array.prototype.flatmap es-abstract@1.24.2 OK for: array.prototype.flatmap@1.3.3 want: ^1.23.5
+125 silly fetch manifest es-abstract@^1.23.3
+126 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+127 silly placeDep node_modules/array.prototype.tosorted es-abstract@1.24.2 OK for: array.prototype.tosorted@1.1.4 want: ^1.23.3
+128 silly fetch manifest es-abstract@^1.24.2
+129 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+130 silly placeDep node_modules/es-iterator-helpers es-abstract@1.24.2 OK for: es-iterator-helpers@1.4.0 want: ^1.24.2
+131 silly fetch manifest eslint-plugin-jsx-a11y@^6.7.1
+132 silly packumentCache full:https://registry.npmjs.org/eslint-plugin-jsx-a11y cache-miss
+133 http fetch GET 200 https://registry.npmjs.org/eslint-plugin-jsx-a11y 412ms (cache miss)
+134 silly packumentCache full:https://registry.npmjs.org/eslint-plugin-jsx-a11y set size:undefined disposed:false
+135 silly fetch manifest eslint@^7.23.0 || ^8.0.0
+136 silly packumentCache full:https://registry.npmjs.org/eslint cache-miss
+137 http cache https://registry.npmjs.org/eslint 9ms (cache hit)
+138 silly packumentCache full:https://registry.npmjs.org/eslint set size:2070000 disposed:false
+139 silly placeDep node_modules/eslint-config-next eslint-plugin-jsx-a11y@6.10.2 OK for: eslint-config-next@14.2.5 want: ^6.7.1
+140 silly fetch manifest aria-query@^5.3.2
+141 silly packumentCache full:https://registry.npmjs.org/aria-query cache-miss
+142 http fetch GET 200 https://registry.npmjs.org/aria-query 682ms (cache miss)
+143 silly packumentCache full:https://registry.npmjs.org/aria-query set size:undefined disposed:false
+144 silly placeDep ROOT @next/swc-darwin-arm64@14.2.5 OK for: next@14.2.5 want: 14.2.5
+145 silly placeDep ROOT @next/swc-darwin-x64@14.2.5 OK for: next@14.2.5 want: 14.2.5
+146 silly placeDep ROOT @next/swc-linux-arm64-gnu@14.2.5 OK for: next@14.2.5 want: 14.2.5
+147 silly placeDep ROOT @next/swc-linux-arm64-musl@14.2.5 OK for: next@14.2.5 want: 14.2.5
+148 silly placeDep ROOT @next/swc-linux-x64-gnu@14.2.5 OK for: next@14.2.5 want: 14.2.5
+149 silly placeDep ROOT @next/swc-linux-x64-musl@14.2.5 OK for: next@14.2.5 want: 14.2.5
+150 silly placeDep ROOT @next/swc-win32-arm64-msvc@14.2.5 OK for: next@14.2.5 want: 14.2.5
+151 silly placeDep ROOT @next/swc-win32-ia32-msvc@14.2.5 OK for: next@14.2.5 want: 14.2.5
+152 silly placeDep ROOT @swc/helpers@0.5.5 OK for: next@14.2.5 want: 0.5.5
+153 silly placeDep ROOT caniuse-lite@1.0.30001810 OK for: next@14.2.5 want: ^1.0.30001579
+154 silly placeDep node_modules/object.fromentries es-abstract@1.24.2 OK for: object.fromentries@2.0.8 want: ^1.23.2
+155 silly placeDep node_modules/object.groupby es-abstract@1.24.2 OK for: object.groupby@1.0.3 want: ^1.23.2
+156 silly placeDep ROOT lodash@4.18.1 OK for: recharts@2.15.4 want: ^4.17.21
+157 silly placeDep ROOT victory-vendor@36.9.2 OK for: recharts@2.15.4 want: ^36.6.8
+158 silly fetch manifest es-abstract@^1.23.6
+159 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+160 silly placeDep node_modules/string.prototype.matchall es-abstract@1.24.2 OK for: string.prototype.matchall@4.0.12 want: ^1.23.6
+161 silly fetch manifest es-abstract@^1.17.5
+162 silly packumentCache full:https://registry.npmjs.org/es-abstract cache-hit
+163 silly placeDep node_modules/string.prototype.repeat es-abstract@1.24.2 OK for: string.prototype.repeat@1.0.0 want: ^1.17.5
+164 silly fetch manifest @unrs/resolver-binding-darwin-arm64@1.12.2
+165 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-arm64 cache-miss
+166 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-arm64 325ms (cache miss)
+167 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-arm64 set size:undefined disposed:false
+168 silly fetch manifest @unrs/resolver-binding-android-arm64@1.12.2
+169 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm64 cache-miss
+170 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm64 451ms (cache miss)
+171 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm64 set size:undefined disposed:false
+172 silly fetch manifest @unrs/resolver-binding-win32-arm64-msvc@1.12.2
+173 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-win32-arm64-msvc cache-miss
+174 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-win32-arm64-msvc 569ms (cache miss)
+175 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-win32-arm64-msvc set size:undefined disposed:false
+176 silly fetch manifest @unrs/resolver-binding-linux-arm64-gnu@1.12.2
+177 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-gnu cache-miss
+178 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-gnu 350ms (cache miss)
+179 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-gnu set size:undefined disposed:false
+180 silly fetch manifest @unrs/resolver-binding-linux-arm64-musl@1.12.2
+181 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-musl cache-miss
+182 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-musl 694ms (cache miss)
+183 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm64-musl set size:undefined disposed:false
+184 silly fetch manifest @unrs/resolver-binding-openharmony-arm64@1.12.2
+185 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-openharmony-arm64 cache-miss
+186 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-openharmony-arm64 362ms (cache miss)
+187 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-openharmony-arm64 set size:undefined disposed:false
+188 silly fetch manifest @unrs/resolver-binding-android-arm-eabi@1.12.2
+189 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm-eabi cache-miss
+190 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm-eabi 381ms (cache miss)
+191 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-android-arm-eabi set size:undefined disposed:false
+192 silly fetch manifest @unrs/resolver-binding-linux-arm-gnueabihf@1.12.2
+193 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-gnueabihf cache-miss
+194 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-gnueabihf 431ms (cache miss)
+195 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-gnueabihf set size:undefined disposed:false
+196 silly fetch manifest @unrs/resolver-binding-linux-arm-musleabihf@1.12.2
+197 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-musleabihf cache-miss
+198 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-musleabihf 562ms (cache miss)
+199 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-arm-musleabihf set size:undefined disposed:false
+200 silly fetch manifest @unrs/resolver-binding-win32-ia32-msvc@1.12.2
+201 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-win32-ia32-msvc cache-miss
+202 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-win32-ia32-msvc 516ms (cache miss)
+203 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-win32-ia32-msvc set size:undefined disposed:false
+204 silly fetch manifest @unrs/resolver-binding-linux-loong64-gnu@1.12.2
+205 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-gnu cache-miss
+206 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-gnu 174ms (cache miss)
+207 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-gnu set size:undefined disposed:false
+208 silly fetch manifest @unrs/resolver-binding-linux-loong64-musl@1.12.2
+209 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-musl cache-miss
+210 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-musl 453ms (cache miss)
+211 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-loong64-musl set size:undefined disposed:false
+212 silly fetch manifest @unrs/resolver-binding-linux-ppc64-gnu@1.12.2
+213 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-ppc64-gnu cache-miss
+214 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-ppc64-gnu 250ms (cache miss)
+215 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-ppc64-gnu set size:undefined disposed:false
+216 silly fetch manifest @unrs/resolver-binding-linux-riscv64-gnu@1.12.2
+217 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-gnu cache-miss
+218 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-gnu 455ms (cache miss)
+219 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-gnu set size:undefined disposed:false
+220 silly fetch manifest @unrs/resolver-binding-linux-riscv64-musl@1.12.2
+221 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-musl cache-miss
+222 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-musl 117ms (cache miss)
+223 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-riscv64-musl set size:undefined disposed:false
+224 silly fetch manifest @unrs/resolver-binding-linux-s390x-gnu@1.12.2
+225 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-s390x-gnu cache-miss
+226 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-s390x-gnu 711ms (cache miss)
+227 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-s390x-gnu set size:undefined disposed:false
+228 silly fetch manifest @unrs/resolver-binding-wasm32-wasi@1.12.2
+229 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-wasm32-wasi cache-miss
+230 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-wasm32-wasi 464ms (cache miss)
+231 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-wasm32-wasi set size:undefined disposed:false
+232 silly fetch manifest @unrs/resolver-binding-darwin-x64@1.12.2
+233 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-x64 cache-miss
+234 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-x64 597ms (cache miss)
+235 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-darwin-x64 set size:undefined disposed:false
+236 silly fetch manifest @unrs/resolver-binding-freebsd-x64@1.12.2
+237 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-freebsd-x64 cache-miss
+238 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-freebsd-x64 443ms (cache miss)
+239 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-freebsd-x64 set size:undefined disposed:false
+240 silly fetch manifest @unrs/resolver-binding-linux-x64-gnu@1.12.2
+241 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-gnu cache-miss
+242 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-gnu 260ms (cache miss)
+243 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-gnu set size:undefined disposed:false
+244 silly fetch manifest @unrs/resolver-binding-linux-x64-musl@1.12.2
+245 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-musl cache-miss
+246 http fetch GET 200 https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-musl 378ms (cache miss)
+247 silly packumentCache full:https://registry.npmjs.org/@unrs%2fresolver-binding-linux-x64-musl set size:undefined disposed:false
+248 silly placeDep ROOT @unrs/resolver-binding-android-arm-eabi@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+249 silly placeDep ROOT @unrs/resolver-binding-android-arm64@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+250 silly placeDep ROOT @unrs/resolver-binding-darwin-arm64@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+251 silly placeDep ROOT @unrs/resolver-binding-darwin-x64@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+252 silly placeDep ROOT @unrs/resolver-binding-freebsd-x64@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+253 silly placeDep ROOT @unrs/resolver-binding-linux-arm-gnueabihf@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+254 silly placeDep ROOT @unrs/resolver-binding-linux-arm-musleabihf@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+255 silly placeDep ROOT @unrs/resolver-binding-linux-arm64-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+256 silly placeDep ROOT @unrs/resolver-binding-linux-arm64-musl@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+257 silly placeDep ROOT @unrs/resolver-binding-linux-loong64-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+258 silly placeDep ROOT @unrs/resolver-binding-linux-loong64-musl@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+259 silly placeDep ROOT @unrs/resolver-binding-linux-ppc64-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+260 silly placeDep ROOT @unrs/resolver-binding-linux-riscv64-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+261 silly placeDep ROOT @unrs/resolver-binding-linux-riscv64-musl@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+262 silly placeDep ROOT @unrs/resolver-binding-linux-s390x-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+263 silly placeDep ROOT @unrs/resolver-binding-linux-x64-gnu@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+264 silly placeDep ROOT @unrs/resolver-binding-linux-x64-musl@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+265 silly placeDep ROOT @unrs/resolver-binding-openharmony-arm64@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+266 silly placeDep ROOT @unrs/resolver-binding-wasm32-wasi@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+267 silly placeDep ROOT @unrs/resolver-binding-win32-arm64-msvc@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+268 silly placeDep ROOT @unrs/resolver-binding-win32-ia32-msvc@1.12.2 OK for: unrs-resolver@1.12.2 want: 1.12.2
+269 silly fetch manifest @napi-rs/wasm-runtime@^1.1.4
+270 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fwasm-runtime cache-miss
+271 silly fetch manifest @emnapi/core@1.10.0
+272 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fcore cache-miss
+273 silly fetch manifest @emnapi/runtime@1.10.0
+274 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime cache-miss
+275 http fetch GET 200 https://registry.npmjs.org/@napi-rs%2fwasm-runtime 171ms (cache miss)
+276 silly packumentCache full:https://registry.npmjs.org/@napi-rs%2fwasm-runtime set size:undefined disposed:false
+277 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fcore 174ms (cache miss)
+278 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fcore set size:undefined disposed:false
+279 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fruntime 180ms (cache miss)
+280 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime set size:undefined disposed:false
+281 silly placeDep ROOT @emnapi/core@1.10.0 OK for: @unrs/resolver-binding-wasm32-wasi@1.12.2 want: 1.10.0
+282 silly placeDep ROOT @emnapi/runtime@1.10.0 OK for: @unrs/resolver-binding-wasm32-wasi@1.12.2 want: 1.10.0
+283 silly placeDep ROOT @napi-rs/wasm-runtime@1.2.3 OK for: @unrs/resolver-binding-wasm32-wasi@1.12.2 want: ^1.1.4
+284 silly fetch manifest @emnapi/wasi-threads@1.2.1
+285 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fwasi-threads cache-miss
+286 silly fetch manifest @tybys/wasm-util@^0.10.3
+287 silly packumentCache full:https://registry.npmjs.org/@tybys%2fwasm-util cache-miss
+288 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fwasi-threads 183ms (cache miss)
+289 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fwasi-threads set size:undefined disposed:false
+290 http fetch GET 200 https://registry.npmjs.org/@tybys%2fwasm-util 219ms (cache miss)
+291 silly packumentCache full:https://registry.npmjs.org/@tybys%2fwasm-util set size:undefined disposed:false
+292 silly placeDep ROOT @emnapi/wasi-threads@1.2.1 OK for: @emnapi/core@1.10.0 want: 1.2.1
+293 silly placeDep ROOT @tybys/wasm-util@0.10.3 OK for: @napi-rs/wasm-runtime@1.2.3 want: ^0.10.3
+294 silly placeDep node_modules/eslint-config-next aria-query@5.3.2 OK for: eslint-plugin-jsx-a11y@6.10.2 want: ^5.3.2
+295 silly reify mark retired [
+295 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\aria-query'
+295 silly reify ]
+296 silly reify mark retired [
+296 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\caniuse-lite'
+296 silly reify ]
+297 silly reify mark retired [
+297 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint'
+297 silly reify ]
+298 silly reify mark retired [
+298 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-jsx-a11y'
+298 silly reify ]
+299 silly reify mark retired [
+299 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\lodash'
+299 silly reify ]
+300 silly reify mark retired [
+300 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\lucide-react'
+300 silly reify ]
+301 silly reify mark retired [
+301 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\next'
+301 silly reify ]
+302 silly reify mark retired [
+302 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\recharts'
+302 silly reify ]
+303 silly reify mark retired [
+303 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\tailwindcss'
+303 silly reify ]
+304 silly reify mark retired [
+304 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\victory-vendor'
+304 silly reify ]
+305 silly reify mark retired [
+305 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\@swc\\helpers'
+305 silly reify ]
+306 silly reify mark retired [
+306 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\acorn',
+306 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn',
+306 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn.cmd',
+306 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn.ps1'
+306 silly reify ]
+307 silly reify mark retired [
+307 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\cssesc',
+307 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc',
+307 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc.cmd',
+307 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc.ps1'
+307 silly reify ]
+308 silly reify mark retired [
+308 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\semver',
+308 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver',
+308 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver.cmd',
+308 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver.ps1'
+308 silly reify ]
+309 silly reify mark retired [
+309 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\semver',
+309 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver',
+309 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver.cmd',
+309 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver.ps1'
+309 silly reify ]
+310 silly reify mark retired [
+310 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\glob',
+310 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob',
+310 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob.cmd',
+310 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob.ps1'
+310 silly reify ]
+311 silly reify mark retired [
+311 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\jiti',
+311 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti',
+311 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti.cmd',
+311 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti.ps1'
+311 silly reify ]
+312 silly reify mark retired [
+312 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\js-yaml',
+312 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml',
+312 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml.cmd',
+312 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml.ps1'
+312 silly reify ]
+313 silly reify mark retired [
+313 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\json5',
+313 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5',
+313 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5.cmd',
+313 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5.ps1'
+313 silly reify ]
+314 silly reify mark retired [
+314 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\loose-envify',
+314 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify',
+314 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify.cmd',
+314 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify.ps1'
+314 silly reify ]
+315 silly reify mark retired [
+315 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\nanoid',
+315 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid',
+315 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid.cmd',
+315 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid.ps1'
+315 silly reify ]
+316 silly reify mark retired [
+316 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\napi-postinstall',
+316 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall',
+316 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall.cmd',
+316 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall.ps1'
+316 silly reify ]
+317 silly reify mark retired [
+317 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\semver',
+317 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver',
+317 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver.cmd',
+317 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver.ps1'
+317 silly reify ]
+318 silly reify mark retired [
+318 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\resolve',
+318 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve',
+318 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve.cmd',
+318 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve.ps1'
+318 silly reify ]
+319 silly reify mark retired [
+319 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\resolve',
+319 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve',
+319 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve.cmd',
+319 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve.ps1'
+319 silly reify ]
+320 silly reify mark retired [
+320 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\rimraf',
+320 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf',
+320 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf.cmd',
+320 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf.ps1'
+320 silly reify ]
+321 silly reify mark retired [
+321 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\semver',
+321 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver',
+321 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver.cmd',
+321 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver.ps1'
+321 silly reify ]
+322 silly reify mark retired [
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\sucrase',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase.cmd',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase.ps1',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node.cmd',
+322 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node.ps1'
+322 silly reify ]
+323 silly reify mark retired [
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc.cmd',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc.ps1',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver.cmd',
+323 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver.ps1'
+323 silly reify ]
+324 silly reify mark retired [
+324 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\which',
+324 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which',
+324 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which.cmd',
+324 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which.ps1'
+324 silly reify ]
+325 silly reify moves {
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\aria-query': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.aria-query-lqGVRRKy',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\caniuse-lite': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.caniuse-lite-5Oi1ybhd',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.eslint-hjH74WfU',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-jsx-a11y': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.eslint-plugin-jsx-a11y-JeGrDvmR',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\lodash': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.lodash-Wd1YL2rm',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\lucide-react': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.lucide-react-a5RcwcLI',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\next': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.next-qkMe7eqi',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\recharts': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.recharts-L0rwM36e',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\tailwindcss': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.tailwindcss-4eNdLg3h',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\victory-vendor': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.victory-vendor-biI6iiwy',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\@swc\\helpers': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\@swc\\.helpers-Mo1iyAGE',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\acorn': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.acorn-BDkuP0Zo',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.acorn-AmE5b6vb',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.acorn.cmd-v2eT5x3K',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\acorn.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.acorn.ps1-wfzFBmsD',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\cssesc': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.cssesc-uOuPFeSD',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.cssesc-1mYz2czL',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.cssesc.cmd-YIgfhZTT',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\cssesc.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.cssesc.ps1-QC5QuMwY',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.semver-WuJH1k7R',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\.semver-CMcxvM43',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\.semver.cmd-Bz3kXE6f',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\semver.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-react\\node_modules\\.bin\\.semver.ps1-eL2oZ7vb',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.semver-kEscS6fS',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\.semver-dJRiifLy',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\.semver.cmd-7XjGAx4l',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\semver.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\eslint-plugin-import\\node_modules\\.bin\\.semver.ps1-pIlKIgyO',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\glob': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.glob-XPtJctL8',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.glob-q3sUcKeI',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.glob.cmd-dtD9QwOx',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\glob.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.glob.ps1-rh2RLG7I',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\jiti': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.jiti-L20pf8Ky',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.jiti-STZvA4Zl',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.jiti.cmd-mWoXoiQD',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\jiti.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.jiti.ps1-vW1hzvOX',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\js-yaml': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.js-yaml-aYMFeZaK',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.js-yaml-Xv9Nk2DG',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.js-yaml.cmd-mlsN2KNw',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\js-yaml.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.js-yaml.ps1-vk16jj7l',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\json5': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.json5-GiFIfvZV',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.json5-p1YGY68t',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.json5.cmd-3JSirNvb',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\json5.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.json5.ps1-lP3tuyta',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\loose-envify': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.loose-envify-oXc5QlDT',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.loose-envify-C4JiYGFr',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.loose-envify.cmd-PHbKkti9',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\loose-envify.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.loose-envify.ps1-teFk2wFm',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\nanoid': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.nanoid-P6NVuSQi',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.nanoid-kQHRl5Dl',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.nanoid.cmd-NelkvKqq',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\nanoid.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.nanoid.ps1-bDzxWjon',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\napi-postinstall': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.napi-postinstall-k3hKURKf',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.napi-postinstall-1TEV9ClI',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.napi-postinstall.cmd-UyCTaLur',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\napi-postinstall.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.napi-postinstall.ps1-XvqqNaA5',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.semver-DQQUKAgF',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\.semver-eE0TmHCO',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\.semver.cmd-iq1SaBWo',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\semver.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\node-exports-info\\node_modules\\.bin\\.semver.ps1-aLwDyTn5',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\resolve': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.resolve-w29dhjCK',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\.resolve-XuhwTxAx',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\.resolve.cmd-lFzEsbgV',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\resolve.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\postcss-import\\node_modules\\.bin\\.resolve.ps1-hmDE4Ywo',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\resolve': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.resolve-72M4gpHl',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.resolve-R9KyH28p',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.resolve.cmd-uU0nRiQj',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\resolve.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.resolve.ps1-ZE18aKA8',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\rimraf': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.rimraf-8KeVpK5n',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.rimraf-foWj0A9w',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.rimraf.cmd-Wkaa4S1B',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\rimraf.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.rimraf.ps1-MCZqiT14',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.semver-h2pqyKCD',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.semver-Zn5AnHOA',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.semver.cmd-xNI0lLC6',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\semver.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.semver.ps1-M2IBCwIu',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\sucrase': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.sucrase-3QTRvmga',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase-yAR1yImK',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase.cmd-bLrJ0PzM',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase.ps1-JK3VxsgO',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase-node-AA9G5zW3',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase-node.cmd-mjgNwOwi',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\sucrase-node.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.sucrase-node.ps1-3VscEEwb',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.typescript-rzQn1aDk',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsc-fIJ2F20H',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsc.cmd-asxXA2k5',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsc.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsc.ps1-KAPWIlvk',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsserver-Qc6Yv5FJ',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsserver.cmd-UExBZE5f',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\tsserver.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.tsserver.ps1-CfIVwbcO',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\which': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.which-nNhw9fNQ',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.node-which-c4VNtDvr',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which.cmd': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.node-which.cmd-e1mcFe9y',
+325 silly reify   'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\node-which.ps1': 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\.bin\\.node-which.ps1-AgqIslqD'
+325 silly reify }
+326 silly audit bulk request {
+326 silly audit   postcss: [ '8.5.26', '8.4.31' ],
+326 silly audit   'react-is': [ '16.13.1', '18.3.1' ],
+326 silly audit   resolve: [ '1.22.12', '2.0.0-next.7' ],
+326 silly audit   'acorn-jsx': [ '5.3.2' ],
+326 silly audit   'ansi-regex': [ '5.0.1', '6.3.0' ],
+326 silly audit   'any-promise': [ '1.3.0' ],
+326 silly audit   'ansi-styles': [ '4.3.0', '6.2.3' ],
+326 silly audit   acorn: [ '8.18.0' ],
+326 silly audit   anymatch: [ '3.1.3' ],
+326 silly audit   arg: [ '5.0.2' ],
+326 silly audit   'array-buffer-byte-length': [ '1.0.2' ],
+326 silly audit   'array-union': [ '2.1.0' ],
+326 silly audit   ajv: [ '6.15.0' ],
+326 silly audit   argparse: [ '2.0.1' ],
+326 silly audit   'array-includes': [ '3.1.9' ],
+326 silly audit   'array.prototype.findlast': [ '1.2.5' ],
+326 silly audit   'array.prototype.findlastindex': [ '1.2.6' ],
+326 silly audit   'ast-types-flow': [ '0.0.8' ],
+326 silly audit   'array.prototype.flat': [ '1.3.3' ],
+326 silly audit   'array.prototype.flatmap': [ '1.3.3' ],
+326 silly audit   'available-typed-arrays': [ '1.0.7' ],
+326 silly audit   'array.prototype.tosorted': [ '1.1.4' ],
+326 silly audit   'axe-core': [ '4.13.0' ],
+326 silly audit   'binary-extensions': [ '2.3.0' ],
+326 silly audit   'arraybuffer.prototype.slice': [ '1.0.4' ],
+326 silly audit   'brace-expansion': [ '1.1.18', '2.1.4' ],
+326 silly audit   'balanced-match': [ '1.0.2' ],
+326 silly audit   'async-function': [ '1.0.0' ],
+326 silly audit   'axobject-query': [ '4.1.0' ],
+326 silly audit   braces: [ '3.0.3' ],
+326 silly audit   busboy: [ '1.6.0' ],
+326 silly audit   callsites: [ '3.1.0' ],
+326 silly audit   'call-bound': [ '1.0.4' ],
+326 silly audit   'camelcase-css': [ '2.0.1' ],
+326 silly audit   chalk: [ '4.1.2' ],
+326 silly audit   'call-bind': [ '1.0.9' ],
+326 silly audit   'client-only': [ '0.0.1' ],
+326 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+326 silly audit   'color-convert': [ '2.0.1' ],
+326 silly audit   clsx: [ '2.1.1' ],
+326 silly audit   'color-name': [ '1.1.4' ],
+326 silly audit   'concat-map': [ '0.0.1' ],
+326 silly audit   commander: [ '4.1.1' ],
+326 silly audit   cssesc: [ '3.0.0' ],
+326 silly audit   chokidar: [ '3.6.0' ],
+326 silly audit   'glob-parent': [ '5.1.2', '6.0.2' ],
+326 silly audit   csstype: [ '3.2.3' ],
+326 silly audit   'cross-spawn': [ '7.0.6' ],
+326 silly audit   'd3-array': [ '3.2.4' ],
+326 silly audit   'd3-interpolate': [ '3.0.1' ],
+326 silly audit   'd3-color': [ '3.1.0' ],
+326 silly audit   'd3-scale': [ '4.0.2' ],
+326 silly audit   'd3-ease': [ '3.0.1' ],
+326 silly audit   'd3-format': [ '3.1.2' ],
+326 silly audit   'd3-time-format': [ '4.1.0' ],
+326 silly audit   'd3-path': [ '3.1.0' ],
+326 silly audit   'data-view-buffer': [ '1.0.2' ],
+326 silly audit   'damerau-levenshtein': [ '1.0.8' ],
+326 silly audit   'data-view-byte-length': [ '1.0.2' ],
+326 silly audit   'd3-time': [ '3.1.0' ],
+326 silly audit   'data-view-byte-offset': [ '1.0.1' ],
+326 silly audit   'decimal.js-light': [ '2.5.1' ],
+326 silly audit   'd3-timer': [ '3.0.1' ],
+326 silly audit   'define-data-property': [ '1.1.4' ],
+326 silly audit   'define-properties': [ '1.2.1' ],
+326 silly audit   didyoumean: [ '1.2.2' ],
+326 silly audit   'dir-glob': [ '3.0.1' ],
+326 silly audit   dlv: [ '1.1.3' ],
+326 silly audit   'd3-shape': [ '3.2.0' ],
+326 silly audit   doctrine: [ '3.0.0', '2.1.0' ],
+326 silly audit   debug: [ '4.4.3', '3.2.7' ],
+326 silly audit   eastasianwidth: [ '0.2.0' ],
+326 silly audit   'deep-is': [ '0.1.4' ],
+326 silly audit   'dunder-proto': [ '1.0.1' ],
+326 silly audit   'es-define-property': [ '1.0.1' ],
+326 silly audit   'emoji-regex': [ '9.2.2', '8.0.0' ],
+326 silly audit   'es-abstract-get': [ '1.0.0' ],
+326 silly audit   'es-errors': [ '1.3.0' ],
+326 silly audit   'es-set-tostringtag': [ '2.1.0' ],
+326 silly audit   'es-object-atoms': [ '1.1.2' ],
+326 silly audit   'es-iterator-helpers': [ '1.4.0' ],
+326 silly audit   'es-shim-unscopables': [ '1.1.0' ],
+326 silly audit   'escape-string-regexp': [ '4.0.0' ],
+326 silly audit   'eslint-config-next': [ '14.2.5' ],
+326 silly audit   'eslint-import-resolver-node': [ '0.3.10' ],
+326 silly audit   'eslint-import-resolver-typescript': [ '3.10.1' ],
+326 silly audit   'dom-helpers': [ '5.2.1' ],
+326 silly audit   'es-to-primitive': [ '1.3.4' ],
+326 silly audit   'eslint-plugin-react': [ '7.37.5' ],
+326 silly audit   semver: [ '6.3.1', '7.8.5' ],
+326 silly audit   'eslint-plugin-import': [ '2.32.0' ],
+326 silly audit   'eslint-module-utils': [ '2.14.0' ],
+326 silly audit   'eslint-plugin-react-hooks': [ '5.0.0-canary-7118f5dd7-20230705' ],
+326 silly audit   'eslint-scope': [ '7.2.2' ],
+326 silly audit   esrecurse: [ '4.3.0' ],
+326 silly audit   esutils: [ '2.0.3' ],
+326 silly audit   'eslint-visitor-keys': [ '3.4.3' ],
+326 silly audit   estraverse: [ '5.3.0' ],
+326 silly audit   eventemitter3: [ '4.0.7' ],
+326 silly audit   espree: [ '9.6.1' ],
+326 silly audit   'fast-glob': [ '3.3.3' ],
+326 silly audit   esquery: [ '1.7.0' ],
+326 silly audit   'file-entry-cache': [ '6.0.1' ],
+326 silly audit   'fast-deep-equal': [ '3.1.3' ],
+326 silly audit   'fill-range': [ '7.1.1' ],
+326 silly audit   'fast-equals': [ '5.4.1' ],
+326 silly audit   'fast-levenshtein': [ '2.0.6' ],
+326 silly audit   'find-up': [ '5.0.0' ],
+326 silly audit   'fast-json-stable-stringify': [ '2.1.0' ],
+326 silly audit   'flat-cache': [ '3.2.0' ],
+326 silly audit   fastq: [ '1.20.1' ],
+326 silly audit   flatted: [ '3.4.4' ],
+326 silly audit   'foreground-child': [ '3.3.1' ],
+326 silly audit   'generator-function': [ '2.0.1' ],
+326 silly audit   'for-each': [ '0.3.5' ],
+326 silly audit   'fs.realpath': [ '1.0.0' ],
+326 silly audit   'function-bind': [ '1.1.2' ],
+326 silly audit   'get-tsconfig': [ '4.14.3' ],
+326 silly audit   'functions-have-names': [ '1.2.3' ],
+326 silly audit   glob: [ '10.3.10', '7.2.3' ],
+326 silly audit   minimatch: [ '9.0.9', '3.1.5', '9.0.3' ],
+326 silly audit   'function.prototype.name': [ '1.2.0' ],
+326 silly audit   globals: [ '13.24.0' ],
+326 silly audit   'get-intrinsic': [ '1.3.0' ],
+326 silly audit   gopd: [ '1.2.0' ],
+326 silly audit   'get-proto': [ '1.0.1' ],
+326 silly audit   'has-bigints': [ '1.1.0' ],
+326 silly audit   globby: [ '11.1.0' ],
+326 silly audit   'get-symbol-description': [ '1.1.0' ],
+326 silly audit   'has-flag': [ '4.0.0' ],
+326 silly audit   'graceful-fs': [ '4.2.11' ],
+326 silly audit   globalthis: [ '1.0.4' ],
+326 silly audit   'has-property-descriptors': [ '1.0.2' ],
+326 silly audit   graphemer: [ '1.4.0' ],
+326 silly audit   ignore: [ '5.3.2' ],
+326 silly audit   'has-proto': [ '1.2.0' ],
+326 silly audit   hasown: [ '2.0.4' ],
+326 silly audit   'import-fresh': [ '3.3.1' ],
+326 silly audit   'has-symbols': [ '1.1.0' ],
+326 silly audit   imurmurhash: [ '0.1.4' ],
+326 silly audit   'has-tostringtag': [ '1.0.2' ],
+326 silly audit   internmap: [ '2.0.3' ],
+326 silly audit   inflight: [ '1.0.6' ],
+326 silly audit   'is-array-buffer': [ '3.0.5' ],
+326 silly audit   inherits: [ '2.0.4' ],
+326 silly audit   'is-binary-path': [ '2.1.0' ],
+326 silly audit   'internal-slot': [ '1.1.0' ],
+326 silly audit   'is-bigint': [ '1.1.0' ],
+326 silly audit   'is-bun-module': [ '2.0.0' ],
+326 silly audit   'is-async-function': [ '2.1.1' ],
+326 silly audit   'is-boolean-object': [ '1.2.2' ],
+326 silly audit   'is-document.all': [ '1.0.0' ],
+326 silly audit   'is-callable': [ '1.2.7' ],
+326 silly audit   'is-core-module': [ '2.16.2' ],
+326 silly audit   'is-extglob': [ '2.1.1' ],
+326 silly audit   'is-finalizationregistry': [ '1.1.1' ],
+326 silly audit   'is-fullwidth-code-point': [ '3.0.0' ],
+326 silly audit   'is-data-view': [ '1.0.2' ],
+326 silly audit   'is-glob': [ '4.0.3' ],
+326 silly audit   'is-date-object': [ '1.1.0' ],
+326 silly audit   'is-number': [ '7.0.0' ],
+326 silly audit   'is-generator-function': [ '1.1.2' ],
+326 silly audit   'is-path-inside': [ '3.0.3' ],
+326 silly audit   'is-map': [ '2.0.3' ],
+326 silly audit   'is-number-object': [ '1.1.1' ],
+326 silly audit   'is-string': [ '1.1.1' ],
+326 silly audit   'is-negative-zero': [ '2.0.3' ],
+326 silly audit   'is-shared-array-buffer': [ '1.0.4' ],
+326 silly audit   'is-regex': [ '1.2.1' ],
+326 silly audit   'is-set': [ '2.0.3' ],
+326 silly audit   'is-typed-array': [ '1.1.15' ],
+326 silly audit   'is-weakref': [ '1.1.1' ],
+326 silly audit   'is-symbol': [ '1.1.1' ],
+326 silly audit   isarray: [ '2.0.5' ],
+326 silly audit   'iterator.prototype': [ '1.1.5' ],
+326 silly audit   'is-weakmap': [ '2.0.2' ],
+326 silly audit   'is-weakset': [ '2.0.4' ],
+326 silly audit   'js-tokens': [ '4.0.0' ],
+326 silly audit   isexe: [ '2.0.0' ],
+326 silly audit   'js-yaml': [ '4.3.1' ],
+326 silly audit   'json-buffer': [ '3.0.1' ],
+326 silly audit   jiti: [ '1.21.7' ],
+326 silly audit   'json-schema-traverse': [ '0.4.1' ],
+326 silly audit   keyv: [ '4.5.4' ],
+326 silly audit   'json-stable-stringify-without-jsonify': [ '1.0.1' ],
+326 silly audit   'jsx-ast-utils': [ '3.3.5' ],
+326 silly audit   'language-tags': [ '1.0.9' ],
+326 silly audit   jackspeak: [ '2.3.6' ],
+326 silly audit   json5: [ '1.0.2' ],
+326 silly audit   'locate-path': [ '6.0.0' ],
+326 silly audit   levn: [ '0.4.1' ],
+326 silly audit   lilconfig: [ '3.1.3' ],
+326 silly audit   'lodash.merge': [ '4.6.2' ],
+326 silly audit   'lines-and-columns': [ '1.2.4' ],
+326 silly audit   'language-subtag-registry': [ '0.3.23' ],
+326 silly audit   merge2: [ '1.4.1' ],
+326 silly audit   'loose-envify': [ '1.4.0' ],
+326 silly audit   micromatch: [ '4.0.8' ],
+326 silly audit   minimist: [ '1.2.8' ],
+326 silly audit   'lru-cache': [ '10.4.3' ],
+326 silly audit   ms: [ '2.1.3' ],
+326 silly audit   'math-intrinsics': [ '1.1.0' ],
+326 silly audit   mz: [ '2.7.0' ],
+326 silly audit   minipass: [ '7.1.3' ],
+326 silly audit   'natural-compare': [ '1.4.0' ],
+326 silly audit   'normalize-path': [ '3.0.0' ],
+326 silly audit   nanoid: [ '3.3.18' ],
+326 silly audit   'object-assign': [ '4.1.1' ],
+326 silly audit   'object-hash': [ '3.0.0' ],
+326 silly audit   'object-inspect': [ '1.13.4' ],
+326 silly audit   'object-keys': [ '1.1.1' ],
+326 silly audit   'napi-postinstall': [ '0.3.4' ],
+326 silly audit   'node-exports-info': [ '1.6.2' ],
+326 silly audit   'object.entries': [ '1.1.9' ],
+326 silly audit   'object.fromentries': [ '2.0.8' ],
+326 silly audit   'object.groupby': [ '1.0.3' ],
+326 silly audit   'object.values': [ '1.2.1' ],
+326 silly audit   'own-keys': [ '1.0.2' ],
+326 silly audit   'object.assign': [ '4.1.7' ],
+326 silly audit   'p-limit': [ '3.1.0' ],
+326 silly audit   'parent-module': [ '1.0.1' ],
+326 silly audit   once: [ '1.4.0' ],
+326 silly audit   'p-locate': [ '5.0.0' ],
+326 silly audit   'path-key': [ '3.1.1' ],
+326 silly audit   'path-exists': [ '4.0.0' ],
+326 silly audit   optionator: [ '0.9.4' ],
+326 silly audit   'path-parse': [ '1.0.7' ],
+326 silly audit   'path-type': [ '4.0.0' ],
+326 silly audit   picocolors: [ '1.1.1' ],
+326 silly audit   pirates: [ '4.0.7' ],
+326 silly audit   'path-is-absolute': [ '1.0.1' ],
+326 silly audit   'possible-typed-array-names': [ '1.1.0' ],
+326 silly audit   'path-scurry': [ '1.11.1' ],
+326 silly audit   picomatch: [ '2.3.2', '4.0.7' ],
+326 silly audit   'postcss-nested': [ '6.2.0' ],
+326 silly audit   'postcss-import': [ '15.1.0' ],
+326 silly audit   'postcss-selector-parser': [ '6.1.4' ],
+326 silly audit   'postcss-js': [ '4.1.0' ],
+326 silly audit   'prop-types': [ '15.8.1' ],
+326 silly audit   'postcss-load-config': [ '6.0.1' ],
+326 silly audit   punycode: [ '2.3.1' ],
+326 silly audit   'postcss-value-parser': [ '4.2.0' ],
+326 silly audit   react: [ '18.3.1' ],
+326 silly audit   'queue-microtask': [ '1.2.3' ],
+326 silly audit   'react-smooth': [ '4.0.4' ],
+326 silly audit   'react-transition-group': [ '4.4.5' ],
+326 silly audit   'read-cache': [ '1.0.2' ],
+326 silly audit   'prelude-ls': [ '1.2.1' ],
+326 silly audit   readdirp: [ '3.6.0' ],
+326 silly audit   'recharts-scale': [ '0.4.5' ],
+326 silly audit   'resolve-from': [ '4.0.0' ],
+326 silly audit   'react-dom': [ '18.3.1' ],
+326 silly audit   'resolve-pkg-maps': [ '1.0.0' ],
+326 silly audit   rimraf: [ '3.0.2' ],
+326 silly audit   'run-parallel': [ '1.2.0' ],
+326 silly audit   'reflect.getprototypeof': [ '1.0.10' ],
+326 silly audit   'safe-array-concat': [ '1.1.4' ],
+326 silly audit   'safe-regex-test': [ '1.1.0' ],
+326 silly audit   'regexp.prototype.flags': [ '1.5.4' ],
+326 silly audit   'safe-push-apply': [ '1.0.0' ],
+326 silly audit   'set-function-name': [ '2.0.2' ],
+326 silly audit   reusify: [ '1.1.0' ],
+326 silly audit   'set-function-length': [ '1.2.2' ],
+326 silly audit   'shebang-command': [ '2.0.0' ],
+326 silly audit   'shebang-regex': [ '3.0.0' ],
+326 silly audit   scheduler: [ '0.23.2' ],
+326 silly audit   'set-proto': [ '1.0.0' ],
+326 silly audit   'side-channel-list': [ '1.0.1' ],
+326 silly audit   'side-channel': [ '1.1.1' ],
+326 silly audit   'side-channel-map': [ '1.0.1' ],
+326 silly audit   slash: [ '3.0.0' ],
+326 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+326 silly audit   'stop-iteration-iterator': [ '1.1.0' ],
+326 silly audit   'string-width': [ '5.1.2', '4.2.3' ],
+326 silly audit   'strip-ansi': [ '7.2.0', '6.0.1' ],
+326 silly audit   'signal-exit': [ '4.1.0' ],
+326 silly audit   'stable-hash': [ '0.0.5' ],
+326 silly audit   'source-map-js': [ '1.2.1' ],
+326 silly audit   streamsearch: [ '1.1.0' ],
+326 silly audit   'string.prototype.includes': [ '2.0.1' ],
+326 silly audit   'string.prototype.matchall': [ '4.0.12' ],
+326 silly audit   'string.prototype.trim': [ '1.2.11' ],
+326 silly audit   'string.prototype.repeat': [ '1.0.0' ],
+326 silly audit   'string.prototype.trimend': [ '1.0.10' ],
+326 silly audit   'strip-bom': [ '3.0.0' ],
+326 silly audit   'string.prototype.trimstart': [ '1.0.8' ],
+326 silly audit   'styled-jsx': [ '5.1.1' ],
+326 silly audit   'strip-json-comments': [ '3.1.1' ],
+326 silly audit   'supports-color': [ '7.2.0' ],
+326 silly audit   sucrase: [ '3.35.1' ],
+326 silly audit   'tailwind-merge': [ '2.6.1' ],
+326 silly audit   'supports-preserve-symlinks-flag': [ '1.0.0' ],
+326 silly audit   'text-table': [ '0.2.0' ],
+326 silly audit   tinyglobby: [ '0.2.17' ],
+326 silly audit   fdir: [ '6.5.0' ],
+326 silly audit   'tiny-invariant': [ '1.3.3' ],
+326 silly audit   'thenify-all': [ '1.6.0' ],
+326 silly audit   thenify: [ '3.3.1' ],
+326 silly audit   'to-regex-range': [ '5.0.1' ],
+326 silly audit   'ts-interface-checker': [ '0.1.13' ],
+326 silly audit   'ts-api-utils': [ '1.4.3' ],
+326 silly audit   'tsconfig-paths': [ '3.15.0' ],
+326 silly audit   'type-check': [ '0.4.0' ],
+326 silly audit   'type-fest': [ '0.20.2' ],
+326 silly audit   'typed-array-buffer': [ '1.0.3' ],
+326 silly audit   'typed-array-byte-length': [ '1.0.3' ],
+326 silly audit   'typed-array-byte-offset': [ '1.0.4' ],
+326 silly audit   'typed-array-length': [ '1.0.8' ],
+326 silly audit   tslib: [ '2.8.1' ],
+326 silly audit   typescript: [ '5.9.3' ],
+326 silly audit   'undici-types': [ '6.21.0' ],
+326 silly audit   'unrs-resolver': [ '1.12.2' ],
+326 silly audit   'uri-js': [ '4.4.1' ],
+326 silly audit   'unbox-primitive': [ '1.1.0' ],
+326 silly audit   'util-deprecate': [ '1.0.2' ],
+326 silly audit   which: [ '2.0.2' ],
+326 silly audit   'which-builtin-type': [ '1.2.1' ],
+326 silly audit   'which-typed-array': [ '1.1.22' ],
+326 silly audit   'word-wrap': [ '1.2.5' ],
+326 silly audit   'wrap-ansi': [ '7.0.0', '8.1.0' ],
+326 silly audit   'which-collection': [ '1.0.2' ],
+326 silly audit   'yocto-queue': [ '0.1.0' ],
+326 silly audit   'which-boxed-primitive': [ '1.1.1' ],
+326 silly audit   wrappy: [ '1.0.2' ],
+326 silly audit   '@alloc/quick-lru': [ '5.2.0' ],
+326 silly audit   '@eslint-community/regexpp': [ '4.12.2' ],
+326 silly audit   '@eslint/eslintrc': [ '2.1.4' ],
+326 silly audit   '@eslint-community/eslint-utils': [ '4.10.1' ],
+326 silly audit   '@isaacs/cliui': [ '8.0.2' ],
+326 silly audit   '@humanwhocodes/config-array': [ '0.13.0' ],
+326 silly audit   '@eslint/js': [ '8.57.1' ],
+326 silly audit   '@jridgewell/resolve-uri': [ '3.1.2' ],
+326 silly audit   '@humanwhocodes/module-importer': [ '1.0.1' ],
+326 silly audit   '@humanwhocodes/object-schema': [ '2.0.3' ],
+326 silly audit   '@next/env': [ '14.2.5' ],
+326 silly audit   '@next/swc-win32-x64-msvc': [ '14.2.5' ],
+326 silly audit   '@jridgewell/gen-mapping': [ '0.3.13' ],
+326 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.5' ],
+326 silly audit   '@jridgewell/trace-mapping': [ '0.3.31' ],
+326 silly audit   '@next/eslint-plugin-next': [ '14.2.5' ],
+326 silly audit   '@nolyfill/is-core-module': [ '1.0.39' ],
+326 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+326 silly audit   '@rtsao/scc': [ '1.1.0' ],
+326 silly audit   '@swc/counter': [ '0.1.3' ],
+326 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+326 silly audit   '@types/d3-array': [ '3.2.2' ],
+326 silly audit   '@types/d3-color': [ '3.1.3' ],
+326 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+326 silly audit   '@types/d3-ease': [ '3.0.2' ],
+326 silly audit   '@rushstack/eslint-patch': [ '1.16.1' ],
+326 silly audit   '@types/d3-interpolate': [ '3.0.4' ],
+326 silly audit   '@types/d3-path': [ '3.1.1' ],
+326 silly audit   '@types/d3-scale': [ '4.0.9' ],
+326 silly audit   '@types/d3-shape': [ '3.2.0' ],
+326 silly audit   '@pkgjs/parseargs': [ '0.11.0' ],
+326 silly audit   '@types/d3-time': [ '3.0.4' ],
+326 silly audit   '@types/d3-timer': [ '3.0.2' ],
+326 silly audit   '@types/json5': [ '0.0.29' ],
+326 silly audit   '@types/prop-types': [ '15.7.15' ],
+326 silly audit   '@types/node': [ '20.19.43' ],
+326 silly audit   '@types/react': [ '18.3.31' ],
+326 silly audit   '@typescript-eslint/scope-manager': [ '7.2.0' ],
+326 silly audit   '@typescript-eslint/parser': [ '7.2.0' ],
+326 silly audit   '@typescript-eslint/visitor-keys': [ '7.2.0' ],
+326 silly audit   '@types/react-dom': [ '18.3.7' ],
+326 silly audit   '@unrs/resolver-binding-win32-x64-msvc': [ '1.12.2' ],
+326 silly audit   '@ungap/structured-clone': [ '1.3.3' ],
+326 silly audit   '@typescript-eslint/types': [ '7.2.0' ],
+326 silly audit   '@typescript-eslint/typescript-estree': [ '7.2.0' ],
+326 silly audit   eslint: [ '8.57.1' ],
+326 silly audit   'lucide-react': [ '0.417.0' ],
+326 silly audit   next: [ '14.2.5' ],
+326 silly audit   recharts: [ '2.15.4' ],
+326 silly audit   tailwindcss: [ '3.4.19' ],
+326 silly audit   'es-abstract': [ '1.24.2' ],
+326 silly audit   'eslint-plugin-jsx-a11y': [ '6.10.2' ],
+326 silly audit   '@next/swc-darwin-arm64': [ '14.2.5' ],
+326 silly audit   '@next/swc-darwin-x64': [ '14.2.5' ],
+326 silly audit   '@next/swc-linux-arm64-gnu': [ '14.2.5' ],
+326 silly audit   '@next/swc-linux-arm64-musl': [ '14.2.5' ],
+326 silly audit   '@next/swc-linux-x64-gnu': [ '14.2.5' ],
+326 silly audit   '@next/swc-linux-x64-musl': [ '14.2.5' ],
+326 silly audit   '@next/swc-win32-arm64-msvc': [ '14.2.5' ],
+326 silly audit   '@next/swc-win32-ia32-msvc': [ '14.2.5' ],
+326 silly audit   '@swc/helpers': [ '0.5.5' ],
+326 silly audit   'caniuse-lite': [ '1.0.30001810' ],
+326 silly audit   lodash: [ '4.18.1' ],
+326 silly audit   'victory-vendor': [ '36.9.2' ],
+326 silly audit   '@unrs/resolver-binding-android-arm-eabi': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-android-arm64': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-darwin-arm64': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-darwin-x64': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-freebsd-x64': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-arm-gnueabihf': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-arm-musleabihf': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-arm64-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-arm64-musl': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-loong64-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-loong64-musl': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-ppc64-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-riscv64-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-riscv64-musl': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-s390x-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-x64-gnu': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-linux-x64-musl': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-openharmony-arm64': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-wasm32-wasi': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-win32-arm64-msvc': [ '1.12.2' ],
+326 silly audit   '@unrs/resolver-binding-win32-ia32-msvc': [ '1.12.2' ],
+326 silly audit   '@napi-rs/wasm-runtime': [ '1.2.3' ],
+326 silly audit   '@emnapi/wasi-threads': [ '1.2.1' ],
+326 silly audit   '@tybys/wasm-util': [ '0.10.3' ],
+326 silly audit   'aria-query': [ '5.3.2' ]
+326 silly audit }
+327 http cache @emnapi/wasi-threads@https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz 0ms (cache hit)
+328 silly packumentCache corgi:https://registry.npmjs.org/which cache-miss
+329 silly packumentCache corgi:https://registry.npmjs.org/typescript cache-miss
+330 silly packumentCache corgi:https://registry.npmjs.org/rimraf cache-miss
+331 silly packumentCache corgi:https://registry.npmjs.org/sucrase cache-miss
+332 silly packumentCache corgi:https://registry.npmjs.org/resolve cache-miss
+333 silly packumentCache corgi:https://registry.npmjs.org/loose-envify cache-miss
+334 silly packumentCache corgi:https://registry.npmjs.org/napi-postinstall cache-miss
+335 silly packumentCache corgi:https://registry.npmjs.org/semver cache-miss
+336 silly packumentCache corgi:https://registry.npmjs.org/json5 cache-miss
+337 silly packumentCache corgi:https://registry.npmjs.org/js-yaml cache-miss
+338 http cache @swc/helpers@https://registry.npmjs.org/@swc/helpers/-/helpers-0.5.5.tgz 0ms (cache hit)
+339 silly packumentCache corgi:https://registry.npmjs.org/jiti cache-miss
+340 silly packumentCache corgi:https://registry.npmjs.org/nanoid cache-miss
+341 silly packumentCache corgi:https://registry.npmjs.org/cssesc cache-miss
+342 silly packumentCache corgi:https://registry.npmjs.org/glob cache-miss
+343 silly packumentCache corgi:https://registry.npmjs.org/acorn cache-miss
+344 http cache victory-vendor@https://registry.npmjs.org/victory-vendor/-/victory-vendor-36.9.2.tgz 0ms (cache hit)
+345 http cache tailwindcss@https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.4.19.tgz 0ms (cache hit)
+346 http cache recharts@https://registry.npmjs.org/recharts/-/recharts-2.15.4.tgz 0ms (cache hit)
+347 http cache lucide-react@https://registry.npmjs.org/lucide-react/-/lucide-react-0.417.0.tgz 0ms (cache hit)
+348 http cache next@https://registry.npmjs.org/next/-/next-14.2.5.tgz 0ms (cache hit)
+349 http cache lodash@https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz 0ms (cache hit)
+350 http cache caniuse-lite@https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001810.tgz 0ms (cache hit)
+351 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+352 http cache eslint@https://registry.npmjs.org/eslint/-/eslint-8.57.1.tgz 0ms (cache hit)
+353 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+354 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+355 silly packumentCache corgi:https://registry.npmjs.org/resolve cache-miss
+356 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+357 silly packumentCache corgi:https://registry.npmjs.org/semver cache-miss
+358 silly packumentCache corgi:https://registry.npmjs.org/semver cache-miss
+359 silly packumentCache corgi:https://registry.npmjs.org/semver cache-miss
+360 http cache eslint-plugin-jsx-a11y@https://registry.npmjs.org/eslint-plugin-jsx-a11y/-/eslint-plugin-jsx-a11y-6.10.2.tgz 0ms (cache hit)
+361 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+362 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 1ms (cache hit)
+363 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+364 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+365 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+366 http cache aria-query@https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz 0ms (cache hit)
+367 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+368 silly tarball no local data for @emnapi/wasi-threads@https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz. Extracting by manifest.
+369 http cache es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 0ms (cache hit)
+370 silly tarball no local data for @swc/helpers@https://registry.npmjs.org/@swc/helpers/-/helpers-0.5.5.tgz. Extracting by manifest.
+371 silly tarball no local data for victory-vendor@https://registry.npmjs.org/victory-vendor/-/victory-vendor-36.9.2.tgz. Extracting by manifest.
+372 silly packumentCache corgi:https://registry.npmjs.org/resolve cache-miss
+373 silly tarball no local data for tailwindcss@https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.4.19.tgz. Extracting by manifest.
+374 silly tarball no local data for recharts@https://registry.npmjs.org/recharts/-/recharts-2.15.4.tgz. Extracting by manifest.
+375 silly tarball no local data for lucide-react@https://registry.npmjs.org/lucide-react/-/lucide-react-0.417.0.tgz. Extracting by manifest.
+376 silly tarball no local data for next@https://registry.npmjs.org/next/-/next-14.2.5.tgz. Extracting by manifest.
+377 silly tarball no local data for lodash@https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz. Extracting by manifest.
+378 silly tarball no local data for caniuse-lite@https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001810.tgz. Extracting by manifest.
+379 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+380 silly tarball no local data for eslint@https://registry.npmjs.org/eslint/-/eslint-8.57.1.tgz. Extracting by manifest.
+381 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+382 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+383 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+384 silly tarball no local data for eslint-plugin-jsx-a11y@https://registry.npmjs.org/eslint-plugin-jsx-a11y/-/eslint-plugin-jsx-a11y-6.10.2.tgz. Extracting by manifest.
+385 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+386 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+387 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+388 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+389 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+390 silly tarball no local data for aria-query@https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz. Extracting by manifest.
+391 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+392 silly tarball no local data for es-abstract@https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz. Extracting by manifest.
+393 http fetch GET 200 https://registry.npmjs.org/loose-envify 210ms (cache miss)
+394 silly packumentCache corgi:https://registry.npmjs.org/loose-envify set size:undefined disposed:false
+395 http fetch GET 200 https://registry.npmjs.org/which 235ms (cache miss)
+396 silly packumentCache corgi:https://registry.npmjs.org/which set size:undefined disposed:false
+397 http fetch GET 200 https://registry.npmjs.org/semver 290ms (cache miss)
+398 silly packumentCache corgi:https://registry.npmjs.org/semver set size:undefined disposed:false
+399 http fetch GET 200 https://registry.npmjs.org/json5 293ms (cache miss)
+400 silly packumentCache corgi:https://registry.npmjs.org/json5 set size:undefined disposed:false
+401 http fetch GET 200 https://registry.npmjs.org/js-yaml 308ms (cache miss)
+402 silly packumentCache corgi:https://registry.npmjs.org/js-yaml set size:undefined disposed:false
+403 http fetch GET 200 https://registry.npmjs.org/rimraf 361ms (cache miss)
+404 silly packumentCache corgi:https://registry.npmjs.org/rimraf set size:undefined disposed:false
+405 http fetch GET 200 https://registry.npmjs.org/resolve 364ms (cache miss)
+406 silly packumentCache corgi:https://registry.npmjs.org/resolve set size:undefined disposed:false
+407 http fetch GET 200 https://registry.npmjs.org/jiti 375ms (cache miss)
+408 silly packumentCache corgi:https://registry.npmjs.org/jiti set size:undefined disposed:false
+409 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 486ms
+410 silly audit report {
+410 silly audit report   postcss: [
+410 silly audit report     {
+410 silly audit report       id: 1130709,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-fxqj-rqcc-2cmp',
+410 silly audit report       title: 'PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '<=8.5.22',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1117015,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-qx2v-qp2m-jg93',
+410 silly audit report       title: 'PostCSS has XSS via Unescaped </style> in its CSS Stringify Output',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '<8.5.10',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124252,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-6g55-p6wh-862q',
+410 silly audit report       title: 'PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '<=8.5.11',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1139510,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-r28c-9q8g-f849',
+410 silly audit report       title: 'PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '<=8.5.17',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     }
+410 silly audit report   ],
+410 silly audit report   glob: [
+410 silly audit report     {
+410 silly audit report       id: 1109842,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-5j98-mcp5-4vw2',
+410 silly audit report       title: 'glob CLI: Command injection via -c/--cmd executes matches with shell:true',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=10.2.0 <10.5.0',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     }
+410 silly audit report   ],
+410 silly audit report   minimatch: [
+410 silly audit report     {
+410 silly audit report       id: 1113465,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-3ppc-4f35-3m26',
+410 silly audit report       title: 'minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.6',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1113544,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-7r86-cg39-jmmj',
+410 silly audit report       title: 'minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1113552,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-23c5-xmqv-rm74',
+410 silly audit report       title: 'minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=9.0.0 <9.0.7',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     }
+410 silly audit report   ],
+410 silly audit report   next: [
+410 silly audit report     {
+410 silly audit report       id: 1099638,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-gp8f-8m3g-qvj9',
+410 silly audit report       title: 'Next.js Cache Poisoning',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=14.0.0 <14.2.10',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1100421,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-g77x-44xx-532m',
+410 silly audit report       title: 'Denial of Service condition in Next.js image optimization',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=10.0.0 <14.2.7',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1117931,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-8h8q-6873-q5fj',
+410 silly audit report       title: 'Next.js Vulnerable to Denial of Service with Server Components',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1101438,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-7m27-7ghc-44w9',
+410 silly audit report       title: 'Next.js Allows a Denial of Service (DoS) with Server Actions',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=14.0.0 <14.2.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1105461,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-3h52-269p-cp9r',
+410 silly audit report       title: 'Information exposure in Next.js dev server due to lack of origin verification',
+410 silly audit report       severity: 'low',
+410 silly audit report       vulnerable_versions: '>=13.0 <14.2.30',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1111391,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-mwv6-3258-q52c',
+410 silly audit report       title: 'Next Vulnerable to Denial of Service with Server Components',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.3.0 <14.2.34',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1107226,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-g5qg-72qw-gw5v',
+410 silly audit report       title: 'Next.js Affected by Cache Key Confusion for Image Optimization API Routes',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=0.9.9 <14.2.31',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1107420,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-7gfc-8cq8-jh5f',
+410 silly audit report       title: 'Next.js authorization bypass vulnerability',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=9.5.5 <14.2.15',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1107512,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-4342-x723-ch2f',
+410 silly audit report       title: 'Next.js Improper Middleware Redirect Handling Leads to SSRF',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=0.9.9 <14.2.32',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1107513,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-xv57-4mr9-wg8v',
+410 silly audit report       title: 'Next.js Content Injection Vulnerability for Image Optimization',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=0.9.9 <14.2.31',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1112182,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-5j59-xgg2-r9c4',
+410 silly audit report       title: 'Next has a Denial of Service with Server Components - Incomplete Fix Follow-Up',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.3.1-canary.0 <14.2.35',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1108291,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-qpjv-v59x-3qc4',
+410 silly audit report       title: 'Next.js Race Condition to Cache Poisoning',
+410 silly audit report       severity: 'low',
+410 silly audit report       vulnerable_versions: '>=0.9.9 <14.2.24',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118942,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-3g8h-86w9-wvmq',
+410 silly audit report       title: "Next.js's Middleware / Proxy redirects can be cache-poisoned",
+410 silly audit report       severity: 'low',
+410 silly audit report       vulnerable_versions: '>=12.2.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118944,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-ffhc-5mcf-pf4q',
+410 silly audit report       title: 'Next.js vulnerable to cross-site scripting in App Router applications using CSP nonces',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.4.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118946,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-vfv6-92ff-j949',
+410 silly audit report       title: 'Next.js vulnerable to cache poisoning via collisions in React Server Component cache-busting',
+410 silly audit report       severity: 'low',
+410 silly audit report       vulnerable_versions: '>=13.4.6 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118948,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-gx5p-jg67-6x7h',
+410 silly audit report       title: 'Next.js has cross-site scripting in beforeInteractive scripts with untrusted input',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118952,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-h64f-5h5j-jqjh',
+410 silly audit report       title: 'Next.js has a Denial of Service in the Image Optimization API',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=10.0.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118954,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-c4j6-fc7j-m34r',
+410 silly audit report       title: 'Next.js vulnerable to server-side request forgery in applications using WebSocket upgrades',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.4.13 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118958,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-wfc6-r584-vfw7',
+410 silly audit report       title: 'Next.js vulnerable to cache poisoning in React Server Component responses',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=14.2.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1118962,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-36qx-fr4f-26g5',
+410 silly audit report       title: 'Next.js has a Middleware / Proxy bypass in Pages Router applications using i18n',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=12.2.0 <15.5.16',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1112593,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-9g9p-9gw9-jx7f',
+410 silly audit report       title: 'Next.js self-hosted applications vulnerable to DoS via Image Optimizer remotePatterns configuration',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=10.0.0 <15.5.10',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1112653,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-h25m-26qc-wcjf',
+410 silly audit report       title: 'Next.js HTTP request deserialization can lead to DoS when using insecure React Server Components',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.0.8',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1113689,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-f82v-jwr5-mffw',
+410 silly audit report       title: 'Authorization Bypass in Next.js Middleware',
+410 silly audit report       severity: 'critical',
+410 silly audit report       vulnerable_versions: '>=14.0.0 <14.2.25',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1114897,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-ggv3-7p47-pfv8',
+410 silly audit report       title: 'Next.js: HTTP request smuggling in rewrites',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=9.5.0 <15.5.13',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1114940,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-3x4c-7xq6-9pq8',
+410 silly audit report       title: 'Next.js: Unbounded next/image disk cache growth can exhaust storage',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=10.0.0 <15.5.14',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1116376,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-q4gf-8mx6-v5v3',
+410 silly audit report       title: 'Next.js has a Denial of Service with Server Components',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.15',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124185,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-89xv-2m56-2m9x',
+410 silly audit report       title: 'Next.js: Server-Side Request Forgery in Server Actions on custom servers',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=14.1.1 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124172,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-m99w-x7hq-7vfj',
+410 silly audit report       title: 'Next.js: Denial of Service in App Router using Server Actions',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124187,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-68g3-v927-f742',
+410 silly audit report       title: 'Next.js: Cache confusion of response bodies for requests with bodies',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124189,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-4633-3j49-mh5q',
+410 silly audit report       title: 'Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124191,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-4c39-4ccg-62r3',
+410 silly audit report       title: 'Next.js: Unbounded Server Action payload in Edge runtime',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124193,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-p9j2-gv94-2wf4',
+410 silly audit report       title: 'Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname',
+410 silly audit report       severity: 'high',
+410 silly audit report       vulnerable_versions: '>=12.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     },
+410 silly audit report     {
+410 silly audit report       id: 1124197,
+410 silly audit report       url: 'https://github.com/advisories/GHSA-955p-x3mx-jcvp',
+410 silly audit report       title: 'Next.js: Unauthenticated disclosure of internal Server Function endpoints',
+410 silly audit report       severity: 'moderate',
+410 silly audit report       vulnerable_versions: '>=13.0.0 <15.5.21',
+410 silly audit report       cwe: [Array],
+410 silly audit report       cvss: [Object]
+410 silly audit report     }
+410 silly audit report   ]
+410 silly audit report }
+411 silly packumentCache corgi:https://registry.npmjs.org/postcss cache-miss
+412 silly packumentCache corgi:https://registry.npmjs.org/glob cache-miss
+413 silly packumentCache corgi:https://registry.npmjs.org/minimatch cache-miss
+414 silly packumentCache corgi:https://registry.npmjs.org/next cache-miss
+415 http fetch GET 200 https://registry.npmjs.org/sucrase 481ms (cache miss)
+416 silly packumentCache corgi:https://registry.npmjs.org/sucrase set size:undefined disposed:false
+417 http fetch GET 200 https://registry.npmjs.org/napi-postinstall 488ms (cache miss)
+418 silly packumentCache corgi:https://registry.npmjs.org/napi-postinstall set size:undefined disposed:false
+419 http fetch GET 200 https://registry.npmjs.org/semver 521ms (cache miss)
+420 silly packumentCache corgi:https://registry.npmjs.org/semver set size:undefined disposed:false
+421 http fetch GET 200 https://registry.npmjs.org/semver 532ms (cache miss)
+422 silly packumentCache corgi:https://registry.npmjs.org/semver set size:undefined disposed:false
+423 http fetch GET 200 https://registry.npmjs.org/semver 574ms (cache miss)
+424 silly packumentCache corgi:https://registry.npmjs.org/semver set size:undefined disposed:false
+425 http fetch GET 200 https://registry.npmjs.org/resolve 584ms (cache miss)
+426 silly packumentCache corgi:https://registry.npmjs.org/resolve set size:undefined disposed:false
+427 http fetch GET 200 https://registry.npmjs.org/acorn 598ms (cache miss)
+428 silly packumentCache corgi:https://registry.npmjs.org/acorn set size:undefined disposed:false
+429 http fetch GET 200 https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-1.2.1.tgz 674ms (cache miss)
+430 http fetch GET 200 https://registry.npmjs.org/resolve 870ms (cache miss)
+431 silly packumentCache corgi:https://registry.npmjs.org/resolve set size:undefined disposed:false
+432 http fetch GET 200 https://registry.npmjs.org/cssesc 944ms (cache miss)
+433 silly packumentCache corgi:https://registry.npmjs.org/cssesc set size:undefined disposed:false
+434 http fetch GET 200 https://registry.npmjs.org/glob 1105ms (cache miss)
+435 silly packumentCache corgi:https://registry.npmjs.org/glob set size:undefined disposed:false
+436 http fetch GET 200 https://registry.npmjs.org/nanoid 1732ms (cache miss)
+437 silly packumentCache corgi:https://registry.npmjs.org/nanoid set size:undefined disposed:false
+438 http fetch GET 200 https://registry.npmjs.org/@swc/helpers/-/helpers-0.5.5.tgz 2374ms (cache miss)
+439 http fetch GET 200 https://registry.npmjs.org/victory-vendor/-/victory-vendor-36.9.2.tgz 2499ms (cache miss)
+440 http fetch GET 200 https://registry.npmjs.org/eslint-plugin-jsx-a11y/-/eslint-plugin-jsx-a11y-6.10.2.tgz 4144ms (cache miss)
+441 http fetch GET 200 https://registry.npmjs.org/eslint/-/eslint-8.57.1.tgz 6409ms (cache miss)
+442 warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+443 http fetch GET 200 https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz 6536ms (cache miss)
+444 http fetch GET 200 https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz 6760ms (cache miss)
+445 http fetch GET 200 https://registry.npmjs.org/which/-/which-2.0.2.tgz 7050ms (cache miss)
+446 http fetch GET 200 https://registry.npmjs.org/semver/-/semver-7.8.5.tgz 7325ms (cache miss)
+447 http fetch GET 200 https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz 7762ms (cache miss)
+448 http fetch GET 200 https://registry.npmjs.org/json5/-/json5-1.0.2.tgz 7574ms (cache miss)
+449 http fetch GET 200 https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001810.tgz 7985ms (cache miss)
+450 http fetch GET 200 https://registry.npmjs.org/rimraf/-/rimraf-3.0.2.tgz 8555ms (cache miss)
+451 http fetch GET 200 https://registry.npmjs.org/resolve/-/resolve-2.0.0-next.7.tgz 10423ms (cache miss)
+452 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 16168ms (cache miss)
+453 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 16204ms (cache miss)
+454 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 16663ms (cache miss)
+455 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 16851ms (cache miss)
+456 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 17156ms (cache miss)
+457 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 17281ms (cache miss)
+458 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 17913ms (cache miss)
+459 http fetch GET 200 https://registry.npmjs.org/minimatch 17813ms (cache miss)
+460 silly packumentCache corgi:https://registry.npmjs.org/minimatch set size:undefined disposed:false
+461 http fetch GET 200 https://registry.npmjs.org/glob 17901ms (cache miss)
+462 silly packumentCache corgi:https://registry.npmjs.org/glob set size:undefined disposed:false
+463 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 18360ms (cache miss)
+464 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 18467ms (cache miss)
+465 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 18682ms (cache miss)
+466 http fetch GET 200 https://registry.npmjs.org/napi-postinstall/-/napi-postinstall-0.3.4.tgz 18592ms (cache miss)
+467 http fetch GET 200 https://registry.npmjs.org/semver/-/semver-6.3.1.tgz 18932ms (cache miss)
+468 http fetch GET 200 https://registry.npmjs.org/jiti/-/jiti-1.21.7.tgz 19237ms (cache miss)
+469 http fetch GET 200 https://registry.npmjs.org/js-yaml/-/js-yaml-4.3.1.tgz 19626ms (cache miss)
+470 http fetch GET 200 https://registry.npmjs.org/semver/-/semver-6.3.1.tgz 20056ms (cache miss)
+471 http fetch GET 200 https://registry.npmjs.org/resolve/-/resolve-1.22.12.tgz 20011ms (cache miss)
+472 http fetch GET 200 https://registry.npmjs.org/semver/-/semver-6.3.1.tgz 20031ms (cache miss)
+473 http fetch GET 200 https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz 20710ms (cache miss)
+474 http fetch GET 200 https://registry.npmjs.org/nanoid/-/nanoid-3.3.18.tgz 19992ms (cache miss)
+475 http fetch GET 200 https://registry.npmjs.org/resolve/-/resolve-1.22.12.tgz 20934ms (cache miss)
+476 http fetch GET 200 https://registry.npmjs.org/acorn/-/acorn-8.18.0.tgz 21400ms (cache miss)
+477 http fetch GET 200 https://registry.npmjs.org/glob/-/glob-10.3.10.tgz 20936ms (cache miss)
+478 http fetch GET 200 https://registry.npmjs.org/postcss 21678ms (cache miss)
+479 silly packumentCache corgi:https://registry.npmjs.org/postcss set size:undefined disposed:false
+480 http fetch GET 200 https://registry.npmjs.org/sucrase/-/sucrase-3.35.1.tgz 22088ms (cache miss)
+481 http fetch GET 200 https://registry.npmjs.org/tailwindcss/-/tailwindcss-3.4.19.tgz 23105ms (cache miss)
+482 http fetch GET 200 https://registry.npmjs.org/recharts/-/recharts-2.15.4.tgz 23166ms (cache miss)
+483 warn deprecated recharts@2.15.4: 1.x and 2.x branches are no longer active. Bump to Recharts v3 to receive latest features and bugfixes. See https://github.com/recharts/recharts/wiki/3.0-migration-guide
+484 http fetch GET 200 https://registry.npmjs.org/es-abstract/-/es-abstract-1.24.2.tgz 23640ms (cache miss)
+485 http fetch GET 200 https://registry.npmjs.org/lucide-react/-/lucide-react-0.417.0.tgz 23801ms (cache miss)
+486 http fetch GET 200 https://registry.npmjs.org/typescript 27998ms (cache miss)
+487 silly packumentCache corgi:https://registry.npmjs.org/typescript set size:undefined disposed:false
+488 http fetch GET 200 https://registry.npmjs.org/next 32937ms (cache miss)
+489 silly packumentCache corgi:https://registry.npmjs.org/next set size:undefined disposed:false
+490 silly packumentCache corgi:https://registry.npmjs.org/@next%2feslint-plugin-next cache-miss
+491 http fetch GET 200 https://registry.npmjs.org/@next%2feslint-plugin-next 1896ms (cache miss)
+492 silly packumentCache corgi:https://registry.npmjs.org/@next%2feslint-plugin-next set size:undefined disposed:false
+493 silly packumentCache corgi:https://registry.npmjs.org/@typescript-eslint%2ftypescript-estree cache-miss
+494 http fetch GET 200 https://registry.npmjs.org/@typescript-eslint%2ftypescript-estree 6289ms (cache miss)
+495 silly packumentCache corgi:https://registry.npmjs.org/@typescript-eslint%2ftypescript-estree set size:undefined disposed:false
+496 silly packumentCache corgi:https://registry.npmjs.org/eslint-config-next cache-miss
+497 http fetch GET 200 https://registry.npmjs.org/eslint-config-next 1343ms (cache miss)
+498 silly packumentCache corgi:https://registry.npmjs.org/eslint-config-next set size:undefined disposed:false
+499 silly packumentCache corgi:https://registry.npmjs.org/@typescript-eslint%2fparser cache-miss
+500 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+501 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+501 silly tar   errno: -4058,
+501 silly tar   code: 'ENOENT',
+501 silly tar   syscall: 'lstat',
+501 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+501 silly tar   entry: ReadEntry {
+501 silly tar     _events: [Object: null prototype] {
+501 silly tar       end: [Function (anonymous)],
+501 silly tar       drain: [Function]
+501 silly tar     },
+501 silly tar     _eventsCount: 2,
+501 silly tar     _maxListeners: undefined,
+501 silly tar     writable: true,
+501 silly tar     readable: true,
+501 silly tar     extended: undefined,
+501 silly tar     globalExtended: undefined,
+501 silly tar     header: Header {
+501 silly tar       cksumValid: true,
+501 silly tar       needPax: false,
+501 silly tar       nullBlock: false,
+501 silly tar       block: undefined,
+501 silly tar       path: 'package/lib/it/diagnosticMessages.generated.json',
+501 silly tar       mode: 420,
+501 silly tar       uid: undefined,
+501 silly tar       gid: undefined,
+501 silly tar       size: 339409,
+501 silly tar       cksum: 7761,
+501 silly tar       linkpath: '',
+501 silly tar       uname: '',
+501 silly tar       gname: '',
+501 silly tar       devmaj: 0,
+501 silly tar       devmin: 0,
+501 silly tar       atime: undefined,
+501 silly tar       ctime: undefined,
+501 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+501 silly tar       charset: undefined,
+501 silly tar       comment: undefined
+501 silly tar     },
+501 silly tar     startBlockSize: 339456,
+501 silly tar     blockRemain: 278388,
+501 silly tar     remain: 278341,
+501 silly tar     type: 'File',
+501 silly tar     meta: false,
+501 silly tar     ignore: false,
+501 silly tar     path: 'lib/it/diagnosticMessages.generated.json',
+501 silly tar     mode: 438,
+501 silly tar     uid: undefined,
+501 silly tar     gid: undefined,
+501 silly tar     uname: '',
+501 silly tar     gname: '',
+501 silly tar     size: 339409,
+501 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+501 silly tar     atime: undefined,
+501 silly tar     ctime: undefined,
+501 silly tar     linkpath: undefined,
+501 silly tar     dev: undefined,
+501 silly tar     ino: undefined,
+501 silly tar     nlink: undefined,
+501 silly tar     invalid: false,
+501 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/it/diagnosticMessages.generated.json',
+501 silly tar     unsupported: false,
+501 silly tar     Symbol(shapeMode): false,
+501 silly tar     Symbol(kCapture): false,
+501 silly tar     Symbol(flowing): false,
+501 silly tar     Symbol(paused): true,
+501 silly tar     Symbol(pipes): [],
+501 silly tar     Symbol(buffer): [
+501 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 54 55 54 54 45 20 4c 45 20 4f 50 5a 49 4f 4e 49 ... 8357 more bytes>,
+501 silly tar       <Buffer 6e 65 20 64 69 6e 61 6d 69 63 61 20 72 65 73 74 69 74 75 69 73 63 65 20 75 6e 20 63 6f 73 74 72 75 74 74 6f 72 65 20 27 50 72 6f 6d 69 73 65 27 2e 20 ... 16334 more bytes>,
+501 silly tar       <Buffer 22 3a 20 22 41 67 67 69 75 6e 67 65 72 65 20 6c 65 20 61 73 73 65 72 7a 69 6f 6e 69 20 64 69 20 61 73 73 65 67 6e 61 7a 69 6f 6e 65 20 64 65 66 69 6e ... 16334 more bytes>,
+501 silly tar       <Buffer 61 20 64 65 6c 6c 27 69 6e 64 69 63 65 20 6e 6f 6e 20 70 75 c3 b2 20 65 73 73 65 72 65 20 75 6e 20 74 69 70 6f 20 64 69 20 76 61 6c 6f 72 65 20 6c 65 ... 16334 more bytes>,
+501 silly tar       <Buffer 6e 6f 74 5f 66 69 6e 64 5f 6e 61 6d 65 5f 30 5f 44 69 64 5f 79 6f 75 5f 6d 65 61 6e 5f 74 68 65 5f 69 6e 73 74 61 6e 63 65 5f 6d 65 6d 62 65 72 5f 74 ... 3459 more bytes>
+501 silly tar     ],
+501 silly tar     Symbol(objectMode): false,
+501 silly tar     Symbol(encoding): null,
+501 silly tar     Symbol(async): false,
+501 silly tar     Symbol(decoder): null,
+501 silly tar     Symbol(EOF): false,
+501 silly tar     Symbol(emittedEnd): false,
+501 silly tar     Symbol(emittingEnd): false,
+501 silly tar     Symbol(closed): false,
+501 silly tar     Symbol(emittedError): null,
+501 silly tar     Symbol(bufferLength): 61068,
+501 silly tar     Symbol(destroyed): false,
+501 silly tar     Symbol(signal): undefined,
+501 silly tar     Symbol(aborted): false,
+501 silly tar     Symbol(dataListeners): 0,
+501 silly tar     Symbol(discarded): false
+501 silly tar   },
+501 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+501 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+501 silly tar }
+502 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+503 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+503 silly tar   errno: -4058,
+503 silly tar   code: 'ENOENT',
+503 silly tar   syscall: 'lstat',
+503 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+503 silly tar   entry: ReadEntry {
+503 silly tar     _events: [Object: null prototype] {
+503 silly tar       end: [Function (anonymous)],
+503 silly tar       drain: [Function]
+503 silly tar     },
+503 silly tar     _eventsCount: 2,
+503 silly tar     _maxListeners: undefined,
+503 silly tar     writable: true,
+503 silly tar     readable: true,
+503 silly tar     extended: undefined,
+503 silly tar     globalExtended: undefined,
+503 silly tar     header: Header {
+503 silly tar       cksumValid: true,
+503 silly tar       needPax: false,
+503 silly tar       nullBlock: false,
+503 silly tar       block: undefined,
+503 silly tar       path: 'package/lib/ja/diagnosticMessages.generated.json',
+503 silly tar       mode: 420,
+503 silly tar       uid: undefined,
+503 silly tar       gid: undefined,
+503 silly tar       size: 381398,
+503 silly tar       cksum: 7746,
+503 silly tar       linkpath: '',
+503 silly tar       uname: '',
+503 silly tar       gname: '',
+503 silly tar       devmaj: 0,
+503 silly tar       devmin: 0,
+503 silly tar       atime: undefined,
+503 silly tar       ctime: undefined,
+503 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+503 silly tar       charset: undefined,
+503 silly tar       comment: undefined
+503 silly tar     },
+503 silly tar     startBlockSize: 381440,
+503 silly tar     blockRemain: 311446,
+503 silly tar     remain: 311404,
+503 silly tar     type: 'File',
+503 silly tar     meta: false,
+503 silly tar     ignore: false,
+503 silly tar     path: 'lib/ja/diagnosticMessages.generated.json',
+503 silly tar     mode: 438,
+503 silly tar     uid: undefined,
+503 silly tar     gid: undefined,
+503 silly tar     uname: '',
+503 silly tar     gname: '',
+503 silly tar     size: 381398,
+503 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+503 silly tar     atime: undefined,
+503 silly tar     ctime: undefined,
+503 silly tar     linkpath: undefined,
+503 silly tar     dev: undefined,
+503 silly tar     ino: undefined,
+503 silly tar     nlink: undefined,
+503 silly tar     invalid: false,
+503 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/ja/diagnosticMessages.generated.json',
+503 silly tar     unsupported: false,
+503 silly tar     Symbol(shapeMode): false,
+503 silly tar     Symbol(kCapture): false,
+503 silly tar     Symbol(flowing): false,
+503 silly tar     Symbol(paused): true,
+503 silly tar     Symbol(pipes): [],
+503 silly tar     Symbol(buffer): [
+503 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 e3 81 99 e3 81 b9 e3 81 a6 e3 81 ae e3 82 b3 e3 ... 14866 more bytes>,
+503 silly tar       <Buffer e3 81 be e3 81 99 e3 80 82 22 2c 0a 20 20 22 41 5f 70 72 6f 70 65 72 74 79 5f 6f 66 5f 61 6e 5f 69 6e 74 65 72 66 61 63 65 5f 6f 72 5f 74 79 70 65 5f ... 16334 more bytes>,
+503 silly tar       <Buffer e3 81 97 e3 81 9f e5 a0 b4 e5 90 88 e3 81 af e3 80 81 27 75 6e 64 65 66 69 6e 65 64 27 20 e3 82 92 e5 9e 8b e3 81 ab e8 bf bd e5 8a a0 e3 81 97 e3 81 ... 16334 more bytes>,
+503 silly tar       <Buffer 82 22 2c 0a 20 20 22 41 6e 5f 6f 62 6a 65 63 74 5f 6c 69 74 65 72 61 6c 5f 63 61 6e 6e 6f 74 5f 68 61 76 65 5f 6d 75 6c 74 69 70 6c 65 5f 70 72 6f 70 ... 16334 more bytes>,
+503 silly tar       <Buffer a1 e3 83 b3 e3 83 90 e3 83 bc 20 27 7b 31 7d 2e 7b 30 7d 27 20 e3 81 a7 e3 81 99 e3 81 8b 3f 22 2c 0a 20 20 22 43 61 6e 6e 6f 74 5f 66 69 6e 64 5f 6e ... 5876 more bytes>
+503 silly tar     ],
+503 silly tar     Symbol(objectMode): false,
+503 silly tar     Symbol(encoding): null,
+503 silly tar     Symbol(async): false,
+503 silly tar     Symbol(decoder): null,
+503 silly tar     Symbol(EOF): false,
+503 silly tar     Symbol(emittedEnd): false,
+503 silly tar     Symbol(emittingEnd): false,
+503 silly tar     Symbol(closed): false,
+503 silly tar     Symbol(emittedError): null,
+503 silly tar     Symbol(bufferLength): 69994,
+503 silly tar     Symbol(destroyed): false,
+503 silly tar     Symbol(signal): undefined,
+503 silly tar     Symbol(aborted): false,
+503 silly tar     Symbol(dataListeners): 0,
+503 silly tar     Symbol(discarded): false
+503 silly tar   },
+503 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+503 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+503 silly tar }
+504 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+505 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+505 silly tar   errno: -4058,
+505 silly tar   code: 'ENOENT',
+505 silly tar   syscall: 'lstat',
+505 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+505 silly tar   entry: ReadEntry {
+505 silly tar     _events: [Object: null prototype] {
+505 silly tar       end: [Function (anonymous)],
+505 silly tar       drain: [Function]
+505 silly tar     },
+505 silly tar     _eventsCount: 2,
+505 silly tar     _maxListeners: undefined,
+505 silly tar     writable: true,
+505 silly tar     readable: true,
+505 silly tar     extended: undefined,
+505 silly tar     globalExtended: undefined,
+505 silly tar     header: Header {
+505 silly tar       cksumValid: true,
+505 silly tar       needPax: false,
+505 silly tar       nullBlock: false,
+505 silly tar       block: undefined,
+505 silly tar       path: 'package/lib/ko/diagnosticMessages.generated.json',
+505 silly tar       mode: 420,
+505 silly tar       uid: undefined,
+505 silly tar       gid: undefined,
+505 silly tar       size: 346139,
+505 silly tar       cksum: 7754,
+505 silly tar       linkpath: '',
+505 silly tar       uname: '',
+505 silly tar       gname: '',
+505 silly tar       devmaj: 0,
+505 silly tar       devmin: 0,
+505 silly tar       atime: undefined,
+505 silly tar       ctime: undefined,
+505 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+505 silly tar       charset: undefined,
+505 silly tar       comment: undefined
+505 silly tar     },
+505 silly tar     startBlockSize: 346624,
+505 silly tar     blockRemain: 298245,
+505 silly tar     remain: 297760,
+505 silly tar     type: 'File',
+505 silly tar     meta: false,
+505 silly tar     ignore: false,
+505 silly tar     path: 'lib/ko/diagnosticMessages.generated.json',
+505 silly tar     mode: 438,
+505 silly tar     uid: undefined,
+505 silly tar     gid: undefined,
+505 silly tar     uname: '',
+505 silly tar     gname: '',
+505 silly tar     size: 346139,
+505 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+505 silly tar     atime: undefined,
+505 silly tar     ctime: undefined,
+505 silly tar     linkpath: undefined,
+505 silly tar     dev: undefined,
+505 silly tar     ino: undefined,
+505 silly tar     nlink: undefined,
+505 silly tar     invalid: false,
+505 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/ko/diagnosticMessages.generated.json',
+505 silly tar     unsupported: false,
+505 silly tar     Symbol(shapeMode): false,
+505 silly tar     Symbol(kCapture): false,
+505 silly tar     Symbol(flowing): false,
+505 silly tar     Symbol(paused): true,
+505 silly tar     Symbol(pipes): [],
+505 silly tar     Symbol(buffer): [
+505 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 eb aa a8 eb 93 a0 20 ec bb b4 ed 8c 8c ec 9d bc ... 14413 more bytes>,
+505 silly tar       <Buffer 36 22 3a 20 22 72 65 73 74 20 ec 9a 94 ec 86 8c ec 97 90 eb 8a 94 20 ec 9d b4 eb 8b 88 ec 85 9c eb 9d bc ec 9d b4 ec a0 80 eb a5 bc 20 ec 82 ac ec 9a ... 16334 more bytes>,
+505 silly tar       <Buffer 6d 70 6f 72 74 69 6e 67 5f 68 65 6c 70 65 72 5f 66 75 6e 63 74 69 6f 6e 73 5f 66 72 6f 6d 5f 74 73 6c 69 62 5f 6f 6e 63 65 5f 70 65 72 5f 70 72 6f 6a ... 16334 more bytes>,
+505 silly tar       <Buffer 39 30 30 39 22 3a 20 22 ed 95 98 eb 82 98 20 ec 9d b4 ec 83 81 ec 9d 98 20 ec a0 91 ea b7 bc ec 9e 90 ec 97 90 20 2d 2d 69 73 6f 6c 61 74 65 64 44 65 ... 1098 more bytes>
+505 silly tar     ],
+505 silly tar     Symbol(objectMode): false,
+505 silly tar     Symbol(encoding): null,
+505 silly tar     Symbol(async): false,
+505 silly tar     Symbol(decoder): null,
+505 silly tar     Symbol(EOF): false,
+505 silly tar     Symbol(emittedEnd): false,
+505 silly tar     Symbol(emittingEnd): false,
+505 silly tar     Symbol(closed): false,
+505 silly tar     Symbol(emittedError): null,
+505 silly tar     Symbol(bufferLength): 48379,
+505 silly tar     Symbol(destroyed): false,
+505 silly tar     Symbol(signal): undefined,
+505 silly tar     Symbol(aborted): false,
+505 silly tar     Symbol(dataListeners): 0,
+505 silly tar     Symbol(discarded): false
+505 silly tar   },
+505 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+505 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+505 silly tar }
+506 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+507 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+507 silly tar   errno: -4058,
+507 silly tar   code: 'ENOENT',
+507 silly tar   syscall: 'lstat',
+507 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+507 silly tar   entry: ReadEntry {
+507 silly tar     _events: [Object: null prototype] {
+507 silly tar       end: [Function (anonymous)],
+507 silly tar       drain: [Function]
+507 silly tar     },
+507 silly tar     _eventsCount: 2,
+507 silly tar     _maxListeners: undefined,
+507 silly tar     writable: true,
+507 silly tar     readable: true,
+507 silly tar     extended: undefined,
+507 silly tar     globalExtended: undefined,
+507 silly tar     header: Header {
+507 silly tar       cksumValid: true,
+507 silly tar       needPax: false,
+507 silly tar       nullBlock: false,
+507 silly tar       block: undefined,
+507 silly tar       path: 'package/lib/pl/diagnosticMessages.generated.json',
+507 silly tar       mode: 420,
+507 silly tar       uid: undefined,
+507 silly tar       gid: undefined,
+507 silly tar       size: 342111,
+507 silly tar       cksum: 7760,
+507 silly tar       linkpath: '',
+507 silly tar       uname: '',
+507 silly tar       gname: '',
+507 silly tar       devmaj: 0,
+507 silly tar       devmin: 0,
+507 silly tar       atime: undefined,
+507 silly tar       ctime: undefined,
+507 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+507 silly tar       charset: undefined,
+507 silly tar       comment: undefined
+507 silly tar     },
+507 silly tar     startBlockSize: 342528,
+507 silly tar     blockRemain: 295767,
+507 silly tar     remain: 295350,
+507 silly tar     type: 'File',
+507 silly tar     meta: false,
+507 silly tar     ignore: false,
+507 silly tar     path: 'lib/pl/diagnosticMessages.generated.json',
+507 silly tar     mode: 438,
+507 silly tar     uid: undefined,
+507 silly tar     gid: undefined,
+507 silly tar     uname: '',
+507 silly tar     gname: '',
+507 silly tar     size: 342111,
+507 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+507 silly tar     atime: undefined,
+507 silly tar     ctime: undefined,
+507 silly tar     linkpath: undefined,
+507 silly tar     dev: undefined,
+507 silly tar     ino: undefined,
+507 silly tar     nlink: undefined,
+507 silly tar     invalid: false,
+507 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/pl/diagnosticMessages.generated.json',
+507 silly tar     unsupported: false,
+507 silly tar     Symbol(shapeMode): false,
+507 silly tar     Symbol(kCapture): false,
+507 silly tar     Symbol(flowing): false,
+507 silly tar     Symbol(paused): true,
+507 silly tar     Symbol(pipes): [],
+507 silly tar     Symbol(buffer): [
+507 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 57 53 5a 59 53 54 4b 49 45 20 4f 50 43 4a 45 20 ... 15470 more bytes>,
+507 silly tar       <Buffer 77 6e 69 65 20 6d 61 70 75 6a c4 85 20 69 6d 70 6f 72 74 6f 77 61 6e 65 20 64 61 6e 65 20 6e 61 20 6c 6f 6b 61 6c 69 7a 61 63 6a 65 20 77 79 73 7a 75 ... 16334 more bytes>,
+507 silly tar       <Buffer 64 75 c5 82 79 20 6f 74 6f 63 7a 65 6e 69 61 20 6e 69 65 20 6d 6f 67 c4 85 20 62 79 c4 87 20 7a 61 67 6e 69 65 c5 bc 64 c5 bc 6f 6e 65 20 77 20 69 6e ... 14807 more bytes>
+507 silly tar     ],
+507 silly tar     Symbol(objectMode): false,
+507 silly tar     Symbol(encoding): null,
+507 silly tar     Symbol(async): false,
+507 silly tar     Symbol(decoder): null,
+507 silly tar     Symbol(EOF): false,
+507 silly tar     Symbol(emittedEnd): false,
+507 silly tar     Symbol(emittingEnd): false,
+507 silly tar     Symbol(closed): false,
+507 silly tar     Symbol(emittedError): null,
+507 silly tar     Symbol(bufferLength): 46761,
+507 silly tar     Symbol(destroyed): false,
+507 silly tar     Symbol(signal): undefined,
+507 silly tar     Symbol(aborted): false,
+507 silly tar     Symbol(dataListeners): 0,
+507 silly tar     Symbol(discarded): false
+507 silly tar   },
+507 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+507 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+507 silly tar }
+508 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+509 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+509 silly tar   errno: -4058,
+509 silly tar   code: 'ENOENT',
+509 silly tar   syscall: 'lstat',
+509 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+509 silly tar   entry: ReadEntry {
+509 silly tar     _events: [Object: null prototype] {
+509 silly tar       end: [Function (anonymous)],
+509 silly tar       drain: [Function]
+509 silly tar     },
+509 silly tar     _eventsCount: 2,
+509 silly tar     _maxListeners: undefined,
+509 silly tar     writable: true,
+509 silly tar     readable: true,
+509 silly tar     extended: undefined,
+509 silly tar     globalExtended: undefined,
+509 silly tar     header: Header {
+509 silly tar       cksumValid: true,
+509 silly tar       needPax: false,
+509 silly tar       nullBlock: false,
+509 silly tar       block: undefined,
+509 silly tar       path: 'package/lib/pt-br/diagnosticMessages.generated.json',
+509 silly tar       mode: 420,
+509 silly tar       uid: undefined,
+509 silly tar       gid: undefined,
+509 silly tar       size: 330482,
+509 silly tar       cksum: 8023,
+509 silly tar       linkpath: '',
+509 silly tar       uname: '',
+509 silly tar       gname: '',
+509 silly tar       devmaj: 0,
+509 silly tar       devmin: 0,
+509 silly tar       atime: undefined,
+509 silly tar       ctime: undefined,
+509 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+509 silly tar       charset: undefined,
+509 silly tar       comment: undefined
+509 silly tar     },
+509 silly tar     startBlockSize: 330752,
+509 silly tar     blockRemain: 299142,
+509 silly tar     remain: 298872,
+509 silly tar     type: 'File',
+509 silly tar     meta: false,
+509 silly tar     ignore: false,
+509 silly tar     path: 'lib/pt-br/diagnosticMessages.generated.json',
+509 silly tar     mode: 438,
+509 silly tar     uid: undefined,
+509 silly tar     gid: undefined,
+509 silly tar     uname: '',
+509 silly tar     gname: '',
+509 silly tar     size: 330482,
+509 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+509 silly tar     atime: undefined,
+509 silly tar     ctime: undefined,
+509 silly tar     linkpath: undefined,
+509 silly tar     dev: undefined,
+509 silly tar     ino: undefined,
+509 silly tar     nlink: undefined,
+509 silly tar     invalid: false,
+509 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json',
+509 silly tar     unsupported: false,
+509 silly tar     Symbol(shapeMode): false,
+509 silly tar     Symbol(kCapture): false,
+509 silly tar     Symbol(flowing): false,
+509 silly tar     Symbol(paused): true,
+509 silly tar     Symbol(pipes): [],
+509 silly tar     Symbol(buffer): [
+509 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 54 4f 44 41 53 20 41 53 20 4f 50 c3 87 c3 95 45 ... 13562 more bytes>,
+509 silly tar       <Buffer 65 74 72 6f 20 6f 70 63 69 6f 6e 61 6c 2e 22 2c 0a 20 20 22 41 5f 72 65 73 74 5f 65 6c 65 6d 65 6e 74 5f 63 61 6e 6e 6f 74 5f 63 6f 6e 74 61 69 6e 5f ... 16334 more bytes>,
+509 silly tar       <Buffer 70 61 64 72 c3 a3 6f 20 64 65 20 6d c3 b3 64 75 6c 6f 73 20 73 65 6d 20 65 78 70 6f 72 74 61 c3 a7 c3 a3 6f 20 70 61 64 72 c3 a3 6f 2e 20 49 73 73 6f ... 1564 more bytes>
+509 silly tar     ],
+509 silly tar     Symbol(objectMode): false,
+509 silly tar     Symbol(encoding): null,
+509 silly tar     Symbol(async): false,
+509 silly tar     Symbol(decoder): null,
+509 silly tar     Symbol(EOF): false,
+509 silly tar     Symbol(emittedEnd): false,
+509 silly tar     Symbol(emittingEnd): false,
+509 silly tar     Symbol(closed): false,
+509 silly tar     Symbol(emittedError): null,
+509 silly tar     Symbol(bufferLength): 31610,
+509 silly tar     Symbol(destroyed): false,
+509 silly tar     Symbol(signal): undefined,
+509 silly tar     Symbol(aborted): false,
+509 silly tar     Symbol(dataListeners): 0,
+509 silly tar     Symbol(discarded): false
+509 silly tar   },
+509 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+509 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+509 silly tar }
+510 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+511 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+511 silly tar   errno: -4058,
+511 silly tar   code: 'ENOENT',
+511 silly tar   syscall: 'lstat',
+511 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+511 silly tar   entry: ReadEntry {
+511 silly tar     _events: [Object: null prototype] {
+511 silly tar       end: [Function (anonymous)],
+511 silly tar       drain: [Function]
+511 silly tar     },
+511 silly tar     _eventsCount: 2,
+511 silly tar     _maxListeners: undefined,
+511 silly tar     writable: true,
+511 silly tar     readable: true,
+511 silly tar     extended: undefined,
+511 silly tar     globalExtended: undefined,
+511 silly tar     header: Header {
+511 silly tar       cksumValid: true,
+511 silly tar       needPax: false,
+511 silly tar       nullBlock: false,
+511 silly tar       block: undefined,
+511 silly tar       path: 'package/lib/ru/diagnosticMessages.generated.json',
+511 silly tar       mode: 420,
+511 silly tar       uid: undefined,
+511 silly tar       gid: undefined,
+511 silly tar       size: 443587,
+511 silly tar       cksum: 7768,
+511 silly tar       linkpath: '',
+511 silly tar       uname: '',
+511 silly tar       gname: '',
+511 silly tar       devmaj: 0,
+511 silly tar       devmin: 0,
+511 silly tar       atime: undefined,
+511 silly tar       ctime: undefined,
+511 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+511 silly tar       charset: undefined,
+511 silly tar       comment: undefined
+511 silly tar     },
+511 silly tar     startBlockSize: 443904,
+511 silly tar     blockRemain: 403162,
+511 silly tar     remain: 402845,
+511 silly tar     type: 'File',
+511 silly tar     meta: false,
+511 silly tar     ignore: false,
+511 silly tar     path: 'lib/ru/diagnosticMessages.generated.json',
+511 silly tar     mode: 438,
+511 silly tar     uid: undefined,
+511 silly tar     gid: undefined,
+511 silly tar     uname: '',
+511 silly tar     gname: '',
+511 silly tar     size: 443587,
+511 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+511 silly tar     atime: undefined,
+511 silly tar     ctime: undefined,
+511 silly tar     linkpath: undefined,
+511 silly tar     dev: undefined,
+511 silly tar     ino: undefined,
+511 silly tar     nlink: undefined,
+511 silly tar     invalid: false,
+511 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/ru/diagnosticMessages.generated.json',
+511 silly tar     unsupported: false,
+511 silly tar     Symbol(shapeMode): false,
+511 silly tar     Symbol(kCapture): false,
+511 silly tar     Symbol(flowing): false,
+511 silly tar     Symbol(paused): true,
+511 silly tar     Symbol(pipes): [],
+511 silly tar     Symbol(buffer): [
+511 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 d0 92 d0 a1 d0 95 20 d0 9f d0 90 d0 a0 d0 90 d0 ... 2796 more bytes>,
+511 silly tar       <Buffer d0 b3 d1 83 d0 bc d0 b5 d0 bd d1 82 d0 b0 d0 bc d0 b8 20 d1 82 d0 b8 d0 bf d0 b0 2e 22 2c 0a 20 20 22 41 5f 63 6c 61 73 73 5f 63 61 6e 5f 6f 6e 6c 79 ... 16334 more bytes>,
+511 silly tar       <Buffer 31 30 31 34 22 3a 20 22 d0 9f d0 b0 d1 80 d0 b0 d0 bc d0 b5 d1 82 d1 80 20 72 65 73 74 20 d0 b4 d0 be d0 bb d0 b6 d0 b5 d0 bd 20 d1 81 d1 82 d0 be d1 ... 16334 more bytes>,
+511 silly tar       <Buffer 61 73 73 65 72 74 69 6f 6e 5f 74 6f 5f 74 68 69 73 5f 65 78 70 72 65 73 73 69 6f 6e 5f 73 61 74 69 73 66 69 65 73 5f 54 5f 61 73 5f 54 5f 74 6f 5f 6d ... 5078 more bytes>
+511 silly tar     ],
+511 silly tar     Symbol(objectMode): false,
+511 silly tar     Symbol(encoding): null,
+511 silly tar     Symbol(async): false,
+511 silly tar     Symbol(decoder): null,
+511 silly tar     Symbol(EOF): false,
+511 silly tar     Symbol(emittedEnd): false,
+511 silly tar     Symbol(emittingEnd): false,
+511 silly tar     Symbol(closed): false,
+511 silly tar     Symbol(emittedError): null,
+511 silly tar     Symbol(bufferLength): 40742,
+511 silly tar     Symbol(destroyed): false,
+511 silly tar     Symbol(signal): undefined,
+511 silly tar     Symbol(aborted): false,
+511 silly tar     Symbol(dataListeners): 0,
+511 silly tar     Symbol(discarded): false
+511 silly tar   },
+511 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+511 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+511 silly tar }
+512 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+513 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+513 silly tar   errno: -4058,
+513 silly tar   code: 'ENOENT',
+513 silly tar   syscall: 'lstat',
+513 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+513 silly tar   entry: ReadEntry {
+513 silly tar     _events: [Object: null prototype] {
+513 silly tar       end: [Function (anonymous)],
+513 silly tar       drain: [Function]
+513 silly tar     },
+513 silly tar     _eventsCount: 2,
+513 silly tar     _maxListeners: undefined,
+513 silly tar     writable: true,
+513 silly tar     readable: true,
+513 silly tar     extended: undefined,
+513 silly tar     globalExtended: undefined,
+513 silly tar     header: Header {
+513 silly tar       cksumValid: true,
+513 silly tar       needPax: false,
+513 silly tar       nullBlock: false,
+513 silly tar       block: undefined,
+513 silly tar       path: 'package/lib/tr/diagnosticMessages.generated.json',
+513 silly tar       mode: 420,
+513 silly tar       uid: undefined,
+513 silly tar       gid: undefined,
+513 silly tar       size: 330684,
+513 silly tar       cksum: 7774,
+513 silly tar       linkpath: '',
+513 silly tar       uname: '',
+513 silly tar       gname: '',
+513 silly tar       devmaj: 0,
+513 silly tar       devmin: 0,
+513 silly tar       atime: undefined,
+513 silly tar       ctime: undefined,
+513 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+513 silly tar       charset: undefined,
+513 silly tar       comment: undefined
+513 silly tar     },
+513 silly tar     startBlockSize: 330752,
+513 silly tar     blockRemain: 284704,
+513 silly tar     remain: 284636,
+513 silly tar     type: 'File',
+513 silly tar     meta: false,
+513 silly tar     ignore: false,
+513 silly tar     path: 'lib/tr/diagnosticMessages.generated.json',
+513 silly tar     mode: 438,
+513 silly tar     uid: undefined,
+513 silly tar     gid: undefined,
+513 silly tar     uname: '',
+513 silly tar     gname: '',
+513 silly tar     size: 330684,
+513 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+513 silly tar     atime: undefined,
+513 silly tar     ctime: undefined,
+513 silly tar     linkpath: undefined,
+513 silly tar     dev: undefined,
+513 silly tar     ino: undefined,
+513 silly tar     nlink: undefined,
+513 silly tar     invalid: false,
+513 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/tr/diagnosticMessages.generated.json',
+513 silly tar     unsupported: false,
+513 silly tar     Symbol(shapeMode): false,
+513 silly tar     Symbol(kCapture): false,
+513 silly tar     Symbol(flowing): false,
+513 silly tar     Symbol(paused): true,
+513 silly tar     Symbol(pipes): [],
+513 silly tar     Symbol(buffer): [
+513 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 54 c3 9c 4d 20 44 45 52 4c 45 59 c4 b0 43 c4 b0 ... 13850 more bytes>,
+513 silly tar       <Buffer 79 70 65 5f 6d 75 73 74 5f 62 65 5f 61 6e 5f 61 72 72 61 79 5f 74 79 70 65 5f 32 35 37 34 22 3a 20 22 52 45 53 54 20 c3 b6 c4 9f 65 73 69 20 64 69 7a ... 16334 more bytes>,
+513 silly tar       <Buffer 6c 65 72 20 c3 a7 c3 b6 7a c3 bc 6d 6c 65 6e 69 72 6b 65 6e 20 62 69 72 64 65 6e 20 c3 a7 6f 6b 20 6b 6c 61 73 c3 b6 72 c3 bc 6e 20 74 65 6b 20 62 69 ... 15714 more bytes>
+513 silly tar     ],
+513 silly tar     Symbol(objectMode): false,
+513 silly tar     Symbol(encoding): null,
+513 silly tar     Symbol(async): false,
+513 silly tar     Symbol(decoder): null,
+513 silly tar     Symbol(EOF): false,
+513 silly tar     Symbol(emittedEnd): false,
+513 silly tar     Symbol(emittingEnd): false,
+513 silly tar     Symbol(closed): false,
+513 silly tar     Symbol(emittedError): null,
+513 silly tar     Symbol(bufferLength): 46048,
+513 silly tar     Symbol(destroyed): false,
+513 silly tar     Symbol(signal): undefined,
+513 silly tar     Symbol(aborted): false,
+513 silly tar     Symbol(dataListeners): 0,
+513 silly tar     Symbol(discarded): false
+513 silly tar   },
+513 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+513 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+513 silly tar }
+514 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+515 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+515 silly tar   errno: -4058,
+515 silly tar   code: 'ENOENT',
+515 silly tar   syscall: 'lstat',
+515 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+515 silly tar   entry: ReadEntry {
+515 silly tar     _events: [Object: null prototype] {
+515 silly tar       end: [Function (anonymous)],
+515 silly tar       drain: [Function]
+515 silly tar     },
+515 silly tar     _eventsCount: 2,
+515 silly tar     _maxListeners: undefined,
+515 silly tar     writable: true,
+515 silly tar     readable: true,
+515 silly tar     extended: undefined,
+515 silly tar     globalExtended: undefined,
+515 silly tar     header: Header {
+515 silly tar       cksumValid: true,
+515 silly tar       needPax: false,
+515 silly tar       nullBlock: false,
+515 silly tar       block: undefined,
+515 silly tar       path: 'package/lib/zh-cn/diagnosticMessages.generated.json',
+515 silly tar       mode: 420,
+515 silly tar       uid: undefined,
+515 silly tar       gid: undefined,
+515 silly tar       size: 295909,
+515 silly tar       cksum: 8018,
+515 silly tar       linkpath: '',
+515 silly tar       uname: '',
+515 silly tar       gname: '',
+515 silly tar       devmaj: 0,
+515 silly tar       devmin: 0,
+515 silly tar       atime: undefined,
+515 silly tar       ctime: undefined,
+515 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+515 silly tar       charset: undefined,
+515 silly tar       comment: undefined
+515 silly tar     },
+515 silly tar     startBlockSize: 295936,
+515 silly tar     blockRemain: 253884,
+515 silly tar     remain: 253857,
+515 silly tar     type: 'File',
+515 silly tar     meta: false,
+515 silly tar     ignore: false,
+515 silly tar     path: 'lib/zh-cn/diagnosticMessages.generated.json',
+515 silly tar     mode: 438,
+515 silly tar     uid: undefined,
+515 silly tar     gid: undefined,
+515 silly tar     uname: '',
+515 silly tar     gname: '',
+515 silly tar     size: 295909,
+515 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+515 silly tar     atime: undefined,
+515 silly tar     ctime: undefined,
+515 silly tar     linkpath: undefined,
+515 silly tar     dev: undefined,
+515 silly tar     ino: undefined,
+515 silly tar     nlink: undefined,
+515 silly tar     invalid: false,
+515 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json',
+515 silly tar     unsupported: false,
+515 silly tar     Symbol(shapeMode): false,
+515 silly tar     Symbol(kCapture): false,
+515 silly tar     Symbol(flowing): false,
+515 silly tar     Symbol(paused): true,
+515 silly tar     Symbol(pipes): [],
+515 silly tar     Symbol(buffer): [
+515 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 e6 89 80 e6 9c 89 e7 bc 96 e8 af 91 e5 99 a8 e9 ... 15930 more bytes>,
+515 silly tar       <Buffer 20 22 e4 bb 85 e7 b1 bb e5 9e 8b e5 af bc e5 85 a5 e5 8f af e4 bb a5 e6 8c 87 e5 ae 9a e9 bb 98 e8 ae a4 e5 af bc e5 85 a5 e6 88 96 e5 91 bd e5 90 8d ... 16334 more bytes>,
+515 silly tar       <Buffer 8e e3 80 82 22 2c 0a 20 20 22 41 6e 5f 69 6d 70 6c 65 6d 65 6e 74 61 74 69 6f 6e 5f 63 61 6e 6e 6f 74 5f 62 65 5f 64 65 63 6c 61 72 65 64 5f 69 6e 5f ... 9638 more bytes>
+515 silly tar     ],
+515 silly tar     Symbol(objectMode): false,
+515 silly tar     Symbol(encoding): null,
+515 silly tar     Symbol(async): false,
+515 silly tar     Symbol(decoder): null,
+515 silly tar     Symbol(EOF): false,
+515 silly tar     Symbol(emittedEnd): false,
+515 silly tar     Symbol(emittingEnd): false,
+515 silly tar     Symbol(closed): false,
+515 silly tar     Symbol(emittedError): null,
+515 silly tar     Symbol(bufferLength): 42052,
+515 silly tar     Symbol(destroyed): false,
+515 silly tar     Symbol(signal): undefined,
+515 silly tar     Symbol(aborted): false,
+515 silly tar     Symbol(dataListeners): 0,
+515 silly tar     Symbol(discarded): false
+515 silly tar   },
+515 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+515 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+515 silly tar }
+516 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+517 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+517 silly tar   errno: -4058,
+517 silly tar   code: 'ENOENT',
+517 silly tar   syscall: 'lstat',
+517 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+517 silly tar   entry: ReadEntry {
+517 silly tar     _events: [Object: null prototype] {
+517 silly tar       end: [Function (anonymous)],
+517 silly tar       drain: [Function]
+517 silly tar     },
+517 silly tar     _eventsCount: 2,
+517 silly tar     _maxListeners: undefined,
+517 silly tar     writable: true,
+517 silly tar     readable: true,
+517 silly tar     extended: undefined,
+517 silly tar     globalExtended: undefined,
+517 silly tar     header: Header {
+517 silly tar       cksumValid: true,
+517 silly tar       needPax: false,
+517 silly tar       nullBlock: false,
+517 silly tar       block: undefined,
+517 silly tar       path: 'package/lib/zh-tw/diagnosticMessages.generated.json',
+517 silly tar       mode: 420,
+517 silly tar       uid: undefined,
+517 silly tar       gid: undefined,
+517 silly tar       size: 292532,
+517 silly tar       cksum: 8048,
+517 silly tar       linkpath: '',
+517 silly tar       uname: '',
+517 silly tar       gname: '',
+517 silly tar       devmaj: 0,
+517 silly tar       devmin: 0,
+517 silly tar       atime: undefined,
+517 silly tar       ctime: undefined,
+517 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+517 silly tar       charset: undefined,
+517 silly tar       comment: undefined
+517 silly tar     },
+517 silly tar     startBlockSize: 292864,
+517 silly tar     blockRemain: 246849,
+517 silly tar     remain: 246517,
+517 silly tar     type: 'File',
+517 silly tar     meta: false,
+517 silly tar     ignore: false,
+517 silly tar     path: 'lib/zh-tw/diagnosticMessages.generated.json',
+517 silly tar     mode: 438,
+517 silly tar     uid: undefined,
+517 silly tar     gid: undefined,
+517 silly tar     uname: '',
+517 silly tar     gname: '',
+517 silly tar     size: 292532,
+517 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+517 silly tar     atime: undefined,
+517 silly tar     ctime: undefined,
+517 silly tar     linkpath: undefined,
+517 silly tar     dev: undefined,
+517 silly tar     ino: undefined,
+517 silly tar     nlink: undefined,
+517 silly tar     invalid: false,
+517 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json',
+517 silly tar     unsupported: false,
+517 silly tar     Symbol(shapeMode): false,
+517 silly tar     Symbol(kCapture): false,
+517 silly tar     Symbol(flowing): false,
+517 silly tar     Symbol(paused): true,
+517 silly tar     Symbol(pipes): [],
+517 silly tar     Symbol(buffer): [
+517 silly tar       <Buffer 7b 0a 20 20 22 41 4c 4c 5f 43 4f 4d 50 49 4c 45 52 5f 4f 50 54 49 4f 4e 53 5f 36 39 31 37 22 3a 20 22 e6 89 80 e6 9c 89 e7 b7 a8 e8 ad af e5 99 a8 e9 ... 4981 more bytes>,
+517 silly tar       <Buffer 6f 74 5f 68 61 76 65 5f 61 5f 74 68 69 73 5f 70 61 72 61 6d 65 74 65 72 5f 32 36 38 31 22 3a 20 22 e5 bb ba e6 a7 8b e5 87 bd e5 bc 8f e4 b8 8d e8 83 ... 16334 more bytes>,
+517 silly tar       <Buffer 75 74 65 73 5f 39 35 31 36 37 22 3a 20 22 e6 96 b0 e5 a2 9e e9 81 ba e5 a4 b1 e7 9a 84 e5 b1 ac e6 80 a7 22 2c 0a 20 20 22 41 64 64 5f 6d 69 73 73 69 ... 16334 more bytes>,
+517 silly tar       <Buffer 68 69 6e 67 5f 74 68 61 74 5f 77 6f 75 6c 64 5f 70 6f 73 73 69 62 6c 79 5f 6d 61 74 63 68 5f 6d 6f 72 65 5f 74 68 61 6e 5f 61 5f 73 69 6e 67 6c 65 5f ... 8166 more bytes>
+517 silly tar     ],
+517 silly tar     Symbol(objectMode): false,
+517 silly tar     Symbol(encoding): null,
+517 silly tar     Symbol(async): false,
+517 silly tar     Symbol(decoder): null,
+517 silly tar     Symbol(EOF): false,
+517 silly tar     Symbol(emittedEnd): false,
+517 silly tar     Symbol(emittingEnd): false,
+517 silly tar     Symbol(closed): false,
+517 silly tar     Symbol(emittedError): null,
+517 silly tar     Symbol(bufferLength): 46015,
+517 silly tar     Symbol(destroyed): false,
+517 silly tar     Symbol(signal): undefined,
+517 silly tar     Symbol(aborted): false,
+517 silly tar     Symbol(dataListeners): 0,
+517 silly tar     Symbol(discarded): false
+517 silly tar   },
+517 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+517 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+517 silly tar }
+518 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\package.json'
+519 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\package.json' [Error: ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\package.json'] {
+519 silly tar   errno: -4058,
+519 silly tar   code: 'ENOENT',
+519 silly tar   syscall: 'open',
+519 silly tar   path: 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript\\package.json',
+519 silly tar   entry: ReadEntry {
+519 silly tar     _events: [Object: null prototype] {},
+519 silly tar     _eventsCount: 0,
+519 silly tar     _maxListeners: undefined,
+519 silly tar     writable: false,
+519 silly tar     readable: false,
+519 silly tar     extended: undefined,
+519 silly tar     globalExtended: undefined,
+519 silly tar     header: Header {
+519 silly tar       cksumValid: true,
+519 silly tar       needPax: false,
+519 silly tar       nullBlock: false,
+519 silly tar       block: undefined,
+519 silly tar       path: 'package/package.json',
+519 silly tar       mode: 420,
+519 silly tar       uid: undefined,
+519 silly tar       gid: undefined,
+519 silly tar       size: 3620,
+519 silly tar       cksum: 4971,
+519 silly tar       linkpath: '',
+519 silly tar       uname: '',
+519 silly tar       gname: '',
+519 silly tar       devmaj: 0,
+519 silly tar       devmin: 0,
+519 silly tar       atime: undefined,
+519 silly tar       ctime: undefined,
+519 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+519 silly tar       charset: undefined,
+519 silly tar       comment: undefined
+519 silly tar     },
+519 silly tar     startBlockSize: 4096,
+519 silly tar     blockRemain: 0,
+519 silly tar     remain: 0,
+519 silly tar     type: 'File',
+519 silly tar     meta: false,
+519 silly tar     ignore: false,
+519 silly tar     path: 'package.json',
+519 silly tar     mode: 438,
+519 silly tar     uid: undefined,
+519 silly tar     gid: undefined,
+519 silly tar     uname: '',
+519 silly tar     gname: '',
+519 silly tar     size: 3620,
+519 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+519 silly tar     atime: undefined,
+519 silly tar     ctime: undefined,
+519 silly tar     linkpath: undefined,
+519 silly tar     dev: undefined,
+519 silly tar     ino: undefined,
+519 silly tar     nlink: undefined,
+519 silly tar     invalid: false,
+519 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/package.json',
+519 silly tar     unsupported: false,
+519 silly tar     Symbol(shapeMode): false,
+519 silly tar     Symbol(kCapture): false,
+519 silly tar     Symbol(flowing): false,
+519 silly tar     Symbol(paused): true,
+519 silly tar     Symbol(pipes): [ [Pipe] ],
+519 silly tar     Symbol(buffer): [],
+519 silly tar     Symbol(objectMode): false,
+519 silly tar     Symbol(encoding): null,
+519 silly tar     Symbol(async): false,
+519 silly tar     Symbol(decoder): null,
+519 silly tar     Symbol(EOF): true,
+519 silly tar     Symbol(emittedEnd): true,
+519 silly tar     Symbol(emittingEnd): false,
+519 silly tar     Symbol(closed): false,
+519 silly tar     Symbol(emittedError): null,
+519 silly tar     Symbol(bufferLength): 0,
+519 silly tar     Symbol(destroyed): false,
+519 silly tar     Symbol(signal): undefined,
+519 silly tar     Symbol(aborted): false,
+519 silly tar     Symbol(dataListeners): 0,
+519 silly tar     Symbol(discarded): false
+519 silly tar   },
+519 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+519 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+519 silly tar }
+520 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+521 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+521 silly tar   errno: -4058,
+521 silly tar   code: 'ENOENT',
+521 silly tar   syscall: 'lstat',
+521 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+521 silly tar   entry: ReadEntry {
+521 silly tar     _events: [Object: null prototype] { end: [Function (anonymous)] },
+521 silly tar     _eventsCount: 1,
+521 silly tar     _maxListeners: undefined,
+521 silly tar     writable: false,
+521 silly tar     readable: true,
+521 silly tar     extended: undefined,
+521 silly tar     globalExtended: undefined,
+521 silly tar     header: Header {
+521 silly tar       cksumValid: true,
+521 silly tar       needPax: false,
+521 silly tar       nullBlock: false,
+521 silly tar       block: undefined,
+521 silly tar       path: 'package/lib/typesMap.json',
+521 silly tar       mode: 420,
+521 silly tar       uid: undefined,
+521 silly tar       gid: undefined,
+521 silly tar       size: 16788,
+521 silly tar       cksum: 5465,
+521 silly tar       linkpath: '',
+521 silly tar       uname: '',
+521 silly tar       gname: '',
+521 silly tar       devmaj: 0,
+521 silly tar       devmin: 0,
+521 silly tar       atime: undefined,
+521 silly tar       ctime: undefined,
+521 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+521 silly tar       charset: undefined,
+521 silly tar       comment: undefined
+521 silly tar     },
+521 silly tar     startBlockSize: 16896,
+521 silly tar     blockRemain: 0,
+521 silly tar     remain: 0,
+521 silly tar     type: 'File',
+521 silly tar     meta: false,
+521 silly tar     ignore: false,
+521 silly tar     path: 'lib/typesMap.json',
+521 silly tar     mode: 438,
+521 silly tar     uid: undefined,
+521 silly tar     gid: undefined,
+521 silly tar     uname: '',
+521 silly tar     gname: '',
+521 silly tar     size: 16788,
+521 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+521 silly tar     atime: undefined,
+521 silly tar     ctime: undefined,
+521 silly tar     linkpath: undefined,
+521 silly tar     dev: undefined,
+521 silly tar     ino: undefined,
+521 silly tar     nlink: undefined,
+521 silly tar     invalid: false,
+521 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/typesMap.json',
+521 silly tar     unsupported: false,
+521 silly tar     Symbol(shapeMode): false,
+521 silly tar     Symbol(kCapture): false,
+521 silly tar     Symbol(flowing): false,
+521 silly tar     Symbol(paused): true,
+521 silly tar     Symbol(pipes): [],
+521 silly tar     Symbol(buffer): [
+521 silly tar       <Buffer 7b 0a 20 20 20 20 22 74 79 70 65 73 4d 61 70 22 3a 20 7b 0a 20 20 20 20 20 20 20 20 22 6a 71 75 65 72 79 22 3a 20 7b 0a 20 20 20 20 20 20 20 20 20 20 ... 5023 more bytes>,
+521 silly tar       <Buffer 65 78 70 72 65 73 73 2d 73 65 73 73 69 6f 6e 22 2c 0a 20 20 20 20 20 20 20 20 22 65 78 74 2d 61 6c 6c 2e 6a 73 22 3a 20 22 65 78 74 6a 73 22 2c 0a 20 ... 11665 more bytes>
+521 silly tar     ],
+521 silly tar     Symbol(objectMode): false,
+521 silly tar     Symbol(encoding): null,
+521 silly tar     Symbol(async): false,
+521 silly tar     Symbol(decoder): null,
+521 silly tar     Symbol(EOF): true,
+521 silly tar     Symbol(emittedEnd): false,
+521 silly tar     Symbol(emittingEnd): false,
+521 silly tar     Symbol(closed): false,
+521 silly tar     Symbol(emittedError): null,
+521 silly tar     Symbol(bufferLength): 16788,
+521 silly tar     Symbol(destroyed): false,
+521 silly tar     Symbol(signal): undefined,
+521 silly tar     Symbol(aborted): false,
+521 silly tar     Symbol(dataListeners): 0,
+521 silly tar     Symbol(discarded): false
+521 silly tar   },
+521 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+521 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+521 silly tar }
+522 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\README.md'
+523 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\README.md' [Error: ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\README.md'] {
+523 silly tar   errno: -4058,
+523 silly tar   code: 'ENOENT',
+523 silly tar   syscall: 'open',
+523 silly tar   path: 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript\\README.md',
+523 silly tar   entry: ReadEntry {
+523 silly tar     _events: [Object: null prototype] {},
+523 silly tar     _eventsCount: 0,
+523 silly tar     _maxListeners: undefined,
+523 silly tar     writable: false,
+523 silly tar     readable: false,
+523 silly tar     extended: undefined,
+523 silly tar     globalExtended: undefined,
+523 silly tar     header: Header {
+523 silly tar       cksumValid: true,
+523 silly tar       needPax: false,
+523 silly tar       nullBlock: false,
+523 silly tar       block: undefined,
+523 silly tar       path: 'package/README.md',
+523 silly tar       mode: 420,
+523 silly tar       uid: undefined,
+523 silly tar       gid: undefined,
+523 silly tar       size: 2842,
+523 silly tar       cksum: 4451,
+523 silly tar       linkpath: '',
+523 silly tar       uname: '',
+523 silly tar       gname: '',
+523 silly tar       devmaj: 0,
+523 silly tar       devmin: 0,
+523 silly tar       atime: undefined,
+523 silly tar       ctime: undefined,
+523 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+523 silly tar       charset: undefined,
+523 silly tar       comment: undefined
+523 silly tar     },
+523 silly tar     startBlockSize: 3072,
+523 silly tar     blockRemain: 0,
+523 silly tar     remain: 0,
+523 silly tar     type: 'File',
+523 silly tar     meta: false,
+523 silly tar     ignore: false,
+523 silly tar     path: 'README.md',
+523 silly tar     mode: 438,
+523 silly tar     uid: undefined,
+523 silly tar     gid: undefined,
+523 silly tar     uname: '',
+523 silly tar     gname: '',
+523 silly tar     size: 2842,
+523 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+523 silly tar     atime: undefined,
+523 silly tar     ctime: undefined,
+523 silly tar     linkpath: undefined,
+523 silly tar     dev: undefined,
+523 silly tar     ino: undefined,
+523 silly tar     nlink: undefined,
+523 silly tar     invalid: false,
+523 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/README.md',
+523 silly tar     unsupported: false,
+523 silly tar     Symbol(shapeMode): false,
+523 silly tar     Symbol(kCapture): false,
+523 silly tar     Symbol(flowing): false,
+523 silly tar     Symbol(paused): true,
+523 silly tar     Symbol(pipes): [ [Pipe] ],
+523 silly tar     Symbol(buffer): [],
+523 silly tar     Symbol(objectMode): false,
+523 silly tar     Symbol(encoding): null,
+523 silly tar     Symbol(async): false,
+523 silly tar     Symbol(decoder): null,
+523 silly tar     Symbol(EOF): true,
+523 silly tar     Symbol(emittedEnd): true,
+523 silly tar     Symbol(emittingEnd): false,
+523 silly tar     Symbol(closed): false,
+523 silly tar     Symbol(emittedError): null,
+523 silly tar     Symbol(bufferLength): 0,
+523 silly tar     Symbol(destroyed): false,
+523 silly tar     Symbol(signal): undefined,
+523 silly tar     Symbol(aborted): false,
+523 silly tar     Symbol(dataListeners): 0,
+523 silly tar     Symbol(discarded): false
+523 silly tar   },
+523 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+523 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+523 silly tar }
+524 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\SECURITY.md'
+525 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\SECURITY.md' [Error: ENOENT: no such file or directory, open 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\SECURITY.md'] {
+525 silly tar   errno: -4058,
+525 silly tar   code: 'ENOENT',
+525 silly tar   syscall: 'open',
+525 silly tar   path: 'C:\\Users\\laksh\\OneDrive\\Desktop\\FleetMind\\node_modules\\typescript\\SECURITY.md',
+525 silly tar   entry: ReadEntry {
+525 silly tar     _events: [Object: null prototype] {},
+525 silly tar     _eventsCount: 0,
+525 silly tar     _maxListeners: undefined,
+525 silly tar     writable: false,
+525 silly tar     readable: false,
+525 silly tar     extended: undefined,
+525 silly tar     globalExtended: undefined,
+525 silly tar     header: Header {
+525 silly tar       cksumValid: true,
+525 silly tar       needPax: false,
+525 silly tar       nullBlock: false,
+525 silly tar       block: undefined,
+525 silly tar       path: 'package/SECURITY.md',
+525 silly tar       mode: 420,
+525 silly tar       uid: undefined,
+525 silly tar       gid: undefined,
+525 silly tar       size: 2656,
+525 silly tar       cksum: 4649,
+525 silly tar       linkpath: '',
+525 silly tar       uname: '',
+525 silly tar       gname: '',
+525 silly tar       devmaj: 0,
+525 silly tar       devmin: 0,
+525 silly tar       atime: undefined,
+525 silly tar       ctime: undefined,
+525 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+525 silly tar       charset: undefined,
+525 silly tar       comment: undefined
+525 silly tar     },
+525 silly tar     startBlockSize: 3072,
+525 silly tar     blockRemain: 0,
+525 silly tar     remain: 0,
+525 silly tar     type: 'File',
+525 silly tar     meta: false,
+525 silly tar     ignore: false,
+525 silly tar     path: 'SECURITY.md',
+525 silly tar     mode: 438,
+525 silly tar     uid: undefined,
+525 silly tar     gid: undefined,
+525 silly tar     uname: '',
+525 silly tar     gname: '',
+525 silly tar     size: 2656,
+525 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+525 silly tar     atime: undefined,
+525 silly tar     ctime: undefined,
+525 silly tar     linkpath: undefined,
+525 silly tar     dev: undefined,
+525 silly tar     ino: undefined,
+525 silly tar     nlink: undefined,
+525 silly tar     invalid: false,
+525 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/SECURITY.md',
+525 silly tar     unsupported: false,
+525 silly tar     Symbol(shapeMode): false,
+525 silly tar     Symbol(kCapture): false,
+525 silly tar     Symbol(flowing): false,
+525 silly tar     Symbol(paused): true,
+525 silly tar     Symbol(pipes): [ [Pipe] ],
+525 silly tar     Symbol(buffer): [],
+525 silly tar     Symbol(objectMode): false,
+525 silly tar     Symbol(encoding): null,
+525 silly tar     Symbol(async): false,
+525 silly tar     Symbol(decoder): null,
+525 silly tar     Symbol(EOF): true,
+525 silly tar     Symbol(emittedEnd): true,
+525 silly tar     Symbol(emittingEnd): false,
+525 silly tar     Symbol(closed): false,
+525 silly tar     Symbol(emittedError): null,
+525 silly tar     Symbol(bufferLength): 0,
+525 silly tar     Symbol(destroyed): false,
+525 silly tar     Symbol(signal): undefined,
+525 silly tar     Symbol(aborted): false,
+525 silly tar     Symbol(dataListeners): 0,
+525 silly tar     Symbol(discarded): false
+525 silly tar   },
+525 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+525 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+525 silly tar }
+526 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+527 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+527 silly tar   errno: -4058,
+527 silly tar   code: 'ENOENT',
+527 silly tar   syscall: 'lstat',
+527 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+527 silly tar   entry: ReadEntry {
+527 silly tar     _events: [Object: null prototype] { end: [Function (anonymous)] },
+527 silly tar     _eventsCount: 1,
+527 silly tar     _maxListeners: undefined,
+527 silly tar     writable: false,
+527 silly tar     readable: true,
+527 silly tar     extended: undefined,
+527 silly tar     globalExtended: undefined,
+527 silly tar     header: Header {
+527 silly tar       cksumValid: true,
+527 silly tar       needPax: false,
+527 silly tar       nullBlock: false,
+527 silly tar       block: undefined,
+527 silly tar       path: 'package/lib/lib.d.ts',
+527 silly tar       mode: 420,
+527 silly tar       uid: undefined,
+527 silly tar       gid: undefined,
+527 silly tar       size: 992,
+527 silly tar       cksum: 4856,
+527 silly tar       linkpath: '',
+527 silly tar       uname: '',
+527 silly tar       gname: '',
+527 silly tar       devmaj: 0,
+527 silly tar       devmin: 0,
+527 silly tar       atime: undefined,
+527 silly tar       ctime: undefined,
+527 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+527 silly tar       charset: undefined,
+527 silly tar       comment: undefined
+527 silly tar     },
+527 silly tar     startBlockSize: 1024,
+527 silly tar     blockRemain: 0,
+527 silly tar     remain: 0,
+527 silly tar     type: 'File',
+527 silly tar     meta: false,
+527 silly tar     ignore: false,
+527 silly tar     path: 'lib/lib.d.ts',
+527 silly tar     mode: 438,
+527 silly tar     uid: undefined,
+527 silly tar     gid: undefined,
+527 silly tar     uname: '',
+527 silly tar     gname: '',
+527 silly tar     size: 992,
+527 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+527 silly tar     atime: undefined,
+527 silly tar     ctime: undefined,
+527 silly tar     linkpath: undefined,
+527 silly tar     dev: undefined,
+527 silly tar     ino: undefined,
+527 silly tar     nlink: undefined,
+527 silly tar     invalid: false,
+527 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/lib.d.ts',
+527 silly tar     unsupported: false,
+527 silly tar     Symbol(shapeMode): false,
+527 silly tar     Symbol(kCapture): false,
+527 silly tar     Symbol(flowing): false,
+527 silly tar     Symbol(paused): true,
+527 silly tar     Symbol(pipes): [],
+527 silly tar     Symbol(buffer): [
+527 silly tar       <Buffer 2f 2a 21 20 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a ... 942 more bytes>
+527 silly tar     ],
+527 silly tar     Symbol(objectMode): false,
+527 silly tar     Symbol(encoding): null,
+527 silly tar     Symbol(async): false,
+527 silly tar     Symbol(decoder): null,
+527 silly tar     Symbol(EOF): true,
+527 silly tar     Symbol(emittedEnd): false,
+527 silly tar     Symbol(emittingEnd): false,
+527 silly tar     Symbol(closed): false,
+527 silly tar     Symbol(emittedError): null,
+527 silly tar     Symbol(bufferLength): 992,
+527 silly tar     Symbol(destroyed): false,
+527 silly tar     Symbol(signal): undefined,
+527 silly tar     Symbol(aborted): false,
+527 silly tar     Symbol(dataListeners): 0,
+527 silly tar     Symbol(discarded): false
+527 silly tar   },
+527 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+527 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+527 silly tar }
+528 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+529 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+529 silly tar   errno: -4058,
+529 silly tar   code: 'ENOENT',
+529 silly tar   syscall: 'lstat',
+529 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+529 silly tar   entry: ReadEntry {
+529 silly tar     _events: [Object: null prototype] { end: [Function (anonymous)] },
+529 silly tar     _eventsCount: 1,
+529 silly tar     _maxListeners: undefined,
+529 silly tar     writable: false,
+529 silly tar     readable: true,
+529 silly tar     extended: undefined,
+529 silly tar     globalExtended: undefined,
+529 silly tar     header: Header {
+529 silly tar       cksumValid: true,
+529 silly tar       needPax: false,
+529 silly tar       nullBlock: false,
+529 silly tar       block: undefined,
+529 silly tar       path: 'package/lib/lib.decorators.d.ts',
+529 silly tar       mode: 420,
+529 silly tar       uid: undefined,
+529 silly tar       gid: undefined,
+529 silly tar       size: 13192,
+529 silly tar       cksum: 5979,
+529 silly tar       linkpath: '',
+529 silly tar       uname: '',
+529 silly tar       gname: '',
+529 silly tar       devmaj: 0,
+529 silly tar       devmin: 0,
+529 silly tar       atime: undefined,
+529 silly tar       ctime: undefined,
+529 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+529 silly tar       charset: undefined,
+529 silly tar       comment: undefined
+529 silly tar     },
+529 silly tar     startBlockSize: 13312,
+529 silly tar     blockRemain: 0,
+529 silly tar     remain: 0,
+529 silly tar     type: 'File',
+529 silly tar     meta: false,
+529 silly tar     ignore: false,
+529 silly tar     path: 'lib/lib.decorators.d.ts',
+529 silly tar     mode: 438,
+529 silly tar     uid: undefined,
+529 silly tar     gid: undefined,
+529 silly tar     uname: '',
+529 silly tar     gname: '',
+529 silly tar     size: 13192,
+529 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+529 silly tar     atime: undefined,
+529 silly tar     ctime: undefined,
+529 silly tar     linkpath: undefined,
+529 silly tar     dev: undefined,
+529 silly tar     ino: undefined,
+529 silly tar     nlink: undefined,
+529 silly tar     invalid: false,
+529 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/lib.decorators.d.ts',
+529 silly tar     unsupported: false,
+529 silly tar     Symbol(shapeMode): false,
+529 silly tar     Symbol(kCapture): false,
+529 silly tar     Symbol(flowing): false,
+529 silly tar     Symbol(paused): true,
+529 silly tar     Symbol(pipes): [],
+529 silly tar     Symbol(buffer): [
+529 silly tar       <Buffer 2f 2a 21 20 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a ... 11679 more bytes>,
+529 silly tar       <Buffer 75 63 74 6f 72 2e 20 46 6f 72 20 61 20 6e 6f 6e 2d 73 74 61 74 69 63 20 63 6c 61 73 73 20 65 6c 65 6d 65 6e 74 2c 20 74 68 69 73 20 77 69 6c 6c 20 62 ... 1413 more bytes>
+529 silly tar     ],
+529 silly tar     Symbol(objectMode): false,
+529 silly tar     Symbol(encoding): null,
+529 silly tar     Symbol(async): false,
+529 silly tar     Symbol(decoder): null,
+529 silly tar     Symbol(EOF): true,
+529 silly tar     Symbol(emittedEnd): false,
+529 silly tar     Symbol(emittingEnd): false,
+529 silly tar     Symbol(closed): false,
+529 silly tar     Symbol(emittedError): null,
+529 silly tar     Symbol(bufferLength): 13192,
+529 silly tar     Symbol(destroyed): false,
+529 silly tar     Symbol(signal): undefined,
+529 silly tar     Symbol(aborted): false,
+529 silly tar     Symbol(dataListeners): 0,
+529 silly tar     Symbol(discarded): false
+529 silly tar   },
+529 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+529 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+529 silly tar }
+530 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+531 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+531 silly tar   errno: -4058,
+531 silly tar   code: 'ENOENT',
+531 silly tar   syscall: 'lstat',
+531 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+531 silly tar   entry: ReadEntry {
+531 silly tar     _events: [Object: null prototype] { end: [Function (anonymous)] },
+531 silly tar     _eventsCount: 1,
+531 silly tar     _maxListeners: undefined,
+531 silly tar     writable: false,
+531 silly tar     readable: true,
+531 silly tar     extended: undefined,
+531 silly tar     globalExtended: undefined,
+531 silly tar     header: Header {
+531 silly tar       cksumValid: true,
+531 silly tar       needPax: false,
+531 silly tar       nullBlock: false,
+531 silly tar       block: undefined,
+531 silly tar       path: 'package/lib/lib.decorators.legacy.d.ts',
+531 silly tar       mode: 420,
+531 silly tar       uid: undefined,
+531 silly tar       gid: undefined,
+531 silly tar       size: 1326,
+531 silly tar       cksum: 6660,
+531 silly tar       linkpath: '',
+531 silly tar       uname: '',
+531 silly tar       gname: '',
+531 silly tar       devmaj: 0,
+531 silly tar       devmin: 0,
+531 silly tar       atime: undefined,
+531 silly tar       ctime: undefined,
+531 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+531 silly tar       charset: undefined,
+531 silly tar       comment: undefined
+531 silly tar     },
+531 silly tar     startBlockSize: 1536,
+531 silly tar     blockRemain: 0,
+531 silly tar     remain: 0,
+531 silly tar     type: 'File',
+531 silly tar     meta: false,
+531 silly tar     ignore: false,
+531 silly tar     path: 'lib/lib.decorators.legacy.d.ts',
+531 silly tar     mode: 438,
+531 silly tar     uid: undefined,
+531 silly tar     gid: undefined,
+531 silly tar     uname: '',
+531 silly tar     gname: '',
+531 silly tar     size: 1326,
+531 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+531 silly tar     atime: undefined,
+531 silly tar     ctime: undefined,
+531 silly tar     linkpath: undefined,
+531 silly tar     dev: undefined,
+531 silly tar     ino: undefined,
+531 silly tar     nlink: undefined,
+531 silly tar     invalid: false,
+531 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/lib.decorators.legacy.d.ts',
+531 silly tar     unsupported: false,
+531 silly tar     Symbol(shapeMode): false,
+531 silly tar     Symbol(kCapture): false,
+531 silly tar     Symbol(flowing): false,
+531 silly tar     Symbol(paused): true,
+531 silly tar     Symbol(pipes): [],
+531 silly tar     Symbol(buffer): [
+531 silly tar       <Buffer 2f 2a 21 20 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a ... 1276 more bytes>
+531 silly tar     ],
+531 silly tar     Symbol(objectMode): false,
+531 silly tar     Symbol(encoding): null,
+531 silly tar     Symbol(async): false,
+531 silly tar     Symbol(decoder): null,
+531 silly tar     Symbol(EOF): true,
+531 silly tar     Symbol(emittedEnd): false,
+531 silly tar     Symbol(emittingEnd): false,
+531 silly tar     Symbol(closed): false,
+531 silly tar     Symbol(emittedError): null,
+531 silly tar     Symbol(bufferLength): 1326,
+531 silly tar     Symbol(destroyed): false,
+531 silly tar     Symbol(signal): undefined,
+531 silly tar     Symbol(aborted): false,
+531 silly tar     Symbol(dataListeners): 0,
+531 silly tar     Symbol(discarded): false
+531 silly tar   },
+531 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+531 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+531 silly tar }
+532 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+533 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+533 silly tar   errno: -4058,
+533 silly tar   code: 'ENOENT',
+533 silly tar   syscall: 'lstat',
+533 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+533 silly tar   entry: ReadEntry {
+533 silly tar     _events: [Object: null prototype] { end: [Function (anonymous)] },
+533 silly tar     _eventsCount: 1,
+533 silly tar     _maxListeners: undefined,
+533 silly tar     writable: false,
+533 silly tar     readable: true,
+533 silly tar     extended: undefined,
+533 silly tar     globalExtended: undefined,
+533 silly tar     header: Header {
+533 silly tar       cksumValid: true,
+533 silly tar       needPax: false,
+533 silly tar       nullBlock: false,
+533 silly tar       block: undefined,
+533 silly tar       path: 'package/lib/lib.dom.asynciterable.d.ts',
+533 silly tar       mode: 420,
+533 silly tar       uid: undefined,
+533 silly tar       gid: undefined,
+533 silly tar       size: 1887,
+533 silly tar       cksum: 6656,
+533 silly tar       linkpath: '',
+533 silly tar       uname: '',
+533 silly tar       gname: '',
+533 silly tar       devmaj: 0,
+533 silly tar       devmin: 0,
+533 silly tar       atime: undefined,
+533 silly tar       ctime: undefined,
+533 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+533 silly tar       charset: undefined,
+533 silly tar       comment: undefined
+533 silly tar     },
+533 silly tar     startBlockSize: 2048,
+533 silly tar     blockRemain: 0,
+533 silly tar     remain: 0,
+533 silly tar     type: 'File',
+533 silly tar     meta: false,
+533 silly tar     ignore: false,
+533 silly tar     path: 'lib/lib.dom.asynciterable.d.ts',
+533 silly tar     mode: 438,
+533 silly tar     uid: undefined,
+533 silly tar     gid: undefined,
+533 silly tar     uname: '',
+533 silly tar     gname: '',
+533 silly tar     size: 1887,
+533 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+533 silly tar     atime: undefined,
+533 silly tar     ctime: undefined,
+533 silly tar     linkpath: undefined,
+533 silly tar     dev: undefined,
+533 silly tar     ino: undefined,
+533 silly tar     nlink: undefined,
+533 silly tar     invalid: false,
+533 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/lib.dom.asynciterable.d.ts',
+533 silly tar     unsupported: false,
+533 silly tar     Symbol(shapeMode): false,
+533 silly tar     Symbol(kCapture): false,
+533 silly tar     Symbol(flowing): false,
+533 silly tar     Symbol(paused): true,
+533 silly tar     Symbol(pipes): [],
+533 silly tar     Symbol(buffer): [
+533 silly tar       <Buffer 2f 2a 21 20 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a ... 1837 more bytes>
+533 silly tar     ],
+533 silly tar     Symbol(objectMode): false,
+533 silly tar     Symbol(encoding): null,
+533 silly tar     Symbol(async): false,
+533 silly tar     Symbol(decoder): null,
+533 silly tar     Symbol(EOF): true,
+533 silly tar     Symbol(emittedEnd): false,
+533 silly tar     Symbol(emittingEnd): false,
+533 silly tar     Symbol(closed): false,
+533 silly tar     Symbol(emittedError): null,
+533 silly tar     Symbol(bufferLength): 1887,
+533 silly tar     Symbol(destroyed): false,
+533 silly tar     Symbol(signal): undefined,
+533 silly tar     Symbol(aborted): false,
+533 silly tar     Symbol(dataListeners): 0,
+533 silly tar     Symbol(discarded): false
+533 silly tar   },
+533 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+533 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+533 silly tar }
+534 warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'
+535 silly tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib' [Error: ENOENT: no such file or directory, lstat 'C:\Users\laksh\OneDrive\Desktop\FleetMind\node_modules\typescript\lib'] {
+535 silly tar   errno: -4058,
+535 silly tar   code: 'ENOENT',
+535 silly tar   syscall: 'lstat',
+535 silly tar   path: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib',
+535 silly tar   entry: ReadEntry {
+535 silly tar     _events: [Object: null prototype] {
+535 silly tar       end: [Function (anonymous)],
+535 silly tar       drain: [Function]
+535 silly tar     },
+535 silly tar     _eventsCount: 2,
+535 silly tar     _maxListeners: undefined,
+535 silly tar     writable: true,
+535 silly tar     readable: true,
+535 silly tar     extended: undefined,
+535 silly tar     globalExtended: undefined,
+535 silly tar     header: Header {
+535 silly tar       cksumValid: true,
+535 silly tar       needPax: false,
+535 silly tar       nullBlock: false,
+535 silly tar       block: undefined,
+535 silly tar       path: 'package/lib/lib.dom.d.ts',
+535 silly tar       mode: 420,
+535 silly tar       uid: undefined,
+535 silly tar       gid: undefined,
+535 silly tar       size: 1874901,
+535 silly tar       cksum: 5238,
+535 silly tar       linkpath: '',
+535 silly tar       uname: '',
+535 silly tar       gname: '',
+535 silly tar       devmaj: 0,
+535 silly tar       devmin: 0,
+535 silly tar       atime: undefined,
+535 silly tar       ctime: undefined,
+535 silly tar       mtime: 1985-10-26T08:15:00.000Z,
+535 silly tar       charset: undefined,
+535 silly tar       comment: undefined
+535 silly tar     },
+535 silly tar     startBlockSize: 1874944,
+535 silly tar     blockRemain: 1853895,
+535 silly tar     remain: 1853852,
+535 silly tar     type: 'File',
+535 silly tar     meta: false,
+535 silly tar     ignore: false,
+535 silly tar     path: 'lib/lib.dom.d.ts',
+535 silly tar     mode: 438,
+535 silly tar     uid: undefined,
+535 silly tar     gid: undefined,
+535 silly tar     uname: '',
+535 silly tar     gname: '',
+535 silly tar     size: 1874901,
+535 silly tar     mtime: 1985-10-26T08:15:00.000Z,
+535 silly tar     atime: undefined,
+535 silly tar     ctime: undefined,
+535 silly tar     linkpath: undefined,
+535 silly tar     dev: undefined,
+535 silly tar     ino: undefined,
+535 silly tar     nlink: undefined,
+535 silly tar     invalid: false,
+535 silly tar     absolute: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript/lib/lib.dom.d.ts',
+535 silly tar     unsupported: false,
+535 silly tar     Symbol(shapeMode): false,
+535 silly tar     Symbol(kCapture): false,
+535 silly tar     Symbol(flowing): false,
+535 silly tar     Symbol(paused): true,
+535 silly tar     Symbol(pipes): [],
+535 silly tar     Symbol(buffer): [
+535 silly tar       <Buffer 2f 2a 21 20 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a 2a ... 9631 more bytes>,
+535 silly tar       <Buffer 3a 20 6e 75 6d 62 65 72 3b 0a 7d 0a 0a 69 6e 74 65 72 66 61 63 65 20 43 6f 6e 74 65 6e 74 56 69 73 69 62 69 6c 69 74 79 41 75 74 6f 53 74 61 74 65 43 ... 11318 more bytes>
+535 silly tar     ],
+535 silly tar     Symbol(objectMode): false,
+535 silly tar     Symbol(encoding): null,
+535 silly tar     Symbol(async): false,
+535 silly tar     Symbol(decoder): null,
+535 silly tar     Symbol(EOF): false,
+535 silly tar     Symbol(emittedEnd): false,
+535 silly tar     Symbol(emittingEnd): false,
+535 silly tar     Symbol(closed): false,
+535 silly tar     Symbol(emittedError): null,
+535 silly tar     Symbol(bufferLength): 21049,
+535 silly tar     Symbol(destroyed): false,
+535 silly tar     Symbol(signal): undefined,
+535 silly tar     Symbol(aborted): false,
+535 silly tar     Symbol(dataListeners): 0,
+535 silly tar     Symbol(discarded): false
+535 silly tar   },
+535 silly tar   cwd: 'C:/Users/laksh/OneDrive/Desktop/FleetMind/node_modules/typescript',
+535 silly tar   tarCode: 'TAR_ENTRY_ERROR'
+535 silly tar }
+536 http fetch GET 200 https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz 34074ms (cache miss)
+537 http fetch GET 200 https://registry.npmjs.org/@typescript-eslint%2fparser 3451ms (cache miss)
+538 silly packumentCache corgi:https://registry.npmjs.org/@typescript-eslint%2fparser set size:undefined disposed:false
+539 http fetch GET 200 https://registry.npmjs.org/next/-/next-14.2.5.tgz 115172ms (cache miss)
+540 warn deprecated next@14.2.5: This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.
+541 silly ADD node_modules/@emnapi/wasi-threads
+542 silly CHANGE node_modules/which
+543 silly CHANGE node_modules/typescript
+544 silly CHANGE node_modules/sucrase
+545 silly ADD node_modules/string.prototype.repeat/node_modules/es-abstract
+546 silly ADD node_modules/string.prototype.matchall/node_modules/es-abstract
+547 silly CHANGE node_modules/semver
+548 silly CHANGE node_modules/rimraf
+549 silly CHANGE node_modules/resolve
+550 silly CHANGE node_modules/postcss-import/node_modules/resolve
+551 silly ADD node_modules/object.groupby/node_modules/es-abstract
+552 silly ADD node_modules/object.fromentries/node_modules/es-abstract
+553 silly CHANGE node_modules/node-exports-info/node_modules/semver
+554 silly CHANGE node_modules/napi-postinstall
+555 silly CHANGE node_modules/nanoid
+556 silly CHANGE node_modules/loose-envify
+557 silly CHANGE node_modules/json5
+558 silly CHANGE node_modules/js-yaml
+559 silly CHANGE node_modules/jiti
+560 silly CHANGE node_modules/glob
+561 silly CHANGE node_modules/eslint-plugin-import/node_modules/semver
+562 silly CHANGE node_modules/eslint-plugin-react/node_modules/semver
+563 silly ADD node_modules/eslint-config-next/node_modules/aria-query
+564 silly ADD node_modules/eslint-config-next/node_modules/eslint-plugin-jsx-a11y
+565 silly ADD node_modules/es-iterator-helpers/node_modules/es-abstract
+566 silly CHANGE node_modules/cssesc
+567 silly ADD node_modules/array.prototype.tosorted/node_modules/es-abstract
+568 silly ADD node_modules/array.prototype.flatmap/node_modules/es-abstract
+569 silly ADD node_modules/array.prototype.findlast/node_modules/es-abstract
+570 silly ADD node_modules/array.prototype.flat/node_modules/es-abstract
+571 silly ADD node_modules/array.prototype.findlastindex/node_modules/es-abstract
+572 silly ADD node_modules/array-includes/node_modules/es-abstract
+573 silly CHANGE node_modules/acorn
+574 silly CHANGE node_modules/@swc/helpers
+575 silly CHANGE node_modules/victory-vendor
+576 silly CHANGE node_modules/tailwindcss
+577 silly CHANGE node_modules/tailwindcss/node_modules/resolve
+578 silly CHANGE node_modules/recharts
+579 silly CHANGE node_modules/next
+580 silly CHANGE node_modules/lucide-react
+581 silly CHANGE node_modules/lodash
+582 silly REMOVE node_modules/eslint-plugin-jsx-a11y
+583 silly CHANGE node_modules/eslint
+584 silly CHANGE node_modules/caniuse-lite
+585 silly REMOVE node_modules/aria-query
+586 verbose cwd C:\Users\laksh\OneDrive\Desktop\FleetMind
+587 verbose os Windows_NT 10.0.26200
+588 verbose node v24.13.0
+589 verbose npm  v11.6.2
+590 notice
+590 notice New minor version of npm available! 11.6.2 -> 11.19.0
+590 notice Changelog: https://github.com/npm/cli/releases/tag/v11.19.0
+590 notice To update run: npm install -g npm@11.19.0
+590 notice  { force: true, Symbol(proc-log.meta): true }
+591 verbose exit 0
+592 info ok
