@@ -1,5 +1,8 @@
 # Dependencies and build output
 /node_modules
+/infra/node_modules
+/infra/cdk.out
+/infra/.cdk.staging
 /.pnp
 .pnp.js
 /.next/
