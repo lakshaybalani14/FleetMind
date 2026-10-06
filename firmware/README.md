@@ -2,6 +2,8 @@
 
 This folder supplies the embedded side of FleetMind: an ESP32 reads DHT22 and MQ-2 data, filters insignificant changes at the edge, publishes MQTT telemetry securely to AWS IoT Core, receives cloud commands, operates a relay-controlled fan, and publishes an acknowledgement and its device-shadow state.
 
+For a bench test that needs no AWS credentials, use the separate [hardware-test project](hardware-test/README.md). It prints DHT22/MQ-2 readings over Serial and lets you switch the relay manually.
+
 ## Hardware wiring
 
 | Part | ESP32 pin | Notes |
