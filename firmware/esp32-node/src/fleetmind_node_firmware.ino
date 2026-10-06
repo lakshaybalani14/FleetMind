@@ -2,7 +2,7 @@
  * FleetMind ESP32 edge node
  *
  * Hardware: DHT22 (temperature/humidity), MQ-2 (gas/smoke), relay-controlled
- * exhaust fan, status LED, and an optional emergency button.
+ * exhaust fan, and status LED.
  *
  * Tasks are pinned deliberately: Wi-Fi/MQTT stays responsive on core 0; sensor,
  * publisher, actuator, and heartbeat work run on core 1.  Queues prevent a slow
@@ -26,7 +26,6 @@
 #define DHT22_PIN 4
 #define RELAY_PIN 26
 #define STATUS_LED_PIN 2
-#define EMERGENCY_BUTTON_PIN 27 // Optional normally-open button wired to GND.
 #define RELAY_ACTIVE_HIGH true  // Set false for common active-low relay boards.
 
 // MQ-2 values are estimates until calibrated with known gas concentrations.
@@ -75,20 +74,9 @@ QueueHandle_t telemetryQueue;
 QueueHandle_t commandQueue;
 SemaphoreHandle_t mqttMutex;
 
-volatile bool emergencyInterruptReceived = false;
 volatile bool relayOn = false;
-volatile uint32_t lastButtonInterruptMs = 0;
 bool commandQueueOverflow = false;
 uint32_t sequenceNumber = 0;
-
-// An ISR must remain tiny: it only records the event; TaskActuator changes GPIO.
-void IRAM_ATTR onEmergencyButtonInterrupt() {
-  uint32_t now = millis();
-  if (now - lastButtonInterruptMs > 250) {
-    emergencyInterruptReceived = true;
-    lastButtonInterruptMs = now;
-  }
-}
 
 uint32_t epochSeconds() {
   time_t now;
@@ -283,15 +271,7 @@ void TaskPublish(void* parameter) {
 void TaskActuator(void* parameter) {
   ActuatorCommand command;
   for (;;) {
-    if (emergencyInterruptReceived) {
-      emergencyInterruptReceived = false;
-      command = {};
-      strlcpy(command.actionId, "physical-emergency-button", sizeof(command.actionId));
-      command.relayOn = true;
-      command.emergency = true;
-    } else if (xQueueReceive(commandQueue, &command, pdMS_TO_TICKS(100)) != pdTRUE) {
-      continue;
-    }
+    if (xQueueReceive(commandQueue, &command, portMAX_DELAY) != pdTRUE) continue;
     setRelay(command.relayOn);
     publishActuatorEvent(command, "applied");
     publishShadowReported(command.actionId);
@@ -320,8 +300,6 @@ void setup() {
   pinMode(STATUS_LED_PIN, OUTPUT);
   pinMode(RELAY_PIN, OUTPUT);
   setRelay(false); // Fail-safe boot state: fan/relay is off until commanded.
-  pinMode(EMERGENCY_BUTTON_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(EMERGENCY_BUTTON_PIN), onEmergencyButtonInterrupt, FALLING);
   analogReadResolution(12);
   dht.setup(DHT22_PIN, DHTesp::DHT22);
 

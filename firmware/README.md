@@ -10,7 +10,7 @@ This folder supplies the embedded side of FleetMind: an ESP32 reads DHT22 and MQ
 | MQ-2 analog out | GPIO 34 | ADC1 input; power the sensor according to the breakout's specification. Its output must not exceed 3.3V. |
 | Relay input | GPIO 26 | Relay switches the fan. Set `RELAY_ACTIVE_HIGH` correctly for the board. |
 | Status LED | GPIO 2 | Built-in LED on many ESP32 dev boards. |
-| Optional emergency button | GPIO 27 to GND | Uses `INPUT_PULLUP` and a falling-edge interrupt. |
+| Unused | GPIO 27 | Reserved/free; no button is configured in the current firmware. |
 
 Do not power a fan directly from an ESP32 GPIO. The relay module must have a suitable driver/power supply and the correct electrical isolation.
 
@@ -53,10 +53,10 @@ Give each Thing certificate only the minimum rights to connect as its own client
 | `TaskWiFiMQTT` | 3 / 0 | Connects Wi-Fi and TLS MQTT, synchronizes time, receives MQTT packets, and reconnects with exponential backoff. |
 | `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds and uses threshold/delta edge filtering before queuing telemetry. |
 | `TaskPublish` | 2 / 1 | Serializes queued telemetry as JSON and publishes it without slowing sampling. |
-| `TaskActuator` | 2 / 1 | Applies cloud commands or a physical emergency-button event, then emits an acknowledgement and shadow report. |
+| `TaskActuator` | 2 / 1 | Applies cloud commands, then emits an acknowledgement and shadow report. |
 | `TaskHeartbeat` | 1 / 1 | Publishes retained connectivity state and feeds the watchdog. |
 
-The ISR is intentionally restricted to setting an event flag. GPIO changes and MQTT calls happen later in a task, which is safe and demonstrates interrupt-to-task handoff.
+GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate from network and sensor work.
 
 ## Known limits before field deployment
 
