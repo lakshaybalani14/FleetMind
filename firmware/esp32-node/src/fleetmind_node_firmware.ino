@@ -176,7 +176,7 @@ void TaskWiFiMQTT(void* parameter) {
   for (;;) {
     if (!connectWifiAndTime()) {
       vTaskDelay(pdMS_TO_TICKS(retryDelayMs));
-      retryDelayMs = min(retryDelayMs * 2, 30000UL);
+      retryDelayMs = retryDelayMs >= 15000U ? 30000U : retryDelayMs * 2U;
       continue;
     }
     if (!mqtt.connected()) {
@@ -190,7 +190,7 @@ void TaskWiFiMQTT(void* parameter) {
       xSemaphoreGive(mqttMutex);
       if (!connected) {
         vTaskDelay(pdMS_TO_TICKS(retryDelayMs));
-        retryDelayMs = min(retryDelayMs * 2, 30000UL);
+        retryDelayMs = retryDelayMs >= 15000U ? 30000U : retryDelayMs * 2U;
         continue;
       }
       retryDelayMs = 1000;
