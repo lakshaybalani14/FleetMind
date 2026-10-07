@@ -165,13 +165,13 @@ bool connectWifiAndTime() {
 
   time_t now = 0;
   time(&now);
-  if (now < 1700000000) {
-    Serial.println("[Time] Clock is not synchronized; requesting network time from NTP servers...");
-    configTime(0, 0, "pool.ntp.org", "time.nist.gov");
-    for (int attempts = 0; now < 1700000000 && attempts < 60; attempts++) {
-      vTaskDelay(pdMS_TO_TICKS(250));
-      time(&now);
-    }
+  if (now >= 1700000000) return true;
+
+  Serial.println("[Time] Clock is not synchronized; requesting network time from NTP servers...");
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+  for (int attempts = 0; now < 1700000000 && attempts < 60; attempts++) {
+    vTaskDelay(pdMS_TO_TICKS(250));
+    time(&now);
   }
   if (now < 1700000000) {
     Serial.printf("[Time] NTP sync failed (clock epoch=%lu); TLS needs valid time. Check hotspot internet/DNS/NTP access.\n",
