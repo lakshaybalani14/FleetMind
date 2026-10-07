@@ -1,98 +1,180 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TelemetryPoint, FleetNode, ActionLogEntry } from "@/types/fleet";
-import { INITIAL_NODES, generateInitialTelemetry, INITIAL_LOGS } from "@/lib/mock-data";
-import { generateId } from "@/lib/utils";
 
-export function useFleetData() {
-  const [selectedNodeId, setSelectedNodeId] = useState<string>("node-01");
-  const [nodes, setNodes] = useState<FleetNode[]>(INITIAL_NODES);
-  const [telemetryHistory, setTelemetryHistory] = useState<Record<string, TelemetryPoint[]>>({
-    "node-01": generateInitialTelemetry("node-01"),
-    "node-02": generateInitialTelemetry("node-02"),
-  });
-  const [logs, setLogs] = useState<ActionLogEntry[]>(INITIAL_LOGS);
+type ApiNode = Partial<FleetNode> & { id: string; temperature?: number; humidity?: number; gasLevel?: number };
+type StreamMessage = {
+  type: "telemetry";
+  eventId: string;
+  nodeId: string;
+  timestamp: string;
+  temperature: number;
+  humidity: number;
+  gasLevel: number;
+  isAnomaly?: boolean;
+  actuatorState?: FleetNode["actuatorState"];
+};
 
-  const addLog = useCallback((log: Omit<ActionLogEntry, "id">) => {
-    setLogs((prev) => [{ ...log, id: generateId("log") }, ...prev.slice(0, 49)]);
-  }, []);
+const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
+
+export function useFleetData(idToken: string | null) {
+  const [selectedNodeId, setSelectedNodeId] = useState("node-01");
+  const [nodes, setNodes] = useState<FleetNode[]>([]);
+  const [telemetryHistory, setTelemetryHistory] = useState<Record<string, TelemetryPoint[]>>({});
+  const [logs, setLogs] = useState<ActionLogEntry[]>([]);
+  const [streamState, setStreamState] = useState<"waiting" | "connecting" | "connected" | "disconnected">("waiting");
+  const apiUrl = process.env.NEXT_PUBLIC_FLEET_API_URL?.replace(/\/$/, "");
+  const socketUrl = process.env.NEXT_PUBLIC_FLEET_WEBSOCKET_URL;
+
+  const fetchJson = useCallback(async (path: string) => {
+    if (!apiUrl || !idToken) throw new Error("Fleet API or Cognito session is not configured");
+    const response = await fetch(`${apiUrl}${path}`, {
+      headers: { authorization: `Bearer ${idToken}` },
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(`Fleet API returned ${response.status}`);
+    return response.json();
+  }, [apiUrl, idToken]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      const isAnomalyTrigger = Math.random() > 0.88;
+    if (!idToken || !apiUrl) return;
+    let cancelled = false;
+    Promise.all([fetchJson("/nodes"), fetchJson("/logs?limit=50")])
+      .then(([nodeResult, logResult]) => {
+        if (cancelled) return;
+        setNodes((nodeResult.nodes as ApiNode[]).map((node) => ({
+          id: node.id,
+          name: node.name ?? `ESP32 ${node.id}`,
+          status: node.status ?? "offline",
+          temperature: node.temperature ?? 0,
+          humidity: node.humidity ?? 0,
+          gasLevel: node.gasLevel ?? 0,
+          actuatorState: node.actuatorState ?? emptyActuatorState,
+          lastSeen: node.lastSeen ?? "No telemetry yet",
+        })));
+        setLogs((logResult.logs as ActionLogEntry[]).map((log) => ({ ...log, id: log.id ?? `${log.timestamp}-${log.nodeId}` })));
+      })
+      .catch((error) => console.error("Could not load FleetMind data", error));
+    return () => { cancelled = true; };
+  }, [idToken, apiUrl, fetchJson]);
 
-      setNodes((prevNodes) =>
-        prevNodes.map((node) => {
-          const isTargetNode = node.id === selectedNodeId;
-          const gasSpike = isTargetNode && isAnomalyTrigger ? 450 + Math.random() * 200 : 0;
-          const newGas = Math.round(280 + Math.random() * 40 + gasSpike);
-          const isAnomaly = newGas > 500;
+  useEffect(() => {
+    if (!idToken || !apiUrl || !socketUrl) {
+      setStreamState("waiting");
+      return;
+    }
+    let stopped = false;
+    let socket: WebSocket | undefined;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let retryDelay = 1000;
 
-          if (isAnomaly && isTargetNode) {
-            addLog({
-              timestamp: now,
-              nodeId: node.id,
-              eventType: "anomaly_detected",
-              message: `Isolation Forest flagged gas spike: ${newGas} PPM`,
-              source: "AWS Lambda ML",
-              severity: "critical",
-            });
-            addLog({
-              timestamp: now,
-              nodeId: node.id,
-              eventType: "actuator_command",
-              message: "AWS IoT Shadow updated: Relay ON (Exhaust Fan Actuated)",
-              source: "AWS IoT Core",
-              severity: "warning",
-            });
-          }
-
-          return {
-            ...node,
-            gasLevel: newGas,
-            temperature: +(node.temperature + (Math.random() - 0.5) * 0.4).toFixed(1),
-            humidity: +(node.humidity + (Math.random() - 0.5) * 0.6).toFixed(1),
-            actuatorState: {
-              relayActive: isAnomaly,
-              fanActive: isAnomaly,
-              buzzerActive: isAnomaly,
-            },
-            lastSeen: "Just now",
-          };
-        })
-      );
-
-      setTelemetryHistory((prev) => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach((id) => {
-          const currentNode = nodes.find((n) => n.id === id);
-          const gas = currentNode ? currentNode.gasLevel : 300;
-          const newPoint: TelemetryPoint = {
-            timestamp: now,
-            temperature: currentNode ? currentNode.temperature : 24,
-            humidity: currentNode ? currentNode.humidity : 50,
-            gasLevel: gas,
-            isAnomaly: gas > 500,
-          };
-          updated[id] = [...updated[id].slice(1), newPoint];
+    const connect = async () => {
+      if (stopped) return;
+      setStreamState("connecting");
+      try {
+        const ticketResponse = await fetch(`${apiUrl}/ws-ticket`, {
+          method: "POST",
+          headers: { authorization: `Bearer ${idToken}` },
         });
-        return updated;
-      });
-    }, 2500);
+        if (!ticketResponse.ok) throw new Error(`Could not authorize live stream (${ticketResponse.status})`);
+        const { ticket } = await ticketResponse.json() as { ticket: string };
+        if (stopped) return;
+        socket = new WebSocket(`${socketUrl}${socketUrl.includes("?") ? "&" : "?"}ticket=${encodeURIComponent(ticket)}`);
+        socket.onopen = () => { retryDelay = 1000; setStreamState("connected"); };
+        socket.onmessage = (event) => {
+          let message: StreamMessage;
+          try { message = JSON.parse(String(event.data)) as StreamMessage; } catch { return; }
+          if (message.type !== "telemetry" || !message.nodeId) return;
+          const time = new Date(message.timestamp);
+          const timestamp = Number.isNaN(time.getTime()) ? message.timestamp : time.toLocaleTimeString();
+          const point = {
+            timestamp,
+            temperature: message.temperature,
+            humidity: message.humidity,
+            gasLevel: message.gasLevel,
+            isAnomaly: message.isAnomaly === true,
+          };
+          setNodes((previous) => {
+            const exists = previous.some((node) => node.id === message.nodeId);
+            const updated = previous.map((node) => node.id === message.nodeId ? {
+              ...node,
+              status: "online" as const,
+              temperature: message.temperature,
+              humidity: message.humidity,
+              gasLevel: message.gasLevel,
+              actuatorState: message.actuatorState ?? node.actuatorState,
+              lastSeen: "Just now",
+            } : node);
+            return exists ? updated : [...updated, {
+              id: message.nodeId, name: `ESP32 ${message.nodeId}`, status: "online",
+              temperature: message.temperature, humidity: message.humidity, gasLevel: message.gasLevel,
+              actuatorState: message.actuatorState ?? emptyActuatorState, lastSeen: "Just now",
+            }];
+          });
+          setTelemetryHistory((previous) => ({
+            ...previous,
+            [message.nodeId]: [...(previous[message.nodeId] ?? []).slice(-49), point],
+          }));
+          const logEntry: ActionLogEntry = {
+            id: `${message.nodeId}-${message.eventId}-${message.timestamp}`,
+            timestamp,
+            nodeId: message.nodeId,
+            eventType: message.isAnomaly ? "anomaly_detected" : "telemetry",
+            message: message.isAnomaly ? `Anomaly detected: ${message.gasLevel} PPM` : `Live reading received: ${message.gasLevel} PPM gas`,
+            source: "AWS IoT Core",
+            severity: message.isAnomaly ? "warning" : "info",
+          };
+          setLogs((previous) => [logEntry, ...previous].slice(0, 50));
+        };
+        socket.onclose = () => {
+          if (stopped) return;
+          setStreamState("disconnected");
+          retryTimer = setTimeout(connect, retryDelay);
+          retryDelay = Math.min(retryDelay * 2, 30_000);
+        };
+        socket.onerror = () => socket?.close();
+      } catch (error) {
+        console.error("WebSocket connection failed", error);
+        setStreamState("disconnected");
+        if (!stopped) {
+          retryTimer = setTimeout(connect, retryDelay);
+          retryDelay = Math.min(retryDelay * 2, 30_000);
+        }
+      }
+    };
+    void connect();
+    return () => {
+      stopped = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      socket?.close();
+    };
+  }, [idToken, apiUrl, socketUrl]);
 
-    return () => clearInterval(interval);
-  }, [selectedNodeId, addLog, nodes]);
+  useEffect(() => {
+    if (!idToken || !apiUrl || !selectedNodeId) return;
+    let cancelled = false;
+    fetchJson(`/telemetry?nodeId=${encodeURIComponent(selectedNodeId)}&limit=50`)
+      .then((result) => {
+        if (cancelled) return;
+        const points = (result.data as Array<StreamMessage>).reverse().map((point) => ({
+          timestamp: new Date(point.timestamp).toLocaleTimeString(),
+          temperature: point.temperature,
+          humidity: point.humidity,
+          gasLevel: point.gasLevel,
+          isAnomaly: point.isAnomaly === true,
+        }));
+        setTelemetryHistory((previous) => previous[selectedNodeId]?.length ? previous : { ...previous, [selectedNodeId]: points });
+      })
+      .catch((error) => console.error("Could not load telemetry history", error));
+    return () => { cancelled = true; };
+  }, [idToken, apiUrl, selectedNodeId, fetchJson]);
 
   return {
     selectedNodeId,
     setSelectedNodeId,
     nodes,
-    selectedNode: nodes.find((n) => n.id === selectedNodeId) || nodes[0],
-    activeTelemetry: telemetryHistory[selectedNodeId] || [],
+    selectedNode: nodes.find((node) => node.id === selectedNodeId) ?? nodes[0],
+    activeTelemetry: telemetryHistory[selectedNodeId] ?? [],
     logs,
+    streamState,
   };
 }

@@ -8,6 +8,7 @@ import * as authorizers from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as iot from "aws-cdk-lib/aws-iot";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as logs from "aws-cdk-lib/aws-logs";
@@ -34,6 +35,15 @@ export class FleetMindStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // WebSocket connection IDs and one-use, short-lived tickets used during $connect.
+    const websocketTable = new dynamodb.Table(this, "WebSocketConnections", {
+      partitionKey: { name: "PK", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "SK", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      timeToLiveAttribute: "expiresAt",
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
@@ -135,6 +145,7 @@ export class FleetMindStack extends cdk.Stack {
       environment: {
         FLEET_TABLE_NAME: fleetTable.tableName,
         HISTORY_BUCKET_NAME: historyBucket.bucketName,
+        WEBSOCKET_TABLE_NAME: websocketTable.tableName,
         TELEMETRY_TTL_DAYS: "30",
       },
       logGroup: lambdaLogs,
@@ -149,6 +160,14 @@ export class FleetMindStack extends cdk.Stack {
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ["dynamodb:Query"],
       resources: [fleetTable.tableArn, `${fleetTable.tableArn}/index/*`],
+    }));
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["dynamodb:PutItem"],
+      resources: [websocketTable.tableArn],
+    }));
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["dynamodb:Query", "dynamodb:DeleteItem"],
+      resources: [websocketTable.tableArn],
     }));
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem"],
@@ -173,6 +192,7 @@ export class FleetMindStack extends cdk.Stack {
       { path: "/nodes", methods: [apigwv2.HttpMethod.GET] },
       { path: "/telemetry", methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST] },
       { path: "/logs", methods: [apigwv2.HttpMethod.GET] },
+      { path: "/ws-ticket", methods: [apigwv2.HttpMethod.POST] },
     ];
 
     for (const route of routes) {
@@ -186,6 +206,106 @@ export class FleetMindStack extends cdk.Stack {
       }
     }
 
+    const wsApi = new apigwv2.WebSocketApi(this, "TelemetryWebSocketApi", {
+      description: "Authenticated FleetMind real-time telemetry stream",
+      routeSelectionExpression: "$request.body.action",
+    });
+    const wsAuthorizerFn = new nodejs.NodejsFunction(this, "WebSocketTicketAuthorizer", {
+      entry: path.join(__dirname, "../lambda/index.ts"),
+      handler: "websocketAuthorizer",
+      runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(5),
+      environment: { WEBSOCKET_TABLE_NAME: websocketTable.tableName },
+      logGroup: new logs.LogGroup(this, "WebSocketAuthorizerLogs", {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+      bundling: { minify: true, sourceMap: true, target: "node22", externalModules: [] },
+    });
+    websocketTable.grant(wsAuthorizerFn, "dynamodb:DeleteItem");
+    const wsConnectFn = new nodejs.NodejsFunction(this, "WebSocketConnectHandler", {
+      entry: path.join(__dirname, "../lambda/index.ts"),
+      handler: "websocketConnect",
+      runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(5),
+      environment: { WEBSOCKET_TABLE_NAME: websocketTable.tableName },
+      logGroup: new logs.LogGroup(this, "WebSocketConnectLogs", {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+      bundling: { minify: true, sourceMap: true, target: "node22", externalModules: [] },
+    });
+    websocketTable.grant(wsConnectFn, "dynamodb:PutItem");
+    const wsDisconnectFn = new nodejs.NodejsFunction(this, "WebSocketDisconnectHandler", {
+      entry: path.join(__dirname, "../lambda/index.ts"),
+      handler: "websocketDisconnect",
+      runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 128,
+      timeout: cdk.Duration.seconds(5),
+      environment: { WEBSOCKET_TABLE_NAME: websocketTable.tableName },
+      logGroup: new logs.LogGroup(this, "WebSocketDisconnectLogs", {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+      bundling: { minify: true, sourceMap: true, target: "node22", externalModules: [] },
+    });
+    websocketTable.grant(wsDisconnectFn, "dynamodb:DeleteItem");
+
+    const cfnWsAuthorizer = new apigwv2.CfnAuthorizer(this, "FleetMindTicketAuthorizer", {
+      apiId: wsApi.apiId,
+      authorizerType: "REQUEST",
+      identitySource: ["route.request.querystring.ticket"],
+      name: "FleetMindTicketAuthorizer",
+      authorizerUri: `arn:${cdk.Aws.PARTITION}:apigateway:${cdk.Aws.REGION}:lambda:path/2015-03-31/functions/${wsAuthorizerFn.functionArn}/invocations`,
+      authorizerResultTtlInSeconds: 0,
+    });
+    wsAuthorizerFn.addPermission("AllowApiGatewayInvokeWebSocketAuthorizer", {
+      principal: new iam.ServicePrincipal("apigateway.amazonaws.com"),
+      sourceArn: cdk.Stack.of(this).formatArn({
+        service: "execute-api",
+        resource: wsApi.apiId,
+        resourceName: `authorizers/${cfnWsAuthorizer.ref}`,
+      }),
+    });
+    const wsRouteAuthorizer: apigwv2.IWebSocketRouteAuthorizer = {
+      bind: () => ({ authorizationType: "CUSTOM", authorizerId: cfnWsAuthorizer.ref }),
+    };
+    wsApi.addRoute("$connect", {
+      integration: new integrations.WebSocketLambdaIntegration("WebSocketConnectIntegration", wsConnectFn),
+      authorizer: wsRouteAuthorizer,
+    });
+    wsApi.addRoute("$disconnect", {
+      integration: new integrations.WebSocketLambdaIntegration("WebSocketDisconnectIntegration", wsDisconnectFn),
+    });
+    const wsStage = new apigwv2.WebSocketStage(this, "WebSocketProductionStage", {
+      webSocketApi: wsApi,
+      stageName: "prod",
+      autoDeploy: true,
+    });
+
+    // Convert the firmware's MQTT publication into the same validated ingestion path.
+    const telemetryRule = new iot.CfnTopicRule(this, "FleetMindTelemetryRule", {
+      ruleName: "FleetMindTelemetryToLambda",
+      topicRulePayload: {
+        sql: "SELECT * FROM 'fleetmind/+/telemetry'",
+        awsIotSqlVersion: "2016-03-23",
+        ruleDisabled: false,
+        actions: [{ lambda: { functionArn: handler.functionArn } }],
+      },
+    });
+    handler.addPermission("AllowIoTRuleInvoke", {
+      principal: new iam.ServicePrincipal("iot.amazonaws.com"),
+      sourceArn: telemetryRule.attrArn,
+    });
+
+    wsApi.grantManageConnections(handler);
+    handler.addEnvironment("WEBSOCKET_API_ENDPOINT", wsStage.callbackUrl);
+
     new cdk.CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });
     new cdk.CfnOutput(this, "UserPoolId", { value: userPool.userPoolId });
     new cdk.CfnOutput(this, "UserPoolClientId", { value: userPoolClient.userPoolClientId });
@@ -194,5 +314,7 @@ export class FleetMindStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, "FleetTableName", { value: fleetTable.tableName });
     new cdk.CfnOutput(this, "HistoryBucketName", { value: historyBucket.bucketName });
+    new cdk.CfnOutput(this, "WebSocketUrl", { value: wsStage.url });
+    new cdk.CfnOutput(this, "WebSocketTicketUrl", { value: `${api.apiEndpoint}/ws-ticket` });
   }
 }
