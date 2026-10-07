@@ -146,22 +146,40 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 bool connectWifiAndTime() {
-  if (WiFi.status() == WL_CONNECTED) return true;
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  uint32_t startedAt = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - startedAt < 15000) {
-    vTaskDelay(pdMS_TO_TICKS(250));
-  }
-  if (WiFi.status() != WL_CONNECTED) return false;
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.printf("[WiFi] Connecting to SSID '%s'...\n", WIFI_SSID);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    uint32_t startedAt = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - startedAt < 15000) {
+      vTaskDelay(pdMS_TO_TICKS(250));
+    }
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.printf("[WiFi] Connection failed; status=%d. Retrying later.\n", WiFi.status());
+      return false;
+    }
 
-  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
-  time_t now = 0;
-  for (int attempts = 0; now < 1700000000 && attempts < 40; attempts++) {
-    vTaskDelay(pdMS_TO_TICKS(250));
-    time(&now);
+    Serial.printf("[WiFi] Connected. IP=%s, RSSI=%d dBm\n",
+                  WiFi.localIP().toString().c_str(), WiFi.RSSI());
   }
-  return now >= 1700000000;
+
+  time_t now = 0;
+  time(&now);
+  if (now < 1700000000) {
+    Serial.println("[Time] Clock is not synchronized; requesting network time from NTP servers...");
+    configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+    for (int attempts = 0; now < 1700000000 && attempts < 60; attempts++) {
+      vTaskDelay(pdMS_TO_TICKS(250));
+      time(&now);
+    }
+  }
+  if (now < 1700000000) {
+    Serial.printf("[Time] NTP sync failed (clock epoch=%lu); TLS needs valid time. Check hotspot internet/DNS/NTP access.\n",
+                  static_cast<unsigned long>(now));
+    return false;
+  }
+  Serial.printf("[Time] Clock is valid (epoch=%lu).\n", static_cast<unsigned long>(now));
+  return true;
 }
 
 void TaskWiFiMQTT(void* parameter) {
@@ -171,10 +189,13 @@ void TaskWiFiMQTT(void* parameter) {
   mqtt.setServer(AWS_IOT_ENDPOINT, AWS_IOT_PORT);
   mqtt.setCallback(mqttCallback);
   mqtt.setBufferSize(512);
+  Serial.printf("[MQTT] AWS IoT endpoint: %s:%d\n", AWS_IOT_ENDPOINT, AWS_IOT_PORT);
 
   uint32_t retryDelayMs = 1000;
   for (;;) {
     if (!connectWifiAndTime()) {
+      Serial.printf("[Network] Retrying Wi-Fi/time in %lu ms.\n",
+                    static_cast<unsigned long>(retryDelayMs));
       vTaskDelay(pdMS_TO_TICKS(retryDelayMs));
       retryDelayMs = retryDelayMs >= 15000U ? 30000U : retryDelayMs * 2U;
       continue;
@@ -189,15 +210,23 @@ void TaskWiFiMQTT(void* parameter) {
       bool connected = mqtt.connect(NODE_ID, TOPIC_STATUS, 1, true, lwtPayload);
       xSemaphoreGive(mqttMutex);
       if (!connected) {
+        Serial.printf("[MQTT] Connect failed; PubSubClient state=%d. Check endpoint, certificate, policy, Thing/client ID, and outbound port 8883.\n",
+                      mqtt.state());
+        Serial.printf("[MQTT] Retrying in %lu ms.\n",
+                      static_cast<unsigned long>(retryDelayMs));
         vTaskDelay(pdMS_TO_TICKS(retryDelayMs));
         retryDelayMs = retryDelayMs >= 15000U ? 30000U : retryDelayMs * 2U;
         continue;
       }
+      Serial.printf("[MQTT] Connected to AWS IoT as Thing/client '%s'.\n", NODE_ID);
       retryDelayMs = 1000;
       xSemaphoreTake(mqttMutex, portMAX_DELAY);
-      mqtt.subscribe(TOPIC_COMMAND, 1);
-      mqtt.subscribe(TOPIC_SHADOW_DELTA, 1);
+      bool commandSubscribed = mqtt.subscribe(TOPIC_COMMAND, 1);
+      bool shadowSubscribed = mqtt.subscribe(TOPIC_SHADOW_DELTA, 1);
       xSemaphoreGive(mqttMutex);
+      Serial.printf("[MQTT] Command subscription: %s; shadow subscription: %s.\n",
+                    commandSubscribed ? "ok" : "failed",
+                    shadowSubscribed ? "ok" : "failed");
       publishShadowReported();
     }
     xSemaphoreTake(mqttMutex, portMAX_DELAY);
