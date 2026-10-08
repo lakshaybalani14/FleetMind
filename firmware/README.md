@@ -42,7 +42,7 @@ The project pins `espressif32@6.7.0`, which uses Arduino-ESP32 2.x. If you delib
 | `$aws/things/{nodeId}/shadow/update/delta` | AWS → device | Shadow desired-state delta: `{"state":{"relayOn":true,"actionId":"uuid"}}`. |
 | `$aws/things/{nodeId}/shadow/update` | device → AWS | Reported relay/fan state. |
 
-The cloud ingestion Lambda should translate `temperatureC`, `humidityPct`, and `gasPpmEstimate` into the dashboard's `temperature`, `humidity`, and `gasLevel` fields. A `timestamp` value of `0` means NTP was not yet available; the cloud must use its receipt time in that case.
+The cloud ingestion Lambda translates `temperatureC`, `humidityPct`, and `gasPpmEstimate` into the dashboard's `temperature`, `humidity`, and `gasLevel` fields. A `timestamp` value of `0` means NTP was not yet available; the cloud uses its receipt time in that case.
 
 ## AWS IoT policy requirements
 
@@ -53,7 +53,7 @@ Give each Thing certificate only the minimum rights to connect as its own client
 | Task | Priority/core | Responsibility |
 | --- | --- | --- |
 | `TaskWiFiMQTT` | 3 / 0 | Connects Wi-Fi and TLS MQTT, synchronizes time, receives MQTT packets, and reconnects with exponential backoff. |
-| `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds and uses threshold/delta edge filtering before queuing telemetry. |
+| `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds and uses threshold/delta edge filtering before queuing telemetry; unchanged readings are sent at most every 30 seconds. |
 | `TaskPublish` | 2 / 1 | Serializes queued telemetry as JSON and publishes it without slowing sampling. |
 | `TaskActuator` | 2 / 1 | Applies cloud commands, then emits an acknowledgement and shadow report. |
 | `TaskHeartbeat` | 1 / 1 | Publishes retained connectivity state and feeds the watchdog. |
@@ -64,4 +64,5 @@ GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate 
 
 - MQ-2 PPM is an estimate, not a calibrated gas measurement. Calibrate its resistance curve and account for warm-up time before claiming PPM accuracy.
 - The source does not store unsent telemetry durably. Add LittleFS/NVS buffering if offline data retention is required.
-- Build the AWS IoT rule, Lambda validation/storage, anomaly service, and dashboard websocket/API integration separately; this firmware provides their topic and payload contract but cannot create those cloud resources.
+- Live `node-01` telemetry is currently routed to Lambda and displayed through the authenticated dashboard WebSocket. The IoT rule currently handles the telemetry topic only; the separate retained status heartbeat and Last Will topic are not yet forwarded to the dashboard backend.
+- For quicker chart updates, reduce `MAX_TELEMETRY_SILENCE_MS` in `src/fleetmind_node_firmware.ino`, rebuild, and upload. For prompt offline/online and relay-state updates, add a status-topic IoT rule and implement corresponding Lambda and frontend message handling. Track these steps in [`../docs/live-testing-log.md`](../docs/live-testing-log.md).

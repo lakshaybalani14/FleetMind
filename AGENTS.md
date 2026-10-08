@@ -46,6 +46,7 @@ When you need to do an inventory of resources, you need to look in both the sele
 - help_level: MEDIUM, selected by the user. Do not ask again unless the user wants to change it.
 - After each task is completed, explain what was done and what the relevant files, code sections, or AWS resources do, at a medium level of detail: clear enough to understand the result, without the step-by-step depth and trade-off discussion expected at HIGH.
 - Do not pause for routine check-ins or ask the user to reconfirm this explanation preference. Ask only when an actual ambiguity, safety issue, or required user action prevents progress.
+- When the user says a work session will continue later (for example, "tomorrow"), prepare a handoff: verify the task-related worktree changes, update the relevant README files and live-testing/session log with current status and next build steps, commit the task-related changes with a descriptive message, and push them to the configured GitHub remote. Keep unrelated user changes out of the commit and report what was pushed, what remains local, and where work should resume.
 
 You CAN update this rule file to save a user's help_level.
 

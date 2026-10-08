@@ -1,5 +1,20 @@
 # FleetMind cloud backend
 
+## Current live-test status
+
+The HTTP API, Cognito authentication, WebSocket API, telemetry Lambda, DynamoDB,
+S3, and AWS IoT telemetry rule have been configured manually in
+`ap-southeast-2`. The ESP32-to-storage path and authenticated dashboard stream
+have been exercised. A `403 AccessDeniedException` on WebSocket callback delivery
+was fixed by scoping the Lambda role's `execute-api:ManageConnections` permission
+to the WebSocket API's `POST/@connections/*` connection path.
+
+The CDK stack below documents the intended infrastructure as code; it is not
+confirmed to be the source of the existing console-created resources. In
+particular, compare the synthesized template with the live resources before
+deploying, so CDK does not create duplicates or replace manually configured
+resources.
+
 This CDK stack provides the authenticated dashboard API and a real-time telemetry stream. It adds an AWS IoT Core rule for the existing firmware topic `fleetmind/<nodeId>/telemetry`; it does not create or change Things, certificates, or device policies.
 
 ## What this stack creates
@@ -67,11 +82,19 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 ## Remaining cloud work
 
-1. Review the synthesized infrastructure and cost footprint, then explicitly approve deployment.
-2. Deploy to the selected Region and create the first Cognito dashboard user.
-3. Create a verified Cognito dashboard user and set the frontend environment values from stack outputs.
-4. Test the WebSocket stream with the ESP32 publishing valid JSON to `fleetmind/node-01/telemetry`.
-5. Build and deploy the anomaly-detection service and connect its result to stored events.
-6. Add a controlled automation/command workflow and alarms, then choose frontend hosting (Amplify or CloudFront/S3).
+1. Add a separate AWS IoT rule for `fleetmind/+/status`; keep the telemetry rule enabled.
+2. Extend the ingestion Lambda to handle status heartbeat and Last Will payloads,
+   update node/relay state, and broadcast status over WebSocket.
+3. Update the dashboard so online/offline and relay status change from those
+   status events, and old actuator values are identified as stale when offline.
+4. Consider reducing the firmware's 30-second maximum telemetry quiet interval
+   to around 10 seconds, then rebuild and upload the firmware.
+5. Re-test normal telemetry, disconnect, reconnect, and relay changes. See
+   [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
+6. After the live path is stable, continue with anomaly detection, controlled
+   command/automation flows, alarms, and frontend hosting.
 
-Firmware Thing/certificate provisioning, IoT Core shadows, downlink automation, anomaly detection, and frontend hosting remain separate follow-up work.
+The device Thing/certificate and firmware shadow/downlink hooks exist for the
+current prototype; a complete dashboard command workflow is still future work.
+Production-grade fleet provisioning, robust offline buffering, anomaly
+detection, automation hardening, and frontend hosting also remain future work.
