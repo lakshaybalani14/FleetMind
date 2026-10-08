@@ -1,5 +1,7 @@
 export interface TelemetryPoint {
+  eventId?: string;
   timestamp: string;
+  timestampMs: number;
   temperature: number;
   humidity: number;
   gasLevel: number;

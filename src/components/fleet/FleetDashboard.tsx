@@ -13,7 +13,7 @@ export default function FleetDashboard() {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [authError, setAuthError] = useState("");
-  const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState } = useFleetData(idToken);
+  const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState, telemetryAge } = useFleetData(idToken);
 
   useEffect(() => {
     setIdToken(getCognitoIdToken());
@@ -90,16 +90,20 @@ export default function FleetDashboard() {
           status={selectedNode.actuatorState.relayActive ? "warning" : "neutral"}
         />
         <StatusTile
-          title="Node Connectivity"
+          title="Device Telemetry"
           value={selectedNode.status.toUpperCase()}
-          subText={`AWS MQTT connected`}
-          status="success"
+          subText={telemetryAge}
+          status={selectedNode.status === "online" ? "success" : selectedNode.status === "degraded" ? "warning" : "danger"}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <TelemetryChart data={activeTelemetry} nodeName={selectedNode.name} />
+          <TelemetryChart
+            data={activeTelemetry}
+            nodeName={selectedNode.name}
+            isLive={streamState === "connected" && selectedNode.status === "online"}
+          />
         </div>
         <div className="lg:col-span-1">
           <ActionLog logs={logs} />

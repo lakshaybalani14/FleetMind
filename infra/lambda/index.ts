@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { createHmac } from "node:crypto";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { DynamoDBDocumentClient, DeleteCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
@@ -14,6 +14,12 @@ const bucketName = process.env.HISTORY_BUCKET_NAME;
 const websocketTableName = process.env.WEBSOCKET_TABLE_NAME;
 const websocketEndpoint = process.env.WEBSOCKET_API_ENDPOINT;
 const ttlDays = Number(process.env.TELEMETRY_TTL_DAYS ?? "30");
+const websocketManagementClient = websocketEndpoint && process.env.AWS_REGION
+  ? new ApiGatewayManagementApiClient({
+      endpoint: websocketEndpoint.replace(/^wss:/, "https:"),
+      region: process.env.AWS_REGION,
+    })
+  : undefined;
 
 interface TelemetryInput {
   readonly eventId: string;
@@ -184,80 +190,82 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Promise<void> {
   if (!tableName || !bucketName || !websocketTableName) throw new Error("Backend configuration is incomplete");
   const timestamp = telemetry.timestamp;
-    const date = new Date(timestamp);
-    const expiresAt = Math.floor(date.getTime() / 1000) + ttlDays * 24 * 60 * 60;
-    const digest = createHash("sha256")
-      .update(`${telemetry.nodeId}:${timestamp}:${telemetry.eventId}`)
-      .digest("hex");
-    const item = {
-      PK: `NODE#${telemetry.nodeId}`,
-      SK: `TELEMETRY#${timestamp}#${telemetry.eventId}`,
-      ...telemetry,
-      expiresAt,
-    };
-    const log = {
-      PK: "FLEET",
-      SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}`,
-      id: digest.slice(0, 24),
-      timestamp,
-      nodeId: telemetry.nodeId,
-      eventType: "telemetry",
-      message: `Telemetry received: ${telemetry.gasLevel} PPM gas, ${telemetry.temperature}°C`,
-      source,
-      severity: telemetry.isAnomaly ? "warning" : "info",
-      expiresAt,
-    };
-    const latestNode = {
-      PK: "FLEET",
-      SK: `NODE#${telemetry.nodeId}`,
-      id: telemetry.nodeId,
-      name: `ESP32 ${telemetry.nodeId}`,
-      status: "online",
-      temperature: telemetry.temperature,
-      humidity: telemetry.humidity,
-      gasLevel: telemetry.gasLevel,
-      ...(telemetry.actuatorState ? { actuatorState: telemetry.actuatorState } : {}),
-      lastSeen: timestamp,
-    };
-    const objectKey = `telemetry/${date.getUTCFullYear()}/${String(date.getUTCMonth() + 1).padStart(2, "0")}/${String(date.getUTCDate()).padStart(2, "0")}/${telemetry.nodeId}/${digest}.json`;
+  const receivedAt = new Date().toISOString();
+  const date = new Date(timestamp);
+  const expiresAt = Math.floor(date.getTime() / 1000) + ttlDays * 24 * 60 * 60;
+  const digest = createHash("sha256")
+    .update(`${telemetry.nodeId}:${timestamp}:${telemetry.eventId}`)
+    .digest("hex");
+  const item = {
+    PK: `NODE#${telemetry.nodeId}`,
+    SK: `TELEMETRY#${timestamp}#${telemetry.eventId}`,
+    ...telemetry,
+    receivedAt,
+    expiresAt,
+  };
+  const log = {
+    PK: "FLEET",
+    SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}`,
+    id: digest.slice(0, 24),
+    timestamp,
+    nodeId: telemetry.nodeId,
+    eventType: "telemetry",
+    message: `Telemetry received: ${telemetry.gasLevel} PPM gas, ${telemetry.temperature}°C`,
+    source,
+    severity: telemetry.isAnomaly ? "warning" : "info",
+    expiresAt,
+  };
+  const latestNode = {
+    PK: "FLEET",
+    SK: `NODE#${telemetry.nodeId}`,
+    id: telemetry.nodeId,
+    name: `ESP32 ${telemetry.nodeId}`,
+    status: "online",
+    temperature: telemetry.temperature,
+    humidity: telemetry.humidity,
+    gasLevel: telemetry.gasLevel,
+    ...(telemetry.actuatorState ? { actuatorState: telemetry.actuatorState } : {}),
+    lastSeen: receivedAt,
+  };
+  const objectKey = `telemetry/${date.getUTCFullYear()}/${String(date.getUTCMonth() + 1).padStart(2, "0")}/${String(date.getUTCDate()).padStart(2, "0")}/${telemetry.nodeId}/${digest}.json`;
 
-    const updateLatestNode = async (): Promise<void> => {
-      const actuatorAssignment = telemetry.actuatorState ? ", actuatorState = :actuatorState" : "";
-      const expressionValues: Record<string, unknown> = {
-        ":name": latestNode.name,
-        ":status": latestNode.status,
-        ":temperature": latestNode.temperature,
-        ":humidity": latestNode.humidity,
-        ":gasLevel": latestNode.gasLevel,
-        ":lastSeen": latestNode.lastSeen,
-      };
-      if (telemetry.actuatorState) expressionValues[":actuatorState"] = telemetry.actuatorState;
-
-      try {
-        await ddb.send(new UpdateCommand({
-          TableName: tableName,
-          Key: { PK: "FLEET", SK: `NODE#${telemetry.nodeId}` },
-          UpdateExpression: `SET #name = :name, #status = :status, temperature = :temperature, humidity = :humidity, gasLevel = :gasLevel, lastSeen = :lastSeen${actuatorAssignment}`,
-          ConditionExpression: "attribute_not_exists(lastSeen) OR lastSeen <= :lastSeen",
-          ExpressionAttributeNames: { "#name": "name", "#status": "status" },
-          ExpressionAttributeValues: expressionValues,
-        }));
-      } catch (error) {
-        if (!(error instanceof Error) || error.name !== "ConditionalCheckFailedException") throw error;
-      }
+  const updateLatestNode = async (): Promise<void> => {
+    const actuatorAssignment = telemetry.actuatorState ? ", actuatorState = :actuatorState" : "";
+    const expressionValues: Record<string, unknown> = {
+      ":name": latestNode.name,
+      ":status": latestNode.status,
+      ":temperature": latestNode.temperature,
+      ":humidity": latestNode.humidity,
+      ":gasLevel": latestNode.gasLevel,
+      ":lastSeen": latestNode.lastSeen,
     };
+    if (telemetry.actuatorState) expressionValues[":actuatorState"] = telemetry.actuatorState;
 
-    await Promise.all([
-      ddb.send(new PutCommand({ TableName: tableName, Item: item })),
-      ddb.send(new PutCommand({ TableName: tableName, Item: log })),
-      updateLatestNode(),
-      s3.send(new PutObjectCommand({
-        Bucket: bucketName,
-        Key: objectKey,
-        Body: JSON.stringify({ ...telemetry, receivedAt: new Date().toISOString() }),
-        ContentType: "application/json",
-      })),
-    ]);
+    try {
+      await ddb.send(new UpdateCommand({
+        TableName: tableName,
+        Key: { PK: "FLEET", SK: `NODE#${telemetry.nodeId}` },
+        UpdateExpression: `SET #name = :name, #status = :status, temperature = :temperature, humidity = :humidity, gasLevel = :gasLevel, lastSeen = :lastSeen${actuatorAssignment}`,
+        ConditionExpression: "attribute_not_exists(lastSeen) OR lastSeen <= :lastSeen",
+        ExpressionAttributeNames: { "#name": "name", "#status": "status" },
+        ExpressionAttributeValues: expressionValues,
+      }));
+    } catch (error) {
+      if (!(error instanceof Error) || error.name !== "ConditionalCheckFailedException") throw error;
+    }
+  };
+
+  await Promise.all([
+    ddb.send(new PutCommand({ TableName: tableName, Item: item })),
+    ddb.send(new PutCommand({ TableName: tableName, Item: log })),
+    updateLatestNode(),
+    s3.send(new PutObjectCommand({
+      Bucket: bucketName,
+      Key: objectKey,
+      Body: JSON.stringify({ ...telemetry, receivedAt }),
+      ContentType: "application/json",
+    })),
+  ]);
   await broadcastTelemetry({ type: "telemetry", ...telemetry });
 }
 
@@ -270,12 +278,15 @@ function parseDeviceTelemetry(record: Record<string, unknown>): TelemetryInput |
   const gasLevel = record.gasPpmEstimate;
   if (
     record.sensorValid !== true || typeof nodeId !== "string" ||
-    !Number.isInteger(sequence) || typeof timestampValue !== "number" ||
+    !Number.isInteger(sequence) || typeof timestampValue !== "number" || !Number.isFinite(timestampValue) ||
     !Number.isFinite(temperature) || !Number.isFinite(humidity) || !Number.isFinite(gasLevel)
   ) return undefined;
+  const timestamp = timestampValue > 0
+    ? new Date(timestampValue * 1000).toISOString()
+    : new Date().toISOString();
   return parseTelemetry(JSON.stringify({
     eventId: String(sequence), nodeId,
-    timestamp: new Date(timestampValue * 1000).toISOString(),
+    timestamp,
     temperature, humidity, gasLevel,
     isAnomaly: record.isAnomaly === true,
     actuatorState: { relayActive: record.relayOn === true, fanActive: record.relayOn === true, buzzerActive: false },
@@ -296,55 +307,33 @@ async function broadcastTelemetry(payload: unknown): Promise<void> {
       const connectionId = connection.connectionId;
       if (typeof connectionId !== "string") return;
       try {
-        const result = await postToWebSocket(connectionId, JSON.stringify(payload));
-        if (result.status === 410) {
-          await ddb.send(new DeleteCommand({ TableName: websocketTableName, Key: { PK: "CONNECTION", SK: connectionId } }));
-        } else if (!result.ok) {
-          console.error("WebSocket delivery failed", { connectionId, status: result.status });
-        }
+        await postToWebSocket(connectionId, JSON.stringify(payload));
       } catch (error) {
-        console.error("WebSocket delivery failed", { connectionId, error });
+        const status = typeof error === "object" && error !== null && "$metadata" in error
+          ? (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode
+          : undefined;
+        if (status === 410 || (error instanceof Error && error.name === "GoneException")) {
+          await ddb.send(new DeleteCommand({ TableName: websocketTableName, Key: { PK: "CONNECTION", SK: connectionId } }));
+        } else {
+          console.error("WebSocket delivery failed", {
+            connectionId,
+            status,
+            errorName: error instanceof Error ? error.name : "UnknownError",
+            errorMessage: error instanceof Error ? error.message : String(error),
+          });
+        }
       }
     }));
     lastKey = page.LastEvaluatedKey;
   } while (lastKey);
 }
 
-async function postToWebSocket(connectionId: string, body: string): Promise<Response> {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const sessionToken = process.env.AWS_SESSION_TOKEN;
-  const region = process.env.AWS_REGION;
-  if (!accessKeyId || !secretAccessKey || !sessionToken || !region || !websocketEndpoint) {
-    throw new Error("Lambda execution credentials or WebSocket endpoint are unavailable");
-  }
-  const endpoint = new URL(websocketEndpoint.replace(/^wss:/, "https:"));
-  const path = `${endpoint.pathname.replace(/\/$/, "")}/@connections/${encodeURIComponent(connectionId)}`;
-  const host = endpoint.host;
-  const now = new Date();
-  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
-  const dateStamp = amzDate.slice(0, 8);
-  const payloadHash = createHash("sha256").update(body).digest("hex");
-  const canonicalHeaders = `content-type:application/json\nhost:${host}\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\nx-amz-security-token:${sessionToken}\n`;
-  const signedHeaders = "content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token";
-  const canonicalRequest = `POST\n${path}\n\n${canonicalHeaders}${signedHeaders}\n${payloadHash}`;
-  const scope = `${dateStamp}/${region}/execute-api/aws4_request`;
-  const stringToSign = `AWS4-HMAC-SHA256\n${amzDate}\n${scope}\n${createHash("sha256").update(canonicalRequest).digest("hex")}`;
-  const hmac = (key: Buffer | string, value: string) => createHmac("sha256", key).update(value).digest();
-  const signingKey = hmac(hmac(hmac(hmac(`AWS4${secretAccessKey}`, dateStamp), region), "execute-api"), "aws4_request");
-  const signature = createHmac("sha256", signingKey).update(stringToSign).digest("hex");
-  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
-  return fetch(`https://${host}${path}`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-amz-content-sha256": payloadHash,
-      "x-amz-date": amzDate,
-      "x-amz-security-token": sessionToken,
-      authorization,
-    },
-    body,
-  });
+async function postToWebSocket(connectionId: string, body: string): Promise<void> {
+  if (!websocketManagementClient) throw new Error("WebSocket management client is not configured");
+  await websocketManagementClient.send(new PostToConnectionCommand({
+    ConnectionId: connectionId,
+    Data: Buffer.from(body),
+  }));
 }
 
 interface WsEvent {

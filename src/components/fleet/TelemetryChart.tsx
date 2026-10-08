@@ -7,9 +7,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 interface Props {
   data: TelemetryPoint[];
   nodeName: string;
+  isLive: boolean;
 }
 
-export function TelemetryChart({ data, nodeName }: Props) {
+export function TelemetryChart({ data, nodeName, isLive }: Props) {
   const [metric, setMetric] = useState<"gasLevel" | "temperature">("gasLevel");
   const hasAnomaly = data.some((d) => d.isAnomaly);
 
@@ -36,10 +37,10 @@ export function TelemetryChart({ data, nodeName }: Props) {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className={`h-2 w-2 rounded-full ${isLive ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`} />
               <CardTitle>{nodeName}</CardTitle>
             </div>
-            <CardDescription>Real-time Telemetry Analytics Feed</CardDescription>
+            <CardDescription>{isLive ? "Live telemetry updates active" : "Waiting for live telemetry updates"}</CardDescription>
           </div>
           <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
             <button
@@ -74,11 +75,22 @@ export function TelemetryChart({ data, nodeName }: Props) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-              <XAxis dataKey="timestamp" stroke="#71717a" fontSize={11} tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="timestampMs"
+                type="number"
+                scale="time"
+                domain={["dataMin", "dataMax"]}
+                tickFormatter={(value: number) => new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                stroke="#71717a"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
               <YAxis stroke="#71717a" fontSize={11} tickLine={false} axisLine={false} />
               <Tooltip
                 contentStyle={{ backgroundColor: "#18181b", borderColor: "#27272a", borderRadius: "12px", color: "#f4f4f5" }}
                 labelStyle={{ color: "#a1a1aa", fontSize: "12px" }}
+                labelFormatter={(value) => new Date(Number(value)).toLocaleString()}
               />
               {config.threshold && (
                 <ReferenceLine
@@ -88,7 +100,7 @@ export function TelemetryChart({ data, nodeName }: Props) {
                   label={{ value: `Threshold (${config.threshold} ${config.unit})`, fill: "#ef4444", fontSize: 10, position: "insideTopRight" }}
                 />
               )}
-              <Area type="monotone" dataKey={metric} stroke={config.color} strokeWidth={2.5} fillOpacity={1} fill="url(#metricGradient)" isAnimationActive={false} />
+              <Area type="monotone" dataKey={metric} stroke={config.color} strokeWidth={2.5} fillOpacity={1} fill="url(#metricGradient)" isAnimationActive animationDuration={250} animationEasing="ease-out" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

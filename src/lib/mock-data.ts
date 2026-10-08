@@ -27,17 +27,17 @@ export function generateInitialTelemetry(nodeId: string): TelemetryPoint[] {
   const baseTemp = nodeId === "node-01" ? 23.5 : 25.0;
   const baseHumidity = nodeId === "node-01" ? 45 : 50;
   const baseGas = nodeId === "node-01" ? 300 : 280;
-  return Array.from({ length: 15 }, (_, i) => ({
-    timestamp: new Date(Date.now() - (15 - i) * 3000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    }),
-    temperature: baseTemp + Math.random() * 1.5,
-    humidity: baseHumidity + Math.random() * 5,
-    gasLevel: baseGas + Math.random() * 30,
-    isAnomaly: false,
-  }));
+  return Array.from({ length: 15 }, (_, i) => {
+    const timestampMs = Date.now() - (15 - i) * 3000;
+    return {
+      timestamp: new Date(timestampMs).toISOString(),
+      timestampMs,
+      temperature: baseTemp + Math.random() * 1.5,
+      humidity: baseHumidity + Math.random() * 5,
+      gasLevel: baseGas + Math.random() * 30,
+      isAnomaly: false,
+    };
+  });
 }
 
 export const INITIAL_LOGS: ActionLogEntry[] = [
