@@ -20,6 +20,7 @@ export interface FleetNode {
     fanActive: boolean;
     buzzerActive: boolean;
   };
+  actuatorStateStale?: boolean;
   lastSeen: string;
 }
 

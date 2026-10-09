@@ -85,9 +85,13 @@ export default function FleetDashboard() {
         />
         <StatusTile
           title="Actuator State"
-          value={selectedNode.actuatorState.relayActive ? "Relay Active" : "Relay Idle"}
-          subText={selectedNode.actuatorState.fanActive ? "Exhaust Fan Running" : "Standby Mode"}
-          status={selectedNode.actuatorState.relayActive ? "warning" : "neutral"}
+          value={selectedNode.actuatorStateStale
+            ? `Last known: Relay ${selectedNode.actuatorState.relayActive ? "Active" : "Idle"}`
+            : selectedNode.actuatorState.relayActive ? "Relay Active" : "Relay Idle"}
+          subText={selectedNode.actuatorStateStale
+            ? "Device offline — actuator state may have changed"
+            : selectedNode.actuatorState.fanActive ? "Exhaust Fan Running" : "Standby Mode"}
+          status={selectedNode.actuatorStateStale ? "warning" : selectedNode.actuatorState.relayActive ? "warning" : "neutral"}
         />
         <StatusTile
           title="Device Telemetry"

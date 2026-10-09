@@ -36,7 +36,7 @@
 
 #define SAMPLE_INTERVAL_MS 2000UL
 #define HEARTBEAT_INTERVAL_MS 15000UL
-#define MAX_TELEMETRY_SILENCE_MS 30000UL
+#define MAX_TELEMETRY_SILENCE_MS SAMPLE_INTERVAL_MS
 #define GAS_DELTA_PPM 20.0f
 #define TEMP_DELTA_C 0.5f
 #define HUMIDITY_DELTA_PCT 3.0f
@@ -120,6 +120,19 @@ void publishActuatorEvent(const ActuatorCommand& command, const char* result) {
   document["result"] = result;
   document["timestamp"] = epochSeconds();
   publishJson(TOPIC_EVENT, document);
+}
+
+void publishDeviceStatus() {
+  // Push relay changes now instead of waiting for the periodic heartbeat.
+  StaticJsonDocument<256> document;
+  document["nodeId"] = NODE_ID;
+  document["online"] = mqtt.connected();
+  document["rssi"] = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : 0;
+  document["uptimeMs"] = millis();
+  document["relayOn"] = relayOn;
+  document["commandQueueOverflow"] = commandQueueOverflow;
+  publishJson(TOPIC_STATUS, document, true);
+  commandQueueOverflow = false;
 }
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
@@ -263,8 +276,8 @@ void TaskSensorRead(void* parameter) {
     data.anomaly = data.gasPpmEstimate >= GAS_ANOMALY_PPM ||
                    (dhtValid && data.temperatureC >= TEMP_ANOMALY_C);
 
-    // Edge filtering: publish the first sample, a state/value change, or a
-    // periodic proof-of-life. Raw readings still happen every two seconds.
+    // Publish meaningful changes immediately; unchanged readings are still
+    // sent at the sample cadence so the dashboard graph stays current.
     bool shouldQueue = !hasLastQueued || isMeaningfulChange(data, lastQueued) ||
                        millis() - lastQueuedAt >= MAX_TELEMETRY_SILENCE_MS;
     if (shouldQueue && xQueueSend(telemetryQueue, &data, 0) == pdTRUE) {
@@ -304,21 +317,14 @@ void TaskActuator(void* parameter) {
     setRelay(command.relayOn);
     publishActuatorEvent(command, "applied");
     publishShadowReported(command.actionId);
+    publishDeviceStatus();
   }
 }
 
 void TaskHeartbeat(void* parameter) {
   esp_task_wdt_add(NULL);
   for (;;) {
-    StaticJsonDocument<256> document;
-    document["nodeId"] = NODE_ID;
-    document["online"] = mqtt.connected();
-    document["rssi"] = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : 0;
-    document["uptimeMs"] = millis();
-    document["relayOn"] = relayOn;
-    document["commandQueueOverflow"] = commandQueueOverflow;
-    publishJson(TOPIC_STATUS, document, true);
-    commandQueueOverflow = false;
+    publishDeviceStatus();
     esp_task_wdt_reset();
     vTaskDelay(pdMS_TO_TICKS(HEARTBEAT_INTERVAL_MS));
   }

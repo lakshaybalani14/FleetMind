@@ -5,7 +5,7 @@ resources, what problems were found, and what remains for the next live test.
 Do not put private keys, device certificates, Cognito tokens, or full WebSocket
 connection IDs in this log.
 
-## Current status — 2026-10-09
+## Current status — 2026-10-10
 
 - The ESP32 connected to AWS IoT Core and telemetry was visible in the MQTT test
   client.
@@ -23,10 +23,22 @@ connection IDs in this log.
   `PK=FLEET`, `SK=NODE#node-01` showed the expected online status, `lastSeen`,
   RSSI, uptime, and command-queue flag. The Lambda also broadcasts a distinct
   `node-status` WebSocket event.
-- The remaining board-free live-dashboard task is to consume `node-status`
-  events in the frontend so online/offline and stale actuator state change
-  without a page reload. This is separate from the queued anomaly-service work;
-  see [`anomaly-service-plan.md`](anomaly-service-plan.md).
+- The frontend now handles `node-status` WebSocket events in source, including
+  online/offline and stale relay-state display. TypeScript validation passed;
+  live browser event validation remains.
+- Local firmware source now publishes unchanged readings every two seconds
+  (matching its sensor sample cadence), publishes meaningful changes as soon as
+  sampled, and publishes retained relay/node status immediately after a relay
+  command. The board must be reflashed before these changes are active.
+- Local telemetry Lambda source now starts WebSocket delivery concurrently with
+  DynamoDB/S3 persistence instead of waiting for all writes first. This source
+  change only affects AWS after it is uploaded to the telemetry Lambda.
+- The user reports the latest live test now behaves as specified. The updated
+  telemetry cadence and status updates are working; exact end-to-end latency
+  measurements have not yet been recorded. The user’s report indicates the
+  updated live path was applied for this test.
+- These dashboard/latency tasks are separate from the queued anomaly-service
+  work; see [`anomaly-service-plan.md`](anomaly-service-plan.md).
 - Leaving the AWS IoT MQTT test client page ends that page's own subscription; it
   does not disconnect the ESP32 or stop the IoT rule from processing device
   publishes.
@@ -36,27 +48,24 @@ connection IDs in this log.
 | Part | Current behavior | Effect |
 | --- | --- | --- |
 | Sensor sampling | Firmware samples every 2 seconds | Readings are available locally at this cadence. |
-| Telemetry publishing | Change-filtered; maximum quiet interval is 30 seconds | A steady graph may not receive a new point for up to 30 seconds. |
-| Device status | Firmware publishes a retained status heartbeat every 15 seconds and configures an MQTT Last Will | The device already reports online/offline information on a separate MQTT topic. |
+| Telemetry publishing | Meaningful changes publish immediately after sampling; unchanged readings publish every 2 seconds | Once updated firmware is flashed, a steady graph should receive a point about every 2 seconds, plus network/backend delivery time. |
+| Device status | Firmware publishes retained heartbeat every 15 seconds, immediate retained status after relay commands, and configures an MQTT Last Will | Online/offline and relay status use the separate MQTT status topic. |
 | AWS ingestion rules | Separate rules select `fleetmind/+/telemetry` and `fleetmind/+/status` | Telemetry and heartbeat/Last Will status are routed to the Lambda backend. |
-| Status update path | Status Lambda updates the latest node item and broadcasts `node-status` | Cloud-to-WebSocket status path is implemented; frontend event consumption still needs validation. |
+| Status update path | Status Lambda updates the latest node item and broadcasts `node-status`; frontend handler is implemented locally | Cloud-to-WebSocket status path is implemented; live browser event consumption still needs validation. |
 | Dashboard stale timeout | Existing telemetry timeout is 90 seconds | The UI should use status events immediately and mark actuator state stale/unknown while offline. |
 
 ## Next live-test work
 
-1. Update the dashboard WebSocket handler to apply `node-status` events
-   immediately, including online/offline, `lastSeen`, and stale actuator state.
-2. Test online → offline → online with status messages while the dashboard stays
-   open; verify there is no reload and no stale offline state after reconnect.
-3. When the ESP32 is available, repeat the test with a real disconnect/reconnect
-   and relay changes while watching CloudWatch and browser WebSocket frames.
-4. Separately, build the anomaly-service workstream described in
-   [`anomaly-service-plan.md`](anomaly-service-plan.md). Keep the 30-second
-   telemetry quiet-interval tuning as a later, board-dependent latency task.
+1. Measure and record sensor-to-dashboard delay for steady and changing values,
+   relay-command-to-dashboard delay, and physical disconnect/reconnect time.
+   Capture CloudWatch/browser WebSocket evidence if any update is delayed.
+2. Separately, build the anomaly-service workstream described in
+   [`anomaly-service-plan.md`](anomaly-service-plan.md).
 
 The status rule and Lambda path are already configured and validated in the
-console. The immediate dashboard task is source-code work; no AWS console change
-is expected for it.
+console. Firmware changes require a local build/flash; the Lambda delivery
+optimization requires uploading its updated package. Neither has been deployed
+to AWS from this session.
 
 ## Repeatable live-test checklist
 
@@ -88,8 +97,8 @@ is expected for it.
 - If the IoT test client stops displaying messages after navigating away, return
   to it and subscribe again. Its display is independent of device publishing and
   dashboard delivery.
-- If a point arrives only after a long pause with no sensor change, check the
-  firmware telemetry quiet interval and its change thresholds.
+- If a point arrives only after a long pause with no sensor change, confirm the
+  updated firmware is flashed and publishing every two seconds.
 - If node or relay status is stale, first check for a `node-status` WebSocket
   frame. If it is present, inspect the frontend event handler; if absent, check
   the status IoT rule and Lambda CloudWatch logs.

@@ -270,7 +270,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     }
   };
 
-  await Promise.all([
+  const persistence = Promise.all([
     ddb.send(new PutCommand({ TableName: tableName, Item: item })),
     ddb.send(new PutCommand({ TableName: tableName, Item: log })),
     updateLatestNode(),
@@ -281,7 +281,12 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
       ContentType: "application/json",
     })),
   ]);
-  await broadcastTelemetry({ type: "telemetry", ...telemetry });
+  // Start live delivery alongside storage rather than making the dashboard
+  // wait for DynamoDB and S3 writes to finish first.
+  await Promise.all([
+    persistence,
+    broadcastTelemetry({ type: "telemetry", ...telemetry }),
+  ]);
 }
 
 async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void> {

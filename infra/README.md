@@ -90,10 +90,10 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
    agreed direction uses EC2 for training and ECR for the Docker image; choose
    the live inference runtime and network path before connecting it to ingestion.
-3. Consider reducing the firmware's 30-second maximum telemetry quiet interval
-   to around 10 seconds, then rebuild and upload the firmware.
+3. Record end-to-end latency for telemetry, relay commands, and offline/reconnect
+   status; see [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
 4. Re-test normal telemetry, disconnect, reconnect, relay changes, and anomaly
-   events. See [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
+   events as the anomaly-service work is integrated.
 5. After the live path is stable, continue with controlled command/automation
    flows, alarms, and frontend hosting.
 

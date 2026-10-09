@@ -5,7 +5,7 @@ const TELEMETRY_STALE_AFTER_MS = 90_000;
 const ALLOWED_CLOCK_SKEW_MS = 30_000;
 
 type ApiNode = Partial<FleetNode> & { id: string; temperature?: number; humidity?: number; gasLevel?: number };
-type StreamMessage = {
+type TelemetryStreamMessage = {
   type: "telemetry";
   eventId: string;
   nodeId: string;
@@ -16,6 +16,17 @@ type StreamMessage = {
   isAnomaly?: boolean;
   actuatorState?: FleetNode["actuatorState"];
 };
+type NodeStatusStreamMessage = {
+  type: "node-status";
+  nodeId: string;
+  online: boolean;
+  timestamp: string;
+  relayOn?: boolean;
+  rssi?: number;
+  uptimeMs?: number;
+  commandQueueOverflow?: boolean;
+};
+type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage;
 
 const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
 
@@ -27,7 +38,14 @@ function telemetryStatus(lastSeen: string, now: number): FleetNode["status"] {
   return ageMs <= TELEMETRY_STALE_AFTER_MS ? "online" : "offline";
 }
 
-function toTelemetryPoint(record: StreamMessage): TelemetryPoint {
+function currentNodeStatus(node: FleetNode, now: number): FleetNode["status"] {
+  // An explicit Last Will/offline update must win over its fresh receive time.
+  if (node.status === "offline") return "offline";
+  const freshness = telemetryStatus(node.lastSeen, now);
+  return freshness === "online" ? node.status : freshness;
+}
+
+function toTelemetryPoint(record: TelemetryStreamMessage): TelemetryPoint {
   const parsedTimestamp = Date.parse(record.timestamp);
   const timestampMs = Number.isFinite(parsedTimestamp) ? parsedTimestamp : Date.now();
   return {
@@ -104,11 +122,12 @@ export function useFleetData(idToken: string | null) {
           return {
             id: node.id,
             name: node.name ?? `ESP32 ${node.id}`,
-            status: telemetryStatus(lastSeen, receivedAt),
+            status: node.status ?? telemetryStatus(lastSeen, receivedAt),
             temperature: node.temperature ?? 0,
             humidity: node.humidity ?? 0,
             gasLevel: node.gasLevel ?? 0,
             actuatorState: node.actuatorState ?? emptyActuatorState,
+            actuatorStateStale: node.status === "offline",
             lastSeen,
           };
         }));
@@ -144,7 +163,46 @@ export function useFleetData(idToken: string | null) {
         socket.onmessage = (event) => {
           let message: StreamMessage;
           try { message = JSON.parse(String(event.data)) as StreamMessage; } catch { return; }
-          if (message.type !== "telemetry" || !message.nodeId) return;
+          if (!message.nodeId) return;
+          if (message.type === "node-status") {
+            if (typeof message.online !== "boolean") return;
+            const statusTime = Date.parse(message.timestamp);
+            const lastSeen = Number.isFinite(statusTime) ? new Date(statusTime).toISOString() : new Date().toISOString();
+            const relayState = typeof message.relayOn === "boolean" ? {
+              relayActive: message.relayOn,
+              fanActive: message.relayOn,
+              buzzerActive: false,
+            } : undefined;
+            setNodes((previous) => {
+              const exists = previous.some((node) => node.id === message.nodeId);
+              const updated = previous.map((node) => {
+                if (node.id !== message.nodeId) return node;
+                const previousStatusTime = Date.parse(node.lastSeen);
+                if (Number.isFinite(previousStatusTime) && Number.isFinite(statusTime) && statusTime < previousStatusTime) return node;
+                return {
+                  ...node,
+                  status: message.online ? "online" as const : "offline" as const,
+                  actuatorState: relayState ?? node.actuatorState,
+                  actuatorStateStale: !message.online || (node.actuatorStateStale === true && !relayState),
+                  lastSeen,
+                };
+              });
+              if (exists) return updated;
+              return [...updated, {
+                id: message.nodeId,
+                name: `ESP32 ${message.nodeId}`,
+                status: message.online ? "online" : "offline",
+                temperature: 0,
+                humidity: 0,
+                gasLevel: 0,
+                actuatorState: relayState ?? emptyActuatorState,
+                actuatorStateStale: !message.online || !relayState,
+                lastSeen,
+              }];
+            });
+            return;
+          }
+          if (message.type !== "telemetry") return;
           const point = toTelemetryPoint(message);
           const receivedAt = new Date().toISOString();
           setNodes((previous) => {
@@ -156,12 +214,13 @@ export function useFleetData(idToken: string | null) {
               humidity: message.humidity,
               gasLevel: message.gasLevel,
               actuatorState: message.actuatorState ?? node.actuatorState,
+              actuatorStateStale: false,
               lastSeen: receivedAt,
             } : node);
             return exists ? updated : [...updated, {
               id: message.nodeId, name: `ESP32 ${message.nodeId}`, status: "online",
               temperature: message.temperature, humidity: message.humidity, gasLevel: message.gasLevel,
-              actuatorState: message.actuatorState ?? emptyActuatorState, lastSeen: receivedAt,
+              actuatorState: message.actuatorState ?? emptyActuatorState, actuatorStateStale: false, lastSeen: receivedAt,
             }];
           });
           setTelemetryHistory((previous) => ({
@@ -209,7 +268,7 @@ export function useFleetData(idToken: string | null) {
     fetchJson(`/telemetry?nodeId=${encodeURIComponent(selectedNodeId)}&limit=50`)
       .then((result) => {
         if (cancelled) return;
-        const points = (result.data as StreamMessage[]).map(toTelemetryPoint);
+        const points = (result.data as TelemetryStreamMessage[]).map(toTelemetryPoint);
         setTelemetryHistory((previous) => ({
           ...previous,
           [selectedNodeId]: mergeTelemetryPoints(points, previous[selectedNodeId] ?? []),
@@ -220,7 +279,12 @@ export function useFleetData(idToken: string | null) {
   }, [idToken, apiUrl, selectedNodeId, fetchJson]);
 
   const node = nodes.find((item) => item.id === selectedNodeId) ?? nodes[0];
-  const selectedNode = node ? { ...node, status: telemetryStatus(node.lastSeen, now) } : undefined;
+  const status = node ? currentNodeStatus(node, now) : undefined;
+  const selectedNode = node && status ? {
+    ...node,
+    status,
+    actuatorStateStale: node.actuatorStateStale === true || status !== "online",
+  } : undefined;
 
   return {
     selectedNodeId,

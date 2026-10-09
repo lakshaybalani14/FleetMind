@@ -53,10 +53,10 @@ Give each Thing certificate only the minimum rights to connect as its own client
 | Task | Priority/core | Responsibility |
 | --- | --- | --- |
 | `TaskWiFiMQTT` | 3 / 0 | Connects Wi-Fi and TLS MQTT, synchronizes time, receives MQTT packets, and reconnects with exponential backoff. |
-| `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds and uses threshold/delta edge filtering before queuing telemetry; unchanged readings are sent at most every 30 seconds. |
+| `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds, queues meaningful changes immediately, and sends unchanged readings on the same two-second cadence. |
 | `TaskPublish` | 2 / 1 | Serializes queued telemetry as JSON and publishes it without slowing sampling. |
-| `TaskActuator` | 2 / 1 | Applies cloud commands, then emits an acknowledgement and shadow report. |
-| `TaskHeartbeat` | 1 / 1 | Publishes retained connectivity state and feeds the watchdog. |
+| `TaskActuator` | 2 / 1 | Applies cloud commands, emits an acknowledgement and shadow report, then publishes retained node/relay status immediately. |
+| `TaskHeartbeat` | 1 / 1 | Publishes retained connectivity state every 15 seconds and feeds the watchdog. |
 
 GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate from network and sensor work.
 
@@ -64,5 +64,5 @@ GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate 
 
 - MQ-2 PPM is an estimate, not a calibrated gas measurement. Calibrate its resistance curve and account for warm-up time before claiming PPM accuracy.
 - The source does not store unsent telemetry durably. Add LittleFS/NVS buffering if offline data retention is required.
-- Live `node-01` telemetry is currently routed to Lambda and displayed through the authenticated dashboard WebSocket. The IoT rule currently handles the telemetry topic only; the separate retained status heartbeat and Last Will topic are not yet forwarded to the dashboard backend.
-- For quicker chart updates, reduce `MAX_TELEMETRY_SILENCE_MS` in `src/fleetmind_node_firmware.ino`, rebuild, and upload. For prompt offline/online and relay-state updates, add a status-topic IoT rule and implement corresponding Lambda and frontend message handling. Track these steps in [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
+- Live `node-01` telemetry and the separate retained status heartbeat/Last Will topic are routed through Lambda; the dashboard uses an authenticated WebSocket. The frontend now handles `node-status` events in source, pending live browser validation.
+- `MAX_TELEMETRY_SILENCE_MS` now matches the 2-second sensor sample interval, so the live dashboard receives steady readings without waiting for a larger change. Relay commands publish status immediately rather than waiting for the 15-second heartbeat. Build and upload the firmware before these changes take effect on the board. See [`../docs/live-testing-log.md`](../docs/live-testing-log.md) for the validation checklist.
