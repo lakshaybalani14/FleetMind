@@ -90,11 +90,10 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
    agreed direction uses EC2 for training and ECR for the Docker image; choose
    the live inference runtime and network path before connecting it to ingestion.
-3. Record end-to-end latency for telemetry, relay commands, and offline/reconnect
-   status; see [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
-4. Re-test normal telemetry, disconnect, reconnect, relay changes, and anomaly
-   events as the anomaly-service work is integrated.
-5. After the live path is stable, continue with controlled command/automation
+3. Continue end-to-end testing as the anomaly service is integrated; revisit
+   latency measurements if live behavior regresses. See
+   [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
+4. After the live path is stable, continue with controlled command/automation
    flows, alarms, and frontend hosting.
 
 The device Thing/certificate and firmware shadow/downlink hooks exist for the

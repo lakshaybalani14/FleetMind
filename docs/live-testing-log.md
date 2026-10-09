@@ -24,19 +24,20 @@ connection IDs in this log.
   RSSI, uptime, and command-queue flag. The Lambda also broadcasts a distinct
   `node-status` WebSocket event.
 - The frontend now handles `node-status` WebSocket events in source, including
-  online/offline and stale relay-state display. TypeScript validation passed;
-  live browser event validation remains.
+  online/offline and stale relay-state display. TypeScript validation passed,
+  and the user confirmed the live browser behavior.
 - Local firmware source now publishes unchanged readings every two seconds
   (matching its sensor sample cadence), publishes meaningful changes as soon as
   sampled, and publishes retained relay/node status immediately after a relay
-  command. The board must be reflashed before these changes are active.
+  command. The user’s latest live run confirms these behaviors are active on the
+  tested board.
 - Local telemetry Lambda source now starts WebSocket delivery concurrently with
   DynamoDB/S3 persistence instead of waiting for all writes first. This source
   change only affects AWS after it is uploaded to the telemetry Lambda.
-- The user reports the latest live test now behaves as specified. The updated
-  telemetry cadence and status updates are working; exact end-to-end latency
-  measurements have not yet been recorded. The user’s report indicates the
-  updated live path was applied for this test.
+- In the latest live run, the user confirmed online/offline state, incoming
+  readings, and the moving chart all update without a manual page reload and
+  feel close enough to live for the current project. No numeric latency target
+  is required before moving on.
 - These dashboard/latency tasks are separate from the queued anomaly-service
   work; see [`anomaly-service-plan.md`](anomaly-service-plan.md).
 - Leaving the AWS IoT MQTT test client page ends that page's own subscription; it
@@ -48,24 +49,22 @@ connection IDs in this log.
 | Part | Current behavior | Effect |
 | --- | --- | --- |
 | Sensor sampling | Firmware samples every 2 seconds | Readings are available locally at this cadence. |
-| Telemetry publishing | Meaningful changes publish immediately after sampling; unchanged readings publish every 2 seconds | Once updated firmware is flashed, a steady graph should receive a point about every 2 seconds, plus network/backend delivery time. |
+| Telemetry publishing | Meaningful changes publish immediately after sampling; unchanged readings publish every 2 seconds | The user confirmed the dashboard readings and moving chart update without manual refresh. |
 | Device status | Firmware publishes retained heartbeat every 15 seconds, immediate retained status after relay commands, and configures an MQTT Last Will | Online/offline and relay status use the separate MQTT status topic. |
 | AWS ingestion rules | Separate rules select `fleetmind/+/telemetry` and `fleetmind/+/status` | Telemetry and heartbeat/Last Will status are routed to the Lambda backend. |
-| Status update path | Status Lambda updates the latest node item and broadcasts `node-status`; frontend handler is implemented locally | Cloud-to-WebSocket status path is implemented; live browser event consumption still needs validation. |
+| Status update path | Status Lambda updates the latest node item and broadcasts `node-status`; the frontend consumes it | The user confirmed online/offline display works during the live run. |
 | Dashboard stale timeout | Existing telemetry timeout is 90 seconds | The UI should use status events immediately and mark actuator state stale/unknown while offline. |
 
 ## Next live-test work
 
-1. Measure and record sensor-to-dashboard delay for steady and changing values,
-   relay-command-to-dashboard delay, and physical disconnect/reconnect time.
-   Capture CloudWatch/browser WebSocket evidence if any update is delayed.
-2. Separately, build the anomaly-service workstream described in
+1. Continue with the anomaly-service workstream described in
    [`anomaly-service-plan.md`](anomaly-service-plan.md).
+2. Revisit numeric latency measurement only if a future test shows noticeable
+   lag, stale readings, or delayed online/offline transitions.
 
-The status rule and Lambda path are already configured and validated in the
-console. Firmware changes require a local build/flash; the Lambda delivery
-optimization requires uploading its updated package. Neither has been deployed
-to AWS from this session.
+The status rule and Lambda path are configured and validated in the console.
+The latest live run confirmed the end-to-end dashboard behavior; no additional
+latency tuning is blocking the next project task.
 
 ## Repeatable live-test checklist
 

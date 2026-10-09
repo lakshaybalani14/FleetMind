@@ -25,14 +25,14 @@ secrets, or credentials.
 | Authentication and APIs | Cognito-authenticated HTTP API and API Gateway WebSocket dashboard flow are configured and working. |
 | Dashboard | Connected to real API data; live WebSocket updates now work after correcting the Lambda role's `execute-api:ManageConnections` resource ARN. |
 | Infrastructure source | CDK source is in `infra/`; the current AWS resources were configured manually, so review differences before any CDK deployment. |
-| Live-test follow-up | User reports the updated live path works as specified. Next, record measured sensor-to-dashboard and relay-command latency, then continue with anomaly detection. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
+| Live-test follow-up | User confirmed online/offline status, live readings, and the moving chart work without manual refresh. Next: continue with anomaly detection. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
 
 ## Resume live testing
 
-1. Record end-to-end timing for sensor updates, relay commands, and physical
-   disconnect/reconnect; note any missed or stale updates in the live-testing log.
-2. Build anomaly detection as a separate teammate branch using
+1. Build anomaly detection as a separate teammate branch using
    [`docs/anomaly-service-plan.md`](docs/anomaly-service-plan.md).
+2. Revisit latency measurements only if future live tests show noticeable lag
+   or stale dashboard state.
 
 The hands-on setup, observed behavior, and repeatable test checklist are in
 [`docs/live-testing-log.md`](docs/live-testing-log.md). Backend endpoints,
