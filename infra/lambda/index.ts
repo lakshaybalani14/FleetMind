@@ -36,6 +36,15 @@ interface TelemetryInput {
   readonly isAnomaly?: boolean;
 }
 
+interface DeviceStatusInput {
+  readonly nodeId: string;
+  readonly online: boolean;
+  readonly relayOn?: boolean;
+  readonly rssi?: number;
+  readonly uptimeMs?: number;
+  readonly commandQueueOverflow?: boolean;
+}
+
 function response(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
   return {
     statusCode,
@@ -103,6 +112,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
   // AWS IoT Rules invoke this Lambda with the firmware JSON as the event payload.
   if (!(event as APIGatewayProxyEventV2).requestContext?.http) {
+    const status = parseDeviceStatus(event as unknown as Record<string, unknown>);
+    if (status) {
+      await storeAndBroadcastStatus(status);
+      return response(202, { accepted: true, nodeId: status.nodeId, type: "status" });
+    }
+
     const telemetry = parseDeviceTelemetry(event as unknown as Record<string, unknown>);
     if (!telemetry) {
       console.warn("Ignoring malformed or invalid IoT telemetry payload");
@@ -267,6 +282,84 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     })),
   ]);
   await broadcastTelemetry({ type: "telemetry", ...telemetry });
+}
+
+async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void> {
+  if (!tableName || !websocketTableName) throw new Error("Backend configuration is incomplete");
+  const receivedAt = new Date().toISOString();
+  const values: Record<string, unknown> = {
+    ":name": `ESP32 ${status.nodeId}`,
+    ":status": status.online ? "online" : "offline",
+    ":lastSeen": receivedAt,
+  };
+  const assignments = ["#name = :name", "#status = :status", "lastSeen = :lastSeen"];
+
+  if (status.relayOn !== undefined) {
+    assignments.push("actuatorState = :actuatorState");
+    values[":actuatorState"] = {
+      relayActive: status.relayOn,
+      fanActive: status.relayOn,
+      buzzerActive: false,
+    };
+  }
+  if (status.rssi !== undefined) {
+    assignments.push("rssi = :rssi");
+    values[":rssi"] = status.rssi;
+  }
+  if (status.uptimeMs !== undefined) {
+    assignments.push("uptimeMs = :uptimeMs");
+    values[":uptimeMs"] = status.uptimeMs;
+  }
+  if (status.commandQueueOverflow !== undefined) {
+    assignments.push("commandQueueOverflow = :commandQueueOverflow");
+    values[":commandQueueOverflow"] = status.commandQueueOverflow;
+  }
+
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${status.nodeId}` },
+      UpdateExpression: `SET ${assignments.join(", ")}`,
+      ConditionExpression: "attribute_not_exists(lastSeen) OR lastSeen <= :lastSeen",
+      ExpressionAttributeNames: { "#name": "name", "#status": "status" },
+      ExpressionAttributeValues: values,
+    }));
+  } catch (error) {
+    if (!(error instanceof Error) || error.name !== "ConditionalCheckFailedException") throw error;
+  }
+
+  await broadcastTelemetry({
+    type: "node-status",
+    nodeId: status.nodeId,
+    online: status.online,
+    timestamp: receivedAt,
+    ...(status.relayOn !== undefined ? { relayOn: status.relayOn } : {}),
+    ...(status.rssi !== undefined ? { rssi: status.rssi } : {}),
+    ...(status.uptimeMs !== undefined ? { uptimeMs: status.uptimeMs } : {}),
+    ...(status.commandQueueOverflow !== undefined ? { commandQueueOverflow: status.commandQueueOverflow } : {}),
+  });
+}
+
+function parseDeviceStatus(record: Record<string, unknown>): DeviceStatusInput | undefined {
+  const { nodeId, online, relayOn, rssi, uptimeMs, commandQueueOverflow } = record;
+  const validNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+  if (
+    typeof nodeId !== "string" || !/^node-[a-zA-Z0-9-]{1,40}$/.test(nodeId) ||
+    typeof online !== "boolean" ||
+    (relayOn !== undefined && typeof relayOn !== "boolean") ||
+    (rssi !== undefined && !validNumber(rssi)) ||
+    (uptimeMs !== undefined && (!validNumber(uptimeMs) || uptimeMs < 0)) ||
+    (commandQueueOverflow !== undefined && typeof commandQueueOverflow !== "boolean")
+  ) return undefined;
+
+  return {
+    nodeId,
+    online,
+    ...(typeof relayOn === "boolean" ? { relayOn } : {}),
+    ...(validNumber(rssi) ? { rssi } : {}),
+    ...(validNumber(uptimeMs) ? { uptimeMs } : {}),
+    ...(typeof commandQueueOverflow === "boolean" ? { commandQueueOverflow } : {}),
+  };
 }
 
 function parseDeviceTelemetry(record: Record<string, unknown>): TelemetryInput | undefined {

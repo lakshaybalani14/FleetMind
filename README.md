@@ -25,16 +25,18 @@ secrets, or credentials.
 | Authentication and APIs | Cognito-authenticated HTTP API and API Gateway WebSocket dashboard flow are configured and working. |
 | Dashboard | Connected to real API data; live WebSocket updates now work after correcting the Lambda role's `execute-api:ManageConnections` resource ARN. |
 | Infrastructure source | CDK source is in `infra/`; the current AWS resources were configured manually, so review differences before any CDK deployment. |
-| Live-test follow-up | Telemetry can wait up to 30 seconds during steady readings; dashboard offline status uses a 90-second telemetry timeout. The device's 15-second status/LWT topic is not yet routed through the backend. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
+| Live-test follow-up | The 15-second status/LWT topic now reaches Lambda, DynamoDB, and the WebSocket broadcaster. The dashboard still needs to consume `node-status` frames immediately; telemetry can wait up to 30 seconds during steady readings. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
 
 ## Resume live testing
 
-1. Reduce the firmware's maximum quiet telemetry interval if more frequent chart
-   points are desired, while keeping the sensor-change filter.
-2. Add an AWS IoT rule for `fleetmind/+/status` and update Lambda/frontend code to
-   process online/offline and relay-state messages.
-3. Test sensor updates, disconnects, reconnects, and relay state while checking
-   CloudWatch delivery logs and browser WebSocket frames.
+1. Update the dashboard WebSocket handler to consume `node-status` frames and
+   show online/offline and stale actuator state without a reload.
+2. Test online/offline/reconnect status transitions; then repeat with the ESP32
+   connected when available.
+3. Build anomaly detection as a separate teammate branch using
+   [`docs/anomaly-service-plan.md`](docs/anomaly-service-plan.md).
+4. Later, tune the firmware's maximum quiet telemetry interval if more frequent
+   chart points are desired, while keeping the sensor-change filter.
 
 The hands-on setup, observed behavior, and repeatable test checklist are in
 [`docs/live-testing-log.md`](docs/live-testing-log.md). Backend endpoints,

@@ -82,17 +82,20 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 ## Remaining cloud work
 
-1. Add a separate AWS IoT rule for `fleetmind/+/status`; keep the telemetry rule enabled.
-2. Extend the ingestion Lambda to handle status heartbeat and Last Will payloads,
-   update node/relay state, and broadcast status over WebSocket.
-3. Update the dashboard so online/offline and relay status change from those
-   status events, and old actuator values are identified as stale when offline.
-4. Consider reducing the firmware's 30-second maximum telemetry quiet interval
+1. Update the dashboard so online/offline and relay status change immediately
+   from the existing `node-status` WebSocket event; show old actuator values as
+   stale/unknown while offline.
+2. Build and review the Isolation Forest training/inference image as a separate
+   feature branch, following
+   [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
+   agreed direction uses EC2 for training and ECR for the Docker image; choose
+   the live inference runtime and network path before connecting it to ingestion.
+3. Consider reducing the firmware's 30-second maximum telemetry quiet interval
    to around 10 seconds, then rebuild and upload the firmware.
-5. Re-test normal telemetry, disconnect, reconnect, and relay changes. See
-   [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
-6. After the live path is stable, continue with anomaly detection, controlled
-   command/automation flows, alarms, and frontend hosting.
+4. Re-test normal telemetry, disconnect, reconnect, relay changes, and anomaly
+   events. See [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
+5. After the live path is stable, continue with controlled command/automation
+   flows, alarms, and frontend hosting.
 
 The device Thing/certificate and firmware shadow/downlink hooks exist for the
 current prototype; a complete dashboard command workflow is still future work.

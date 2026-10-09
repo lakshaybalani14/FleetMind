@@ -18,6 +18,15 @@ connection IDs in this log.
   `arn:aws:execute-api:ap-southeast-2:<project-account>:<websocket-api-id>/<stage>/POST/@connections/*`.
 - The user reports that live dashboard updates are now working after that
   permission correction.
+- A separate AWS IoT Core rule for `fleetmind/+/status` was added and exercised.
+  The updated telemetry Lambda completed successfully, and the DynamoDB item
+  `PK=FLEET`, `SK=NODE#node-01` showed the expected online status, `lastSeen`,
+  RSSI, uptime, and command-queue flag. The Lambda also broadcasts a distinct
+  `node-status` WebSocket event.
+- The remaining board-free live-dashboard task is to consume `node-status`
+  events in the frontend so online/offline and stale actuator state change
+  without a page reload. This is separate from the queued anomaly-service work;
+  see [`anomaly-service-plan.md`](anomaly-service-plan.md).
 - Leaving the AWS IoT MQTT test client page ends that page's own subscription; it
   does not disconnect the ESP32 or stop the IoT rule from processing device
   publishes.
@@ -29,28 +38,25 @@ connection IDs in this log.
 | Sensor sampling | Firmware samples every 2 seconds | Readings are available locally at this cadence. |
 | Telemetry publishing | Change-filtered; maximum quiet interval is 30 seconds | A steady graph may not receive a new point for up to 30 seconds. |
 | Device status | Firmware publishes a retained status heartbeat every 15 seconds and configures an MQTT Last Will | The device already reports online/offline information on a separate MQTT topic. |
-| AWS ingestion rule | Currently selects `fleetmind/+/telemetry` | Status heartbeats and Last Will messages are not currently forwarded into the dashboard backend. |
-| Dashboard stale timeout | Marks telemetry offline after 90 seconds without a telemetry update | Offline indication can lag behind a disconnect; previous actuator state may remain visible until the next telemetry event. |
+| AWS ingestion rules | Separate rules select `fleetmind/+/telemetry` and `fleetmind/+/status` | Telemetry and heartbeat/Last Will status are routed to the Lambda backend. |
+| Status update path | Status Lambda updates the latest node item and broadcasts `node-status` | Cloud-to-WebSocket status path is implemented; frontend event consumption still needs validation. |
+| Dashboard stale timeout | Existing telemetry timeout is 90 seconds | The UI should use status events immediately and mark actuator state stale/unknown while offline. |
 
 ## Next live-test work
 
-1. Keep the telemetry change filter, but consider reducing the maximum quiet
-   interval from 30 seconds to 10 seconds so the graph gets a regular point more
-   often.
-2. Add an AWS IoT rule for `fleetmind/+/status` that invokes the existing
-   telemetry Lambda. Keep the current telemetry rule in place.
-3. Update the Lambda to recognize status heartbeat and Last Will payloads,
-   update the latest node status/actuator state, and broadcast a separate
-   WebSocket status message.
-4. Update the dashboard to apply those status messages immediately and show
-   actuator state as stale/unknown when the node is offline rather than implying
-   that an old state is current.
-5. Test normal updates, MQTT disconnect, reconnect, and relay changes while
-   watching CloudWatch and browser WebSocket frames.
+1. Update the dashboard WebSocket handler to apply `node-status` events
+   immediately, including online/offline, `lastSeen`, and stale actuator state.
+2. Test online → offline → online with status messages while the dashboard stays
+   open; verify there is no reload and no stale offline state after reconnect.
+3. When the ESP32 is available, repeat the test with a real disconnect/reconnect
+   and relay changes while watching CloudWatch and browser WebSocket frames.
+4. Separately, build the anomaly-service workstream described in
+   [`anomaly-service-plan.md`](anomaly-service-plan.md). Keep the 30-second
+   telemetry quiet-interval tuning as a later, board-dependent latency task.
 
-The firmware interval and Lambda/frontend changes are source-code work. The new
-status-topic rule is an AWS Console action and should be validated before any
-production deployment.
+The status rule and Lambda path are already configured and validated in the
+console. The immediate dashboard task is source-code work; no AWS console change
+is expected for it.
 
 ## Repeatable live-test checklist
 
@@ -84,6 +90,6 @@ production deployment.
   dashboard delivery.
 - If a point arrives only after a long pause with no sensor change, check the
   firmware telemetry quiet interval and its change thresholds.
-- If node or relay status is stale, verify that the status topic is being routed
-  to and handled by the backend; telemetry alone cannot deliver the separate
-  heartbeat/LWT events.
+- If node or relay status is stale, first check for a `node-status` WebSocket
+  frame. If it is present, inspect the frontend event handler; if absent, check
+  the status IoT rule and Lambda CloudWatch logs.
