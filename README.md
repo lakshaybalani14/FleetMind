@@ -37,6 +37,10 @@ secrets, or credentials.
    the prototype relay to safety-critical equipment.
 3. Build anomaly detection as a separate teammate branch using
    [`docs/anomaly-service-plan.md`](docs/anomaly-service-plan.md).
+   The agreed scope includes EC2 training, FastAPI `/score` in a Docker image
+   pushed to ECR, K3s inference on EC2, Lambda score persistence, and SNS alerts
+   when a high score triggers the acknowledged relay path. SQS is optional, not
+   a current requirement.
 4. Revisit latency measurements only if future live tests show noticeable lag
    or stale dashboard state.
 

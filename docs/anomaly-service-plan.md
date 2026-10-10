@@ -6,20 +6,34 @@ Status: queued as the first teammate-owned feature workstream. Implement on a
 separate Git branch and merge through a reviewed pull request. This document is
 the starting contract, not authorization to change live AWS resources.
 
-Agreed direction: train a scikit-learn Isolation Forest model on an EC2
-development/training instance, save the fitted model, package the model and its
-inference application into a Docker image, and push that image to ECR. ECR is a
-container-image registry; pushing an image does not run it or make live
-predictions. The runtime that will run the container and receive live readings
-must be chosen before wiring it into the live telemetry path.
+Agreed Phase 5/6 direction: collect normal telemetry from S3; train a
+scikit-learn Isolation Forest offline, initially on EC2; expose inference as a
+FastAPI `/score` service; package it in Docker and push a versioned image to
+ECR; and run the container in K3s on a single EC2 node for the prototype. The
+training EC2 and K3s inference EC2 may be the same or separate instances; decide
+that before provisioning. ECR stores the image but does not run it.
+
+The ingestion Lambda will call `/score` per reading initially (batching can be
+considered if measured throughput requires it), persist the score/result, and
+on a high score write an `AnomalyEvent`, publish an actuator command through
+the existing IoT path, and publish an SNS alert. The device acknowledgement
+must still close the control loop. Keep telemetry/WebSocket delivery live even
+if model inference is unhealthy; fall back to the existing threshold behavior
+and record inference failures. Measure the Phase 6 end-to-end target of under
+5 seconds from anomaly reading to acknowledged physical action; it is a target
+to verify, not a guarantee.
 
 The project currently has one prototype node, an uncalibrated gas estimate, and
-no trustworthy labeled dataset. The teammate can implement the training and
-inference code and test it locally first. Do not deploy a live prediction
-service until the data, evaluation, runtime, and access are reviewed.
+no trustworthy labeled dataset. A few hours or days of normal data are an
+initial training input, not proof of model quality; evaluate coverage, false
+alarms, and missed anomalies before using scores for actuation. Do not breathe
+on the sensor, apply unsafe heat, or release gas as a test. Use controlled,
+documented safe test readings for the prototype. Do not treat the uncalibrated
+MQ-2 as a CO detector or life-safety device.
 
-The existing status stream remains a separate concern: the dashboard still needs
-to consume the already-broadcast `node-status` WebSocket event.
+The status stream is already implemented separately: the dashboard consumes the
+`node-status` WebSocket event for online/offline and relay state. It is not part
+of the pending anomaly-service work.
 
 ## Existing telemetry available
 
@@ -79,7 +93,11 @@ dataset or Git branch. For any later cloud dataset, use an approved private S3
 prefix and least-privilege access; do not create a bucket or upload real data
 until the owner reviews retention, access, and cost.
 
-## Implementation procedure
+## Phase 5 — Anomaly detection service
+
+The teammate owns this work on a separate branch and opens a reviewed PR. The
+original estimate is roughly 1–2 weeks; actual time depends on data quality and
+evaluation findings.
 
 1. Create a feature branch from the latest `main` (suggested name:
    `feat/anomaly-service`). Keep unrelated working-tree changes out of it.
@@ -94,10 +112,11 @@ until the owner reviews retention, access, and cost.
    needed to measure false alarms and missed anomalies and choose a useful
    threshold. Add unit tests for preprocessing, predictions, invalid sensors,
    missing fields, and model load/save round trips.
-4. Implement a small inference application with a versioned JSON input/output
-   contract. It loads the saved model and returns the score, normal/anomaly
-   decision, model version, and reason/context features. Keep this detector
-   independent from the Next.js frontend.
+4. Implement a small FastAPI inference application with a versioned JSON
+   contract and `/score` endpoint. It loads the saved model and returns the
+   score, normal/anomaly decision, model version, and reason/context features.
+   Include a health endpoint and keep inference independent from the Next.js
+   frontend.
 5. Add a Dockerfile with pinned Python/package versions and a health check or
    simple local smoke-test command. Include the inference app and the intended
    model artifact in the image, or document a versioned model download step if
@@ -108,11 +127,22 @@ until the owner reviews retention, access, and cost.
 7. Open a pull request with training/evaluation results, sample predictions,
    image build instructions, model artifact size, known limitations, and no live
    AWS deployment. The owner reviews/merges it.
-8. Before live predictions, choose where the ECR image runs (for example, a
-   Docker container on EC2) and how the ingestion backend can send it readings.
-   Document the network path and authentication between services, logging,
-   health/restart behavior, and how to roll back to the previous image/model.
-   Then the owner deploys and validates with controlled sample telemetry.
+8. Deploy the reviewed inference image to K3s on one EC2 node for the
+   prototype. Document and secure the Lambda-to-FastAPI network path and
+   service authentication, logging, health/restart behavior, and rollback to
+   the previous image/model. Then the owner deploys and validates with
+   controlled sample telemetry.
+## Phase 6 — Close the automation loop
+
+The original estimate is roughly one week after the scoring service is
+reviewed. Complete this phase only after Phase 5's service contract and network
+path are ready.
+
+1. Add the response path: persist scored readings and a deduplicated
+   `AnomalyEvent`, publish a high-score alert to an SNS topic, and request relay
+   ON through the existing IoT command/acknowledgement flow. Avoid an alert and
+   command on every repeated high-score sample; define a trigger/cooldown rule.
+   The target is a measured sub-5-second reading-to-device-ack round trip.
 
 The eventual anomaly event sent to the dashboard can look like:
 
@@ -143,6 +173,9 @@ Isolation Forest score alone does not explain the physical cause.
   digest and a documented rollback target.
 - The event includes severity, score, context/reason codes, node/time identifiers, and
   de-duplication behavior; repeat readings do not create an alert storm.
+- A high-scoring controlled test is stored as an `AnomalyEvent`, emits an SNS
+  alert, and results in an acknowledged actuator action within the measured
+  target; repeated samples are deduplicated/cooldown-limited.
 - Training/evaluation and inference tests pass; no credentials, generated ZIPs,
   or console-created resource changes are included in the feature branch.
 
@@ -157,10 +190,15 @@ for console access. Give her access to the approved training-data location and
 ECR repository only as needed. Do not deploy from her branch or let it change
 live resources before pull-request review.
 
-For this agreed approach, AWS resources likely include an EC2 training instance,
-a private S3 dataset/model-artifact location, and an ECR repository. The
-live-inference runtime and connection to the ingestion backend are still an
-explicit design decision. Confirm the project spend limit and service
-availability in `ap-southeast-2` before creating resources. Keep EC2 storage
-temporary data on durable S3/EBS as appropriate; do not leave a training
-instance running when it is not needed.
+For this agreed approach, pending AWS resources include an EC2 training
+instance, an approved private S3 dataset/model-artifact location (the existing
+telemetry-history bucket is separate until its access/retention is approved),
+an ECR repository, an EC2 inference host running K3s, and an SNS anomaly-alert
+topic with its approved subscriber(s). The training and inference EC2 roles
+must be least-privilege and the service endpoint must be authenticated. SQS is
+not required by the original Phase 5/6 flow; consider it only if asynchronous
+inference buffering is needed, because it requires a result-return path and
+changes when automation can act. Confirm the project spend limit and service
+availability in `ap-southeast-2` before creating resources. Keep training data
+and model artifacts on approved durable storage, and stop EC2 instances when
+not needed.

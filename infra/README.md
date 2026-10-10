@@ -90,11 +90,13 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
    mode remains opt-in. Optional follow-up: test hysteresis-band and cooldown
    boundaries with a harmless low-voltage load. MQ-2 supplies a relative demo
    level, not calibrated gas/CO concentration.
-2. Build and review the Isolation Forest training/inference image as a separate
-   feature branch, following
+2. Build and review the Isolation Forest training/inference service as a
+   separate feature branch, following
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
-   agreed direction uses EC2 for training and ECR for the Docker image; choose
-   the live inference runtime and network path before connecting it to ingestion.
+   agreed prototype target is EC2 training, FastAPI `/score` in Docker/ECR,
+   K3s on one EC2 inference node, Lambda scoring/persistence, and SNS alerts for
+   high scores. Secure and test the Lambda-to-service network path before
+   enabling live predictions.
 3. Continue end-to-end testing as the anomaly service is integrated; revisit
    latency measurements if live behavior regresses. See
    [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
@@ -109,11 +111,14 @@ future work.
 
 ## SNS and queue status
 
-Amazon SNS and Amazon SQS are not currently part of the deployed or planned
-baseline resources. SQS may be considered later to buffer asynchronous anomaly
-inference jobs for an EC2-hosted model worker. SNS is only useful if anomaly
-results need fan-out to multiple independent consumers. Keep the dashboard's
-low-latency telemetry WebSocket path direct; these services are not required
-for it. The firmware's command queue is an on-device FreeRTOS queue, not SQS.
-Do not create SNS/SQS resources until the inference integration design is
-reviewed.
+SNS is a **pending Phase 6 resource**: create an anomaly-alert topic and
+subscribe the approved alert recipient(s); the Lambda publishes only for a
+deduplicated high-score anomaly. SNS alerts are separate from the dashboard's
+live WebSocket updates and do not carry relay commands.
+
+SQS is **not required by the original Phase 5/6 flow**. It is an optional later
+buffer between ingestion and inference if the EC2 model worker needs retries or
+back-pressure. A queue would require a worker/result-return path and may delay
+the automation decision, so first implement and measure the direct authenticated
+Lambda-to-FastAPI `/score` call against the sub-5-second target. The firmware's
+command queue is an on-device FreeRTOS queue, not SQS.
