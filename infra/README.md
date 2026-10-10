@@ -87,7 +87,9 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 1. Run the board test in [`../docs/actuator-control.md`](../docs/actuator-control.md).
    AWS routes, Lambda package, publish permission, and acknowledgement rule are
-   configured; automatic mode remains disabled pending MQ-2 calibration.
+   configured; automatic mode remains opt-in. MQ-2 supplies a relative demo
+   level, not a calibrated gas/CO concentration. Use synthetic telemetry and
+   a harmless low-voltage load to validate automation behavior.
 2. Build and review the Isolation Forest training/inference image as a separate
    feature branch, following
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The

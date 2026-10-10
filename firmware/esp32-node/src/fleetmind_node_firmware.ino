@@ -28,16 +28,17 @@
 #define STATUS_LED_PIN 2
 #define RELAY_ACTIVE_HIGH true  // Set false for common active-low relay boards.
 
-// MQ-2 values are estimates until calibrated with known gas concentrations.
+// Prototype-only scale: this is a linear mapping of ADC voltage to a relative
+// level, not a gas concentration or CO measurement. Never use it for safety.
 #define MQ2_ADC_MAX 4095.0f
-#define MQ2_ESTIMATED_PPM_AT_FULL_SCALE 1000.0f
-#define GAS_ANOMALY_PPM 400.0f
-#define TEMP_ANOMALY_C 60.0f
+#define MQ2_RELATIVE_LEVEL_MAX 1000.0f
+#define GAS_DEMO_TRIGGER_LEVEL 400.0f
+#define TEMP_DEMO_TRIGGER_C 60.0f
 
 #define SAMPLE_INTERVAL_MS 2000UL
 #define HEARTBEAT_INTERVAL_MS 15000UL
 #define MAX_TELEMETRY_SILENCE_MS SAMPLE_INTERVAL_MS
-#define GAS_DELTA_PPM 20.0f
+#define GAS_DELTA_LEVEL 20.0f
 #define TEMP_DELTA_C 0.5f
 #define HUMIDITY_DELTA_PCT 3.0f
 
@@ -54,7 +55,7 @@ struct TelemetryData {
   uint32_t epochSeconds;
   uint32_t uptimeMs;
   int gasAdc;
-  float gasPpmEstimate;
+  float gasLevelEstimate;
   float temperatureC;
   float humidityPct;
   bool sensorValid;
@@ -251,7 +252,7 @@ void TaskWiFiMQTT(void* parameter) {
 
 bool isMeaningfulChange(const TelemetryData& current, const TelemetryData& last) {
   return current.anomaly != last.anomaly || current.sensorValid != last.sensorValid ||
-         abs(current.gasPpmEstimate - last.gasPpmEstimate) >= GAS_DELTA_PPM ||
+         abs(current.gasLevelEstimate - last.gasLevelEstimate) >= GAS_DELTA_LEVEL ||
          (!isnan(current.temperatureC) && !isnan(last.temperatureC) && abs(current.temperatureC - last.temperatureC) >= TEMP_DELTA_C) ||
          (!isnan(current.humidityPct) && !isnan(last.humidityPct) && abs(current.humidityPct - last.humidityPct) >= HUMIDITY_DELTA_PCT);
 }
@@ -267,14 +268,14 @@ void TaskSensorRead(void* parameter) {
     bool dhtValid = !isnan(dhtReading.temperature) && !isnan(dhtReading.humidity);
     TelemetryData data = {
       ++sequenceNumber, epochSeconds(), millis(), gasAdc,
-      (gasAdc / MQ2_ADC_MAX) * MQ2_ESTIMATED_PPM_AT_FULL_SCALE,
+      (gasAdc / MQ2_ADC_MAX) * MQ2_RELATIVE_LEVEL_MAX,
       dhtValid ? dhtReading.temperature : NAN,
       dhtValid ? dhtReading.humidity : NAN,
       dhtValid,
       false
     };
-    data.anomaly = data.gasPpmEstimate >= GAS_ANOMALY_PPM ||
-                   (dhtValid && data.temperatureC >= TEMP_ANOMALY_C);
+    data.anomaly = data.gasLevelEstimate >= GAS_DEMO_TRIGGER_LEVEL ||
+                   (dhtValid && data.temperatureC >= TEMP_DEMO_TRIGGER_C);
 
     // Publish meaningful changes immediately; unchanged readings are still
     // sent at the sample cadence so the dashboard graph stays current.
@@ -300,7 +301,8 @@ void TaskPublish(void* parameter) {
     document["timestamp"] = data.epochSeconds;
     document["uptimeMs"] = data.uptimeMs;
     document["gasAdc"] = data.gasAdc;
-    document["gasPpmEstimate"] = data.gasPpmEstimate;
+    document["gasLevelEstimate"] = data.gasLevelEstimate;
+    document["gasScale"] = "relative-0-1000";
     document["temperatureC"] = data.temperatureC;
     document["humidityPct"] = data.humidityPct;
     document["sensorValid"] = data.sensorValid;

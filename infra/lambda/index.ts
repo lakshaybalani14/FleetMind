@@ -33,6 +33,7 @@ interface TelemetryInput {
   readonly temperature: number;
   readonly humidity: number;
   readonly gasLevel: number;
+  readonly gasAdc?: number;
   readonly actuatorState?: {
     readonly relayActive: boolean;
     readonly fanActive: boolean;
@@ -84,12 +85,14 @@ function parseTelemetry(body: string | undefined): TelemetryInput | undefined {
   const record = value as Record<string, unknown>;
   const { eventId, nodeId, timestamp, temperature, humidity, gasLevel } = record;
   const validNumber = (input: unknown): input is number => typeof input === "number" && Number.isFinite(input);
+  const gasAdc = record.gasAdc;
   if (
     typeof eventId !== "string" || !/^[a-zA-Z0-9_-]{1,80}$/.test(eventId) ||
     typeof nodeId !== "string" || !/^node-[a-zA-Z0-9-]{1,40}$/.test(nodeId) ||
     typeof timestamp !== "string" || Number.isNaN(Date.parse(timestamp)) ||
-    !validNumber(temperature) || !validNumber(humidity) || !validNumber(gasLevel)
+    !validNumber(temperature) || !validNumber(humidity) || !validNumber(gasLevel) || gasLevel < 0 || gasLevel > 1000
   ) return undefined;
+  if (gasAdc !== undefined && (!Number.isInteger(gasAdc) || (gasAdc as number) < 0 || (gasAdc as number) > 4095)) return undefined;
 
   const actuatorState = record.actuatorState;
   let normalizedActuatorState: TelemetryInput["actuatorState"];
@@ -113,6 +116,7 @@ function parseTelemetry(body: string | undefined): TelemetryInput | undefined {
     temperature,
     humidity,
     gasLevel,
+    ...(typeof gasAdc === "number" ? { gasAdc } : {}),
     ...(normalizedActuatorState ? { actuatorState: normalizedActuatorState } : {}),
     ...(typeof record.isAnomaly === "boolean" ? { isAnomaly: record.isAnomaly } : {}),
   };
@@ -262,7 +266,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     timestamp,
     nodeId: telemetry.nodeId,
     eventType: "telemetry",
-    message: `Telemetry received: ${telemetry.gasLevel} PPM gas, ${telemetry.temperature}°C`,
+    message: `Telemetry received: MQ-2 relative level ${telemetry.gasLevel}/1000, ${telemetry.temperature}°C`,
     source,
     severity: telemetry.isAnomaly ? "warning" : "info",
     expiresAt,
@@ -276,6 +280,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     temperature: telemetry.temperature,
     humidity: telemetry.humidity,
     gasLevel: telemetry.gasLevel,
+    ...(telemetry.gasAdc !== undefined ? { gasAdc: telemetry.gasAdc } : {}),
     ...(telemetry.actuatorState ? { actuatorState: telemetry.actuatorState } : {}),
     lastSeen: receivedAt,
   };
@@ -283,6 +288,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
 
   const updateLatestNode = async (): Promise<void> => {
     const actuatorAssignment = telemetry.actuatorState ? ", actuatorState = :actuatorState" : "";
+    const gasAdcAssignment = telemetry.gasAdc !== undefined ? ", gasAdc = :gasAdc" : "";
     const expressionValues: Record<string, unknown> = {
       ":name": latestNode.name,
       ":status": latestNode.status,
@@ -291,13 +297,14 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
       ":gasLevel": latestNode.gasLevel,
       ":lastSeen": latestNode.lastSeen,
     };
+    if (telemetry.gasAdc !== undefined) expressionValues[":gasAdc"] = telemetry.gasAdc;
     if (telemetry.actuatorState) expressionValues[":actuatorState"] = telemetry.actuatorState;
 
     try {
       await ddb.send(new UpdateCommand({
         TableName: tableName,
         Key: { PK: "FLEET", SK: `NODE#${telemetry.nodeId}` },
-        UpdateExpression: `SET #name = :name, #status = :status, temperature = :temperature, humidity = :humidity, gasLevel = :gasLevel, lastSeen = :lastSeen${actuatorAssignment}`,
+        UpdateExpression: `SET #name = :name, #status = :status, temperature = :temperature, humidity = :humidity, gasLevel = :gasLevel, lastSeen = :lastSeen${gasAdcAssignment}${actuatorAssignment}`,
         ConditionExpression: "attribute_not_exists(lastSeen) OR lastSeen <= :lastSeen",
         ExpressionAttributeNames: { "#name": "name", "#status": "status" },
         ExpressionAttributeValues: expressionValues,
@@ -640,7 +647,10 @@ function parseDeviceTelemetry(record: Record<string, unknown>): TelemetryInput |
   const timestampValue = record.timestamp;
   const temperature = record.temperatureC;
   const humidity = record.humidityPct;
-  const gasLevel = record.gasPpmEstimate;
+  // gasLevelEstimate is the current contract. Accept gasPpmEstimate temporarily
+  // so older deployed firmware continues to publish during staged updates.
+  const gasLevel = record.gasLevelEstimate ?? record.gasPpmEstimate;
+  const gasAdc = record.gasAdc;
   if (
     record.sensorValid !== true || typeof nodeId !== "string" ||
     !Number.isInteger(sequence) || typeof timestampValue !== "number" || !Number.isFinite(timestampValue) ||
@@ -653,6 +663,7 @@ function parseDeviceTelemetry(record: Record<string, unknown>): TelemetryInput |
     eventId: String(sequence), nodeId,
     timestamp,
     temperature, humidity, gasLevel,
+    ...(Number.isInteger(gasAdc) && (gasAdc as number) >= 0 && (gasAdc as number) <= 4095 ? { gasAdc } : {}),
     isAnomaly: record.isAnomaly === true,
     actuatorState: { relayActive: record.relayOn === true, fanActive: record.relayOn === true, buzzerActive: false },
   }));

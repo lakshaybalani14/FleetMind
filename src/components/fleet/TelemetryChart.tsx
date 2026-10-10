@@ -16,17 +16,17 @@ export function TelemetryChart({ data, nodeName, isLive }: Props) {
 
   const config = {
     gasLevel: {
-      label: "MQ-2 Gas / Smoke",
-      unit: "PPM",
+      label: "MQ-2 Relative Level (not CO ppm)",
+      unit: "/ 1000",
       color: hasAnomaly ? "#f87171" : "#60a5fa",
-      threshold: 500,
+      threshold: 400,
       icon: Wind,
     },
     temperature: {
       label: "DHT22 Temperature",
       unit: "°C",
       color: "#34d399",
-      threshold: 35,
+      threshold: 60,
       icon: Thermometer,
     },
   }[metric];
@@ -40,7 +40,7 @@ export function TelemetryChart({ data, nodeName, isLive }: Props) {
               <span className={`h-2 w-2 rounded-full ${isLive ? "bg-emerald-400 animate-pulse" : "bg-zinc-600"}`} />
               <CardTitle>{nodeName}</CardTitle>
             </div>
-            <CardDescription>{isLive ? "Live telemetry updates active" : "Waiting for live telemetry updates"}</CardDescription>
+            <CardDescription>{isLive ? "Live telemetry updates active" : "Waiting for live telemetry updates"} · MQ-2 is a prototype relative reading, not a CO measurement</CardDescription>
           </div>
           <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
             <button
@@ -50,7 +50,7 @@ export function TelemetryChart({ data, nodeName, isLive }: Props) {
               }`}
             >
               <Wind className="w-3.5 h-3.5" />
-              <span>Gas / Smoke</span>
+              <span>MQ-2 Level</span>
             </button>
             <button
               onClick={() => setMetric("temperature")}
@@ -97,7 +97,7 @@ export function TelemetryChart({ data, nodeName, isLive }: Props) {
                   y={config.threshold}
                   stroke="#ef4444"
                   strokeDasharray="4 4"
-                  label={{ value: `Threshold (${config.threshold} ${config.unit})`, fill: "#ef4444", fontSize: 10, position: "insideTopRight" }}
+                  label={{ value: `Demo reference (${config.threshold} ${config.unit})`, fill: "#ef4444", fontSize: 10, position: "insideTopRight" }}
                 />
               )}
               <Area type="monotone" dataKey={metric} stroke={config.color} strokeWidth={2.5} fillOpacity={1} fill="url(#metricGradient)" isAnimationActive animationDuration={250} animationEasing="ease-out" />

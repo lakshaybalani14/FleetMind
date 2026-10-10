@@ -42,7 +42,7 @@ The project pins `espressif32@6.7.0`, which uses Arduino-ESP32 2.x. If you delib
 | `$aws/things/{nodeId}/shadow/update/delta` | AWS → device | Shadow desired-state delta: `{"state":{"relayOn":true,"actionId":"uuid"}}`. |
 | `$aws/things/{nodeId}/shadow/update` | device → AWS | Reported relay/fan state. |
 
-The cloud ingestion Lambda translates `temperatureC`, `humidityPct`, and `gasPpmEstimate` into the dashboard's `temperature`, `humidity`, and `gasLevel` fields. A `timestamp` value of `0` means NTP was not yet available; the cloud uses its receipt time in that case.
+The cloud ingestion Lambda translates `temperatureC`, `humidityPct`, and `gasLevelEstimate` into the dashboard's `temperature`, `humidity`, and `gasLevel` fields. Firmware also publishes `gasAdc` (raw 0–4095 ADC) and `gasScale: "relative-0-1000"`; the dashboard shows the raw ADC value beside the relative level for traceability. A `timestamp` value of `0` means NTP was not yet available; the cloud uses its receipt time in that case. For staged firmware updates, Lambda still accepts the legacy `gasPpmEstimate` field, but it is not actual ppm.
 
 ## AWS IoT policy requirements
 
@@ -62,7 +62,7 @@ GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate 
 
 ## Known limits before field deployment
 
-- MQ-2 PPM is an estimate, not a calibrated gas measurement. Calibrate its resistance curve and account for warm-up time before claiming PPM accuracy.
+- MQ-2 output is a relative prototype level mapped linearly from ADC 0–4095 to 0–1000; it is not calibrated ppm and does not identify CO. Do not use it for life-safety protection.
 - The source does not store unsent telemetry durably. Add LittleFS/NVS buffering if offline data retention is required.
 - Live `node-01` telemetry and the separate retained status heartbeat/Last Will topic are routed through Lambda; the dashboard uses an authenticated WebSocket. Local dashboard control now sends commands to `fleetmind/{nodeId}/commands`, while the device reports `actuator_ack` on its events topic. See [`../docs/actuator-control.md`](../docs/actuator-control.md) for the AWS setup and board test.
 - `MAX_TELEMETRY_SILENCE_MS` now matches the 2-second sensor sample interval, so the live dashboard receives steady readings without waiting for a larger change. Relay commands publish status immediately rather than waiting for the 15-second heartbeat. Build and upload the firmware before these changes take effect on the board. See [`../docs/live-testing-log.md`](../docs/live-testing-log.md) for the validation checklist.

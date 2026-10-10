@@ -55,11 +55,12 @@ connection IDs in this log.
   running/standby after each command. This verifies the manual command and
   acknowledgement round trip with the board.
 - Automatic mode is intentionally off unless `AUTO_CONTROL_ENABLED=true` and
-  gas/temperature on/off thresholds are set. MQ-2's current PPM value is an
-  estimate, so calibrate it before enabling automatic relay behavior.
-- Next: calibrate the MQ-2 sensor, agree on safe gas/temperature thresholds,
-  then test baseline automatic mode with controlled readings. Keep automation
-  disabled until calibration is complete.
+  gas/temperature on/off thresholds are set. MQ-2 is now documented and labeled
+  as a relative 0–1000 prototype level, not ppm or a CO measurement.
+- Next: if desired, test the automatic loop with synthetic telemetry and a
+  harmless low-voltage load. Demo values are gas ON/OFF 400/350 and temperature
+  ON/OFF 60/58°C; these validate software behavior only and are not safety
+  limits. Keep certified CO alarms independent of this project.
 - Procedure and the configuration checklist: [`actuator-control.md`](actuator-control.md).
 
 ## Current timing and status behavior

@@ -125,10 +125,10 @@ export default function FleetDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatusTile
-          title="Gas / Smoke Level"
-          value={`${selectedNode.gasLevel} PPM`}
-          subText={selectedNode.gasLevel > 500 ? "Anomaly Triggered" : "Nominal Range"}
-          status={selectedNode.gasLevel > 500 ? "danger" : "success"}
+          title="MQ-2 Relative Level"
+          value={`${Math.round(selectedNode.gasLevel)} / 1000`}
+          subText={`Raw ADC ${selectedNode.gasAdc ?? "—"} / 4095 · demo trigger 400`}
+          status={selectedNode.gasLevel >= 400 ? "warning" : "neutral"}
         />
         <StatusTile
           title="Ambient Temp"
@@ -158,7 +158,7 @@ export default function FleetDashboard() {
         <div>
           <h2 className="text-sm font-semibold text-white">Fan control</h2>
           <p className="mt-1 text-xs text-zinc-400">
-            Mode: {selectedNode.automationEnabled ? "Automatic detection" : "Manual"}. Automatic mode uses configured thresholds and any anomaly flag; a manual relay command switches it off.
+            Mode: {selectedNode.automationEnabled ? "Automatic demo" : "Manual"}. Automatic demo uses prototype sensor thresholds; MQ-2 is not a CO alarm. A manual relay command switches it to manual.
           </p>
           {controlMessage && <p role="status" className="mt-2 text-xs text-emerald-300">{controlMessage}</p>}
           {controlError && <p role="alert" className="mt-2 text-xs text-red-300">{controlError}</p>}

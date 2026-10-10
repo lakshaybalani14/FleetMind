@@ -21,15 +21,21 @@ test("anomaly inference can request relay on while automatic mode is active", ()
 
 test("threshold configuration must be complete and have lower release thresholds", () => {
   assert.deepEqual(loadAutomationThresholds({
-    AUTO_GAS_ON_PPM: "400",
-    AUTO_GAS_OFF_PPM: "350",
+    AUTO_GAS_ON_LEVEL: "400",
+    AUTO_GAS_OFF_LEVEL: "350",
     AUTO_TEMP_ON_C: "60",
     AUTO_TEMP_OFF_C: "58",
   }), thresholds);
   assert.equal(loadAutomationThresholds({}), undefined);
   assert.equal(loadAutomationThresholds({
-    AUTO_GAS_ON_PPM: "350",
-    AUTO_GAS_OFF_PPM: "400",
+    AUTO_GAS_ON_LEVEL: "350",
+    AUTO_GAS_OFF_LEVEL: "400",
+    AUTO_TEMP_ON_C: "60",
+    AUTO_TEMP_OFF_C: "58",
+  }), undefined);
+  assert.equal(loadAutomationThresholds({
+    AUTO_GAS_ON_LEVEL: "1001",
+    AUTO_GAS_OFF_LEVEL: "350",
     AUTO_TEMP_ON_C: "60",
     AUTO_TEMP_OFF_C: "58",
   }), undefined);

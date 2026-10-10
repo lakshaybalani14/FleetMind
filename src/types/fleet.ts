@@ -5,6 +5,7 @@ export interface TelemetryPoint {
   temperature: number;
   humidity: number;
   gasLevel: number;
+  gasAdc?: number;
   isAnomaly: boolean;
 }
 
@@ -15,6 +16,7 @@ export interface FleetNode {
   temperature: number;
   humidity: number;
   gasLevel: number;
+  gasAdc?: number;
   actuatorState: {
     relayActive: boolean;
     fanActive: boolean;

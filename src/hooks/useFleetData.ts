@@ -13,6 +13,7 @@ type TelemetryStreamMessage = {
   temperature: number;
   humidity: number;
   gasLevel: number;
+  gasAdc?: number;
   isAnomaly?: boolean;
   actuatorState?: FleetNode["actuatorState"];
 };
@@ -69,6 +70,7 @@ function toTelemetryPoint(record: TelemetryStreamMessage): TelemetryPoint {
     temperature: record.temperature,
     humidity: record.humidity,
     gasLevel: record.gasLevel,
+    gasAdc: record.gasAdc,
     isAnomaly: record.isAnomaly === true,
   };
 }
@@ -147,6 +149,7 @@ export function useFleetData(idToken: string | null) {
             temperature: node.temperature ?? 0,
             humidity: node.humidity ?? 0,
             gasLevel: node.gasLevel ?? 0,
+            gasAdc: node.gasAdc,
             actuatorState: node.actuatorState ?? emptyActuatorState,
             actuatorStateStale: node.status === "offline",
             automationEnabled: node.automationEnabled === true,
@@ -265,6 +268,7 @@ export function useFleetData(idToken: string | null) {
               temperature: message.temperature,
               humidity: message.humidity,
               gasLevel: message.gasLevel,
+              gasAdc: message.gasAdc,
               actuatorState: message.actuatorState ?? node.actuatorState,
               actuatorStateStale: false,
               lastSeen: receivedAt,
@@ -272,6 +276,7 @@ export function useFleetData(idToken: string | null) {
             return exists ? updated : [...updated, {
               id: message.nodeId, name: `ESP32 ${message.nodeId}`, status: "online",
               temperature: message.temperature, humidity: message.humidity, gasLevel: message.gasLevel,
+              gasAdc: message.gasAdc,
               actuatorState: message.actuatorState ?? emptyActuatorState, actuatorStateStale: false, lastSeen: receivedAt,
             }];
           });
@@ -284,7 +289,7 @@ export function useFleetData(idToken: string | null) {
             timestamp: formatTimestamp(message.timestamp),
             nodeId: message.nodeId,
             eventType: message.isAnomaly ? "anomaly_detected" : "telemetry",
-            message: message.isAnomaly ? `Anomaly detected: ${message.gasLevel} PPM` : `Live reading received: ${message.gasLevel} PPM gas`,
+            message: message.isAnomaly ? `Prototype trigger: MQ-2 relative level ${Math.round(message.gasLevel)}/1000` : `Live MQ-2 relative level: ${Math.round(message.gasLevel)}/1000`,
             source: "AWS IoT Core",
             severity: message.isAnomaly ? "warning" : "info",
           };

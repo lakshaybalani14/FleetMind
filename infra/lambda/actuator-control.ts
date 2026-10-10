@@ -14,12 +14,13 @@ export interface SensorReading {
 export function loadAutomationThresholds(
   environment: Readonly<Record<string, string | undefined>> = process.env,
 ): AutomationThresholds | undefined {
-  const gasOn = Number(environment.AUTO_GAS_ON_PPM);
-  const gasOff = Number(environment.AUTO_GAS_OFF_PPM);
+  const gasOn = Number(environment.AUTO_GAS_ON_LEVEL);
+  const gasOff = Number(environment.AUTO_GAS_OFF_LEVEL);
   const temperatureOn = Number(environment.AUTO_TEMP_ON_C);
   const temperatureOff = Number(environment.AUTO_TEMP_OFF_C);
   if (
     ![gasOn, gasOff, temperatureOn, temperatureOff].every(Number.isFinite) ||
+    gasOff < 0 || gasOn < 0 || gasOff > 1000 || gasOn > 1000 ||
     gasOff >= gasOn || temperatureOff >= temperatureOn
   ) return undefined;
 

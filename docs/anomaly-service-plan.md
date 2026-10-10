@@ -36,7 +36,7 @@ The firmware currently sends these fields on
 | `temperatureC` | DHT22 temperature in Celsius. |
 | `humidityPct` | DHT22 relative humidity percentage. |
 | `gasAdc` | Raw MQ-2 ADC reading; preserve this for calibration and analysis. |
-| `gasPpmEstimate` | Uncalibrated MQ-2 estimate; do not treat as ground-truth ppm. |
+| `gasLevelEstimate` | MQ-2 relative 0–1000 prototype level; not calibrated ppm or CO ground truth. |
 | `sensorValid` | Whether sensor readings passed firmware validity checks. |
 | `isAnomaly` | Existing firmware rule flag; useful as a hint, not a verified label. |
 | `relayOn` | Relay state reported by the device. |
@@ -51,7 +51,7 @@ for irregular intervals and missing readings.
 Every stored/exported row should retain:
 
 - `nodeId`, `sequence`, device `timestamp`, and server `receivedAt` in UTC;
-- `temperatureC`, `humidityPct`, `gasAdc`, and `gasPpmEstimate` with units in
+- `temperatureC`, `humidityPct`, `gasAdc`, and `gasLevelEstimate` with units in
   column names;
 - `sensorValid`, `relayOn`, `uptimeMs`, and relevant status/RSSI data where
   available;

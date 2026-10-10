@@ -16,10 +16,21 @@ relay-on. Both use the same device command, acknowledgement, DynamoDB status,
 and dashboard update. Manual relay commands switch that node back to manual
 mode.
 
-Automatic control is off by default. MQ-2 `gasPpmEstimate` is not calibrated
-PPM, so do not enable threshold automation until the sensor is calibrated and
-the team has selected safe on/off points. The off point is lower than the on
-point (hysteresis) to prevent rapid relay cycling.
+Automatic control is off by default. The MQ-2 value is a **relative prototype
+level**, not ppm and not a CO measurement. Firmware maps ADC 0–4095 linearly to
+level 0–1000; the MQ-2 response is nonlinear and affected by other gases and
+environmental conditions. These values and thresholds are for software/demo
+behavior only. Never use this project as a CO alarm or life-safety controller;
+use a certified CO alarm independently.
+
+The current firmware demo trigger is level 400/1000 (40% of ADC full scale) or
+temperature 60°C. The controller test thresholds are gas ON 400, OFF 350,
+temperature ON 60°C, OFF 58°C. The 50-level / 2°C gaps are hysteresis: ON
+occurs if either ON threshold is reached; OFF occurs only when both readings
+are at or below their OFF thresholds. In between, the relay holds its current
+state. These are arbitrary prototype settings, not measured CO limits. The
+dashboard's chart lines are visual demo references, not independently enforced
+thresholds.
 
 ## AWS setup reference
 
@@ -49,8 +60,8 @@ are only needed again if resources must be recreated or updated.
    | --- | --- |
    | `IOT_DATA_ENDPOINT` | The account-specific HTTPS IoT data endpoint shown in AWS IoT Core → Settings in `ap-southeast-2`. |
    | `AUTO_CONTROL_ENABLED` | `false` for the first manual-control test. |
-   | `AUTO_GAS_ON_PPM` / `AUTO_GAS_OFF_PPM` | Leave empty until MQ-2 is calibrated. |
-   | `AUTO_TEMP_ON_C` / `AUTO_TEMP_OFF_C` | Leave empty until the team selects safe temperature limits. |
+   | `AUTO_GAS_ON_LEVEL` / `AUTO_GAS_OFF_LEVEL` | Relative MQ-2 levels from 0 to 1000; use 400 / 350 only for controlled demo testing. |
+   | `AUTO_TEMP_ON_C` / `AUTO_TEMP_OFF_C` | Temperature thresholds in °C; use 60 / 58 only for controlled demo testing. |
    | `AUTO_COMMAND_COOLDOWN_SECONDS` | `10` initially. |
 
    Save the variables, then wait for the Lambda update to finish.
@@ -122,12 +133,16 @@ IoT rule.
 
 ### Batch B — baseline threshold automation
 
-1. Calibrate MQ-2 and agree gas/temperature on/off thresholds with the team.
-2. Set `AUTO_CONTROL_ENABLED=true` and all four numeric threshold variables on
-   the telemetry Lambda; keep off thresholds below their corresponding on
-   thresholds. Save and wait for the update to finish.
+1. Confirm the demo is isolated from any life-safety function and uses only a
+   harmless low-voltage load. No calibration gas is required for a software
+   simulation; do not make smoke or release gas to test it.
+2. For a controlled software demo only, set `AUTO_CONTROL_ENABLED=true` and
+   configure `AUTO_GAS_ON_LEVEL=400`, `AUTO_GAS_OFF_LEVEL=350`,
+   `AUTO_TEMP_ON_C=60`, and `AUTO_TEMP_OFF_C=58` on the telemetry Lambda. These
+   example values validate the controller logic; they are not CO limits. Save
+   and wait for the Lambda update to finish.
 3. Enable **Automatic thresholds** for one node in the dashboard.
-4. Using safe sensor simulation or controlled readings, verify that crossing
+4. Using synthetic telemetry or safe software tests (not gas exposure), verify that crossing
    either on threshold requests relay-on, values in the hysteresis band do not
    cause repeated switching, and both readings below their off thresholds
    request relay-off. Confirm every change via device acknowledgement.
@@ -155,4 +170,5 @@ directly until ownership, authorization, and audit behavior are reviewed.
 - Board-verified: manual relay ON/OFF produced a relay click and LED state
   changes, and the dashboard showed running/standby after each action.
 - Not board-verified: automated threshold behavior.
-- Not ready to enable: production threshold automation before MQ-2 calibration.
+- Prototype thresholds are now explicitly relative/demo-only. Do not treat the
+  MQ-2 output or automation as a CO detector or life-safety system.
