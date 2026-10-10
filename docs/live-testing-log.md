@@ -87,6 +87,39 @@ latency tuning is blocking the next project task.
 
 ## Repeatable live-test checklist
 
+## 2026-10-10 — Dashboard synthetic temperature / relay orchestration
+
+- User confirmed the test MQTT payload caused a physical relay click and the
+  MQTT acknowledgement was received. This verifies the command/ack path; it
+  does not by itself verify that the telemetry value reached the chart.
+- Root-cause checks found two visibility/order conditions: the chart defaults
+  to MQ-2 Level rather than Temperature, and the previously shared sample
+  timestamp was stale relative to current live telemetry. Valid, older frames
+  can remain in chart history, but must never roll the current-value tiles
+  backward. A current ESP32 sample can also
+  quickly replace a synthetic value on the latest-temperature tile.
+- Frontend stream handling now validates event timestamps and numeric readings,
+  deduplicates chart points without conflating sequence IDs reused after device
+  reboot, rejects stale values for current tiles, and preserves newer live
+  WebSocket state if the initial HTTP snapshot resolves later. Live action
+  acknowledgements are also preserved if the initial log request finishes late.
+- Added six automated tests for fresh readings, stale-event protection, invalid
+  timestamps, chart ordering/deduplication/sequence reuse, HTTP-vs-WebSocket
+  race behavior, and acknowledgement-vs-log-snapshot race behavior.
+- Verification: dashboard tests passed (6/6), root TypeScript check passed,
+  infrastructure TypeScript check passed, and the Next.js production build
+  completed successfully. No browser/device retest was run in this local code
+  session.
+- Retest: send a new synthetic telemetry event with a fresh timestamp, select
+  **Temperature** in the chart, and compare the event across CloudWatch,
+  DynamoDB, the live tile, and chart. See the synthetic telemetry checklist in
+  [`actuator-control.md`](actuator-control.md).
+- User retested with a newly generated Unix timestamp and confirmed the
+  temperature spike appeared. The earlier timestamp example was stale by the
+  time it was reused; the dashboard now behaves as expected with a fresh event.
+
+## Repeatable live-test checklist
+
 ### Before testing
 
 - Confirm the ESP32 is connected and is publishing the expected

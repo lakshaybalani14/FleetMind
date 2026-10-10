@@ -148,6 +148,28 @@ IoT rule.
    request relay-off. Confirm every change via device acknowledgement.
 5. Click **Turn fan on/off** manually; this must switch that node to Manual.
 
+### Synthetic telemetry and dashboard chart check
+
+1. Send the synthetic MQTT telemetry through the same
+   `fleetmind/<nodeId>/telemetry` topic as the device. Use a current Unix
+   timestamp (seconds) or current ISO timestamp; do not reuse an old example
+   timestamp. The frontend orders chart points by the timestamp in the event and
+   intentionally will not let an older event replace the current-value tiles.
+2. In the dashboard chart, select **Temperature** to see a temperature test
+   spike. The chart initially selects **MQ-2 Level**, so a temperature change
+   will not be visible until Temperature is selected.
+3. The temperature tile reflects the latest reading. Since the ESP32 continues
+   publishing real sensor readings, a synthetic temperature may be replaced on
+   that tile by the next device sample; the chart should retain the synthetic
+   sample among its 50 most recent points while it remains in that window.
+4. Confirm the same event appears in the telemetry Lambda's CloudWatch logs,
+   the `FleetMindData` latest-node item, the dashboard current value, and the
+   selected chart series. A relay acknowledgement by itself proves the command
+   path, not that the synthetic telemetry event reached the chart.
+
+Synthetic readings validate software routing and display behavior only. They
+are not calibrated sensor measurements or evidence of gas concentration.
+
 ### Later — Isolation Forest model
 
 When the model service is ready, connect its prediction output to the telemetry

@@ -1,22 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { TelemetryPoint, FleetNode, ActionLogEntry } from "@/types/fleet";
+import type { TelemetryPoint, FleetNode, ActionLogEntry } from "@/types/fleet";
+import {
+  applyTelemetryToNodes,
+  mergeActionLogs,
+  mergeNodeSnapshot,
+  mergeTelemetryPoints,
+  telemetryMessageToPoint,
+  telemetryStatusAt,
+  type TelemetryStreamMessage,
+} from "@/lib/fleet-stream";
 
-const TELEMETRY_STALE_AFTER_MS = 90_000;
 const ALLOWED_CLOCK_SKEW_MS = 30_000;
 
 type ApiNode = Partial<FleetNode> & { id: string; temperature?: number; humidity?: number; gasLevel?: number };
-type TelemetryStreamMessage = {
-  type: "telemetry";
-  eventId: string;
-  nodeId: string;
-  timestamp: string;
-  temperature: number;
-  humidity: number;
-  gasLevel: number;
-  gasAdc?: number;
-  isAnomaly?: boolean;
-  actuatorState?: FleetNode["actuatorState"];
-};
 type NodeStatusStreamMessage = {
   type: "node-status";
   nodeId: string;
@@ -45,45 +41,11 @@ type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage | ControlM
 
 const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
 
-function telemetryStatus(lastSeen: string, now: number): FleetNode["status"] {
-  const lastSeenMs = Date.parse(lastSeen);
-  if (!Number.isFinite(lastSeenMs)) return "offline";
-  const ageMs = now - lastSeenMs;
-  if (ageMs < -ALLOWED_CLOCK_SKEW_MS) return "degraded";
-  return ageMs <= TELEMETRY_STALE_AFTER_MS ? "online" : "offline";
-}
-
 function currentNodeStatus(node: FleetNode, now: number): FleetNode["status"] {
   // An explicit Last Will/offline update must win over its fresh receive time.
   if (node.status === "offline") return "offline";
-  const freshness = telemetryStatus(node.lastSeen, now);
+  const freshness = telemetryStatusAt(Date.parse(node.lastSeen), now);
   return freshness === "online" ? node.status : freshness;
-}
-
-function toTelemetryPoint(record: TelemetryStreamMessage): TelemetryPoint {
-  const parsedTimestamp = Date.parse(record.timestamp);
-  const timestampMs = Number.isFinite(parsedTimestamp) ? parsedTimestamp : Date.now();
-  return {
-    eventId: record.eventId,
-    timestamp: new Date(timestampMs).toISOString(),
-    timestampMs,
-    temperature: record.temperature,
-    humidity: record.humidity,
-    gasLevel: record.gasLevel,
-    gasAdc: record.gasAdc,
-    isAnomaly: record.isAnomaly === true,
-  };
-}
-
-function mergeTelemetryPoints(...groups: TelemetryPoint[][]): TelemetryPoint[] {
-  const pointsById = new Map<string, TelemetryPoint>();
-  for (const point of groups.flat()) {
-    const key = point.eventId ?? `${point.timestampMs}:${point.temperature}:${point.humidity}:${point.gasLevel}`;
-    pointsById.set(key, point);
-  }
-  const merged: TelemetryPoint[] = [];
-  pointsById.forEach((point) => merged.push(point));
-  return merged.sort((a, b) => a.timestampMs - b.timestampMs).slice(-50);
 }
 
 function formatTimestamp(value: string): string {
@@ -140,12 +102,12 @@ export function useFleetData(idToken: string | null) {
       .then(([nodeResult, logResult]) => {
         if (cancelled) return;
         const receivedAt = Date.now();
-        setNodes((nodeResult.nodes as ApiNode[]).map((node) => {
+        const snapshotNodes = (nodeResult.nodes as ApiNode[]).map((node) => {
           const lastSeen = node.lastSeen ?? "";
           return {
             id: node.id,
             name: node.name ?? `ESP32 ${node.id}`,
-            status: node.status ?? telemetryStatus(lastSeen, receivedAt),
+            status: node.status ?? telemetryStatusAt(Date.parse(lastSeen), receivedAt),
             temperature: node.temperature ?? 0,
             humidity: node.humidity ?? 0,
             gasLevel: node.gasLevel ?? 0,
@@ -157,8 +119,10 @@ export function useFleetData(idToken: string | null) {
             lastActuatorActionResult: node.lastActuatorActionResult,
             lastSeen,
           };
-        }));
-        setLogs((logResult.logs as ActionLogEntry[]).map((log) => ({ ...log, id: log.id ?? `${log.timestamp}-${log.nodeId}` })));
+        });
+        setNodes((previous) => mergeNodeSnapshot(previous, snapshotNodes));
+        const snapshotLogs = (logResult.logs as ActionLogEntry[]).map((log) => ({ ...log, id: log.id ?? `${log.timestamp}-${log.nodeId}` }));
+        setLogs((previous) => mergeActionLogs(previous, snapshotLogs));
       })
       .catch((error) => console.error("Could not load FleetMind data", error));
     return () => { cancelled = true; };
@@ -254,32 +218,13 @@ export function useFleetData(idToken: string | null) {
               source: "AWS IoT Core",
               severity: message.result === "applied" ? "info" : "warning",
             };
-            setLogs((previous) => [ackLog, ...previous.filter((entry) => entry.id !== ackLog.id)].slice(0, 50));
+            setLogs((previous) => mergeActionLogs([ackLog], previous));
             return;
           }
           if (message.type !== "telemetry") return;
-          const point = toTelemetryPoint(message);
-          const receivedAt = new Date().toISOString();
-          setNodes((previous) => {
-            const exists = previous.some((node) => node.id === message.nodeId);
-            const updated = previous.map((node) => node.id === message.nodeId ? {
-              ...node,
-              status: "online" as const,
-              temperature: message.temperature,
-              humidity: message.humidity,
-              gasLevel: message.gasLevel,
-              gasAdc: message.gasAdc,
-              actuatorState: message.actuatorState ?? node.actuatorState,
-              actuatorStateStale: false,
-              lastSeen: receivedAt,
-            } : node);
-            return exists ? updated : [...updated, {
-              id: message.nodeId, name: `ESP32 ${message.nodeId}`, status: "online",
-              temperature: message.temperature, humidity: message.humidity, gasLevel: message.gasLevel,
-              gasAdc: message.gasAdc,
-              actuatorState: message.actuatorState ?? emptyActuatorState, actuatorStateStale: false, lastSeen: receivedAt,
-            }];
-          });
+          const point = telemetryMessageToPoint(message);
+          if (!point) return;
+          setNodes((previous) => applyTelemetryToNodes(previous, message));
           setTelemetryHistory((previous) => ({
             ...previous,
             [message.nodeId]: mergeTelemetryPoints(previous[message.nodeId] ?? [], [point]),
@@ -293,7 +238,7 @@ export function useFleetData(idToken: string | null) {
             source: "AWS IoT Core",
             severity: message.isAnomaly ? "warning" : "info",
           };
-          setLogs((previous) => [logEntry, ...previous].slice(0, 50));
+          setLogs((previous) => mergeActionLogs([logEntry], previous));
         };
         socket.onclose = () => {
           if (stopped) return;
@@ -325,7 +270,9 @@ export function useFleetData(idToken: string | null) {
     fetchJson(`/telemetry?nodeId=${encodeURIComponent(selectedNodeId)}&limit=50`)
       .then((result) => {
         if (cancelled) return;
-        const points = (result.data as TelemetryStreamMessage[]).map(toTelemetryPoint);
+        const points = (result.data as TelemetryStreamMessage[])
+          .map(telemetryMessageToPoint)
+          .filter((point): point is TelemetryPoint => point !== undefined);
         setTelemetryHistory((previous) => ({
           ...previous,
           [selectedNodeId]: mergeTelemetryPoints(points, previous[selectedNodeId] ?? []),

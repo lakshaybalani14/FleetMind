@@ -4,7 +4,8 @@
   "scripts": {
     "synth": "cdk synth --strict",
     "typecheck": "tsc --noEmit",
-    "diff": "cdk diff"
+    "diff": "cdk diff",
+    "test:dashboard": "tsx --test ../src/lib/fleet-stream.test.ts"
   },
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "3.1146.0",
