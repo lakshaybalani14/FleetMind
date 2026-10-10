@@ -85,11 +85,11 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 ## Remaining cloud work
 
-1. Run the board test in [`../docs/actuator-control.md`](../docs/actuator-control.md).
-   AWS routes, Lambda package, publish permission, and acknowledgement rule are
-   configured; automatic mode remains opt-in. MQ-2 supplies a relative demo
-   level, not a calibrated gas/CO concentration. Use synthetic telemetry and
-   a harmless low-voltage load to validate automation behavior.
+1. The manual relay round trip and synthetic threshold ON/OFF test are verified
+   in [`../docs/actuator-control.md`](../docs/actuator-control.md). Automatic
+   mode remains opt-in. Optional follow-up: test hysteresis-band and cooldown
+   boundaries with a harmless low-voltage load. MQ-2 supplies a relative demo
+   level, not calibrated gas/CO concentration.
 2. Build and review the Isolation Forest training/inference image as a separate
    feature branch, following
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
@@ -102,6 +102,18 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 The device Thing/certificate and firmware downlink/acknowledgement hooks exist
 for the current prototype. The dashboard command flow and matching AWS
-configuration are in place; the board test is pending. Production-
-grade fleet provisioning, robust offline buffering, anomaly detection,
-automation hardening, and frontend hosting also remain future work.
+configuration are in place; manual relay and synthetic threshold ON/OFF have
+been exercised. Production-grade fleet provisioning, robust offline buffering,
+anomaly detection, automation hardening, and frontend hosting also remain
+future work.
+
+## SNS and queue status
+
+Amazon SNS and Amazon SQS are not currently part of the deployed or planned
+baseline resources. SQS may be considered later to buffer asynchronous anomaly
+inference jobs for an EC2-hosted model worker. SNS is only useful if anomaly
+results need fan-out to multiple independent consumers. Keep the dashboard's
+low-latency telemetry WebSocket path direct; these services are not required
+for it. The firmware's command queue is an on-device FreeRTOS queue, not SQS.
+Do not create SNS/SQS resources until the inference integration design is
+reviewed.

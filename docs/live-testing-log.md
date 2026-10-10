@@ -117,6 +117,11 @@ latency tuning is blocking the next project task.
 - User retested with a newly generated Unix timestamp and confirmed the
   temperature spike appeared. The earlier timestamp example was stale by the
   time it was reused; the dashboard now behaves as expected with a fresh event.
+- User confirmed the automatic threshold OFF action also worked after the
+  synthetic high-temperature test. Together with the earlier ON relay click and
+  MQTT acknowledgement, this verifies the demo threshold ON/OFF loop through
+  the device. It does not validate calibrated gas detection, and hysteresis
+  boundary/cooldown behavior was not separately measured.
 
 ## Repeatable live-test checklist
 

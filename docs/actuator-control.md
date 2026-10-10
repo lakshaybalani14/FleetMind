@@ -185,12 +185,18 @@ directly until ownership, authorization, and audit behavior are reviewed.
 - Local source: manual route, baseline threshold controller, anomaly-flag hook,
   dashboard controls, IoT acknowledgement handler, WebSocket updates, and CDK
   reference changes are implemented.
-- AWS setup verified: deployed Lambda ZIP hash matches local code,
-  `AUTO_CONTROL_ENABLED` is `false`, the scoped IoT publish permission and
-  acknowledgement rule exist, and both Cognito-protected HTTP routes are
-  deployed to `$default`.
+- AWS setup verified: deployed Lambda ZIP hash matches local code, the scoped
+  IoT publish permission and acknowledgement rule exist, and both
+  Cognito-protected HTTP routes are deployed to `$default`. Automatic control
+  was enabled for the controlled synthetic threshold test; it remains an
+  opt-in feature.
 - Board-verified: manual relay ON/OFF produced a relay click and LED state
   changes, and the dashboard showed running/standby after each action.
-- Not board-verified: automated threshold behavior.
+- User-tested with synthetic telemetry: a fresh 61°C reading crossed the demo
+  temperature ON threshold, the relay actuated and acknowledged, and the
+  automatic OFF path also worked after readings returned below both OFF
+  thresholds. This does not verify calibrated physical gas detection or
+  life-safety behavior. Hysteresis-band and cooldown boundary cases remain
+  optional follow-up tests.
 - Prototype thresholds are now explicitly relative/demo-only. Do not treat the
   MQ-2 output or automation as a CO detector or life-safety system.
