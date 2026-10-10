@@ -34,6 +34,17 @@ interface TelemetryInput {
   readonly humidity: number;
   readonly gasLevel: number;
   readonly gasAdc?: number;
+  // Preserve the device payload alongside dashboard-friendly aliases so the
+  // anomaly pipeline can train on raw readings and audit data quality.
+  readonly schemaVersion?: number;
+  readonly sequence?: number;
+  readonly deviceTimestamp?: number;
+  readonly uptimeMs?: number;
+  readonly gasLevelEstimate?: number;
+  readonly gasScale?: string;
+  readonly gasPpmEstimate?: number;
+  readonly sensorValid?: boolean;
+  readonly relayOn?: boolean;
   readonly actuatorState?: {
     readonly relayActive: boolean;
     readonly fanActive: boolean;
@@ -83,16 +94,28 @@ function parseTelemetry(body: string | undefined): TelemetryInput | undefined {
   if (typeof value !== "object" || value === null) return undefined;
 
   const record = value as Record<string, unknown>;
-  const { eventId, nodeId, timestamp, temperature, humidity, gasLevel } = record;
+  const {
+    eventId, nodeId, timestamp, temperature, humidity, gasLevel,
+    schemaVersion, sequence, deviceTimestamp, uptimeMs, gasAdc,
+    gasLevelEstimate, gasScale, gasPpmEstimate, sensorValid, relayOn,
+  } = record;
   const validNumber = (input: unknown): input is number => typeof input === "number" && Number.isFinite(input);
-  const gasAdc = record.gasAdc;
   if (
     typeof eventId !== "string" || !/^[a-zA-Z0-9_-]{1,80}$/.test(eventId) ||
     typeof nodeId !== "string" || !/^node-[a-zA-Z0-9-]{1,40}$/.test(nodeId) ||
     typeof timestamp !== "string" || Number.isNaN(Date.parse(timestamp)) ||
-    !validNumber(temperature) || !validNumber(humidity) || !validNumber(gasLevel) || gasLevel < 0 || gasLevel > 1000
+    !validNumber(temperature) || !validNumber(humidity) || !validNumber(gasLevel) || gasLevel < 0 || gasLevel > 1000 ||
+    (schemaVersion !== undefined && !Number.isInteger(schemaVersion)) ||
+    (sequence !== undefined && (!Number.isInteger(sequence) || (sequence as number) < 0 || (sequence as number) > 0xffffffff)) ||
+    (deviceTimestamp !== undefined && (!validNumber(deviceTimestamp) || deviceTimestamp < 0)) ||
+    (uptimeMs !== undefined && (!validNumber(uptimeMs) || uptimeMs < 0)) ||
+    (gasLevelEstimate !== undefined && (!validNumber(gasLevelEstimate) || gasLevelEstimate < 0 || gasLevelEstimate > 1000)) ||
+    (gasPpmEstimate !== undefined && (!validNumber(gasPpmEstimate) || gasPpmEstimate < 0 || gasPpmEstimate > 1000)) ||
+    (gasAdc !== undefined && (!Number.isInteger(gasAdc) || (gasAdc as number) < 0 || (gasAdc as number) > 4095)) ||
+    (gasScale !== undefined && (typeof gasScale !== "string" || gasScale.length > 64)) ||
+    (sensorValid !== undefined && typeof sensorValid !== "boolean") ||
+    (relayOn !== undefined && typeof relayOn !== "boolean")
   ) return undefined;
-  if (gasAdc !== undefined && (!Number.isInteger(gasAdc) || (gasAdc as number) < 0 || (gasAdc as number) > 4095)) return undefined;
 
   const actuatorState = record.actuatorState;
   let normalizedActuatorState: TelemetryInput["actuatorState"];
@@ -116,7 +139,16 @@ function parseTelemetry(body: string | undefined): TelemetryInput | undefined {
     temperature,
     humidity,
     gasLevel,
+    ...(typeof schemaVersion === "number" ? { schemaVersion } : {}),
+    ...(typeof sequence === "number" ? { sequence } : {}),
+    ...(typeof deviceTimestamp === "number" ? { deviceTimestamp } : {}),
+    ...(typeof uptimeMs === "number" ? { uptimeMs } : {}),
+    ...(typeof gasLevelEstimate === "number" ? { gasLevelEstimate } : {}),
+    ...(typeof gasScale === "string" ? { gasScale } : {}),
     ...(typeof gasAdc === "number" ? { gasAdc } : {}),
+    ...(typeof gasPpmEstimate === "number" ? { gasPpmEstimate } : {}),
+    ...(typeof sensorValid === "boolean" ? { sensorValid } : {}),
+    ...(typeof relayOn === "boolean" ? { relayOn } : {}),
     ...(normalizedActuatorState ? { actuatorState: normalizedActuatorState } : {}),
     ...(typeof record.isAnomaly === "boolean" ? { isAnomaly: record.isAnomaly } : {}),
   };
@@ -663,7 +695,16 @@ function parseDeviceTelemetry(record: Record<string, unknown>): TelemetryInput |
     eventId: String(sequence), nodeId,
     timestamp,
     temperature, humidity, gasLevel,
-    ...(Number.isInteger(gasAdc) && (gasAdc as number) >= 0 && (gasAdc as number) <= 4095 ? { gasAdc } : {}),
+    schemaVersion: record.schemaVersion,
+    sequence,
+    deviceTimestamp: timestampValue,
+    uptimeMs: record.uptimeMs,
+    gasAdc: record.gasAdc,
+    gasLevelEstimate: record.gasLevelEstimate,
+    gasScale: record.gasScale,
+    gasPpmEstimate: record.gasPpmEstimate,
+    sensorValid: record.sensorValid,
+    relayOn: record.relayOn,
     isAnomaly: record.isAnomaly === true,
     actuatorState: { relayActive: record.relayOn === true, fanActive: record.relayOn === true, buzzerActive: false },
   }));
