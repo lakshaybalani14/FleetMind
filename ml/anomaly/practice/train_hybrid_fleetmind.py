@@ -24,7 +24,7 @@ from sklearn.pipeline import Pipeline
 
 FLEET_FEATURES = ["gasAdc", "temperature", "humidity"]
 URBAN_FEATURES = ["temp", "humidity"]
-MODEL_VERSION = "fleetmind-hybrid-prototype-0.1"
+MODEL_VERSION = "fleetmind-hybrid-prototype-0.2"
 URBAN_MODEL_VERSION = "urbaniot-temp-humidity-rf-0.1"
 URBAN_THRESHOLD = 0.5
 
@@ -125,6 +125,9 @@ def fit_models(fleet: pd.DataFrame, urban: pd.DataFrame) -> tuple[Any, Any, pd.D
     fleet_holdout["hybrid_anomaly_candidate"] = (
         fleet_holdout.fleet_baseline_unusual | fleet_holdout.urbaniot_label_signal
     )
+    fleet_holdout["prediction"] = fleet_holdout.hybrid_anomaly_candidate.map(
+        {True: "anomaly", False: "normal"}
+    )
     return fleet_model, urban_model, fleet_holdout, urban_holdout
 
 
@@ -132,6 +135,7 @@ def score_reading(bundle: dict[str, Any], reading: dict[str, Any]) -> dict[str, 
     if reading.get("sensorValid") is not True:
         return {
             "status": "sensor_issue",
+            "prediction": "sensor_issue",
             "anomaly_candidate": None,
             "reason": "sensorValid must be true; invalid readings are not scored as environmental anomalies",
             "modelVersion": bundle["model_version"],
@@ -145,6 +149,7 @@ def score_reading(bundle: dict[str, Any], reading: dict[str, Any]) -> dict[str, 
     if not (0 <= gas <= 4095 and -40 <= temp <= 85 and 0 <= humidity <= 100):
         return {
             "status": "invalid_reading",
+            "prediction": "sensor_issue",
             "anomaly_candidate": None,
             "reason": "one or more values are outside the accepted sensor ranges",
             "modelVersion": bundle["model_version"],
@@ -158,6 +163,7 @@ def score_reading(bundle: dict[str, Any], reading: dict[str, Any]) -> dict[str, 
     urban_flag = urban_probability >= bundle["urban_probability_threshold"]
     return {
         "status": "scored",
+        "prediction": "anomaly" if fleet_unusual or urban_flag else "normal",
         "anomaly_candidate": bool(fleet_unusual or urban_flag),
         "fleetmind_baseline_unusual": fleet_unusual,
         "fleetmind_baseline_score": fleet_score,
@@ -198,7 +204,7 @@ def main() -> None:
     fleet_holdout[[
         "timestamp", "gasAdc", "temperature", "humidity", "fleet_baseline_score",
         "fleet_baseline_unusual", "urbaniot_anomaly_probability", "urbaniot_label_signal",
-        "hybrid_anomaly_candidate",
+        "hybrid_anomaly_candidate", "prediction",
     ]].to_csv(fleet_scores_path, index=False)
     urban_holdout[[
         "timestamp", *URBAN_FEATURES, "anomaly_label", "predicted_anomaly", "anomaly_probability"

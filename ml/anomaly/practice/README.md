@@ -147,9 +147,9 @@ python3 ml/anomaly/practice/score_hybrid_fleetmind.py \
   --reading-json '{"temperature":25.1,"humidity":65.6,"gasAdc":367,"sensorValid":true}'
 ```
 
-The input uses only FleetMind fields. The output includes the baseline flag,
-UrbanIoT probability, combined candidate flag, score, and model version.
-Invalid sensor readings return `sensor_issue` and are not scored as
+The input uses only FleetMind fields. A valid reading returns `prediction` as
+`normal` or `anomaly`, along with each component's signal, score, and model
+version. Invalid sensor readings return `sensor_issue` and are not scored as
 environmental anomalies. This remains an offline prototype: the UrbanIoT
 temperature/humidity classifier performed poorly on labeled UrbanIoT holdout
 data, and there are no reviewed FleetMind anomaly labels. Do not use it for
