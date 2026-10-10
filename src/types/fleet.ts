@@ -17,6 +17,7 @@ export interface FleetNode {
   humidity: number;
   gasLevel: number;
   gasAdc?: number;
+  isAnomaly?: boolean;
   actuatorState: {
     relayActive: boolean;
     fanActive: boolean;

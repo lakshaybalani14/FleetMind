@@ -6,6 +6,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { DynamoDBDocumentClient, DeleteCommand, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 import { decideAutomaticRelay, loadAutomationThresholds } from "./actuator-control";
+import { canAcceptMqttTelemetry } from "./telemetry-policy";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
@@ -19,6 +20,9 @@ const iotDataEndpoint = process.env.IOT_DATA_ENDPOINT;
 const iotData = iotDataEndpoint ? new IoTDataPlaneClient({ endpoint: iotDataEndpoint }) : undefined;
 const automaticControlEnabled = process.env.AUTO_CONTROL_ENABLED === "true";
 const ttlDays = Number(process.env.TELEMETRY_TTL_DAYS ?? "30");
+// Keep these dashboard/demo alert thresholds aligned with src/lib/telemetry-analysis.ts.
+const demoGasAlertThreshold = 400;
+const demoTemperatureAlertThreshold = 60;
 const websocketManagementClient = websocketEndpoint && process.env.AWS_REGION
   ? new ApiGatewayManagementApiClient({
       endpoint: websocketEndpoint.replace(/^wss:/, "https:"),
@@ -177,10 +181,23 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       return response(202, { accepted: true, nodeId: status.nodeId, type: "status" });
     }
 
-    const telemetry = parseDeviceTelemetry(event as unknown as Record<string, unknown>);
+    const record = event as unknown as Record<string, unknown>;
+    // Firmware sends temperatureC/humidityPct/gasLevelEstimate, while the AWS
+    // MQTT test client commonly uses the normalized dashboard/API field names.
+    // Accept both through the same strict validator so test publishes exercise
+    // the exact same storage, threshold, and WebSocket path as device publishes.
+    const deviceTelemetry = parseDeviceTelemetry(record);
+    const testClientTelemetry = deviceTelemetry ? undefined : parseTelemetry(JSON.stringify(record));
+    const telemetry = deviceTelemetry ?? testClientTelemetry;
     if (!telemetry) {
       console.warn("Ignoring malformed or invalid IoT telemetry payload");
       return response(202, { accepted: false });
+    }
+    if (!canAcceptMqttTelemetry(await getNode(telemetry.nodeId))) {
+      console.warn("Ignoring MQTT telemetry because the target node is offline or its status is stale", {
+        nodeId: telemetry.nodeId,
+      });
+      return response(202, { accepted: false, nodeId: telemetry.nodeId, reason: "node_offline" });
     }
     await storeAndBroadcast(telemetry, "AWS IoT Core");
     return response(202, { accepted: true, nodeId: telemetry.nodeId });
@@ -279,6 +296,15 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
   if (!tableName || !bucketName || !websocketTableName) throw new Error("Backend configuration is incomplete");
   const timestamp = telemetry.timestamp;
   const receivedAt = new Date().toISOString();
+  const thresholdReasons = [
+    ...(telemetry.gasLevel >= demoGasAlertThreshold
+      ? [`MQ-2 relative level reached ${Math.round(telemetry.gasLevel)} / 1000 (demo trigger ${demoGasAlertThreshold})`]
+      : []),
+    ...(telemetry.temperature >= demoTemperatureAlertThreshold
+      ? [`Temperature reached ${telemetry.temperature.toFixed(1)} °C (demo trigger ${demoTemperatureAlertThreshold} °C)`]
+      : []),
+  ];
+  const isAlert = telemetry.isAnomaly === true || thresholdReasons.length > 0;
   const date = new Date(timestamp);
   const expiresAt = Math.floor(date.getTime() / 1000) + ttlDays * 24 * 60 * 60;
   const digest = createHash("sha256")
@@ -294,13 +320,20 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
   const log = {
     PK: "FLEET",
     SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}`,
-    id: digest.slice(0, 24),
+    id: `${telemetry.nodeId}-${telemetry.eventId}-${timestamp}`,
     timestamp,
     nodeId: telemetry.nodeId,
-    eventType: "telemetry",
-    message: `Telemetry received: MQ-2 relative level ${telemetry.gasLevel}/1000, ${telemetry.temperature}°C`,
+    eventType: isAlert ? "anomaly_detected" : "telemetry",
+    message: [
+      isAlert ? "PROTOTYPE ALERT" : "Telemetry received",
+      `MQ-2 relative level ${telemetry.gasLevel}/1000`,
+      `temperature ${telemetry.temperature.toFixed(1)} °C`,
+      `humidity ${telemetry.humidity.toFixed(1)}%`,
+      ...thresholdReasons,
+      ...(telemetry.isAnomaly && thresholdReasons.length === 0 ? ["firmware anomaly flag set"] : []),
+    ].join(" · "),
     source,
-    severity: telemetry.isAnomaly ? "warning" : "info",
+    severity: isAlert ? "warning" : "info",
     expiresAt,
   };
   const latestNode = {
@@ -361,7 +394,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
   // wait for DynamoDB and S3 writes to finish first.
   await Promise.all([
     persistence,
-    broadcastTelemetry({ type: "telemetry", ...telemetry }),
+    broadcastTelemetry({ type: "telemetry", ...telemetry, receivedAt }),
   ]);
   if (source === "AWS IoT Core") await evaluateThresholdAutomation(telemetry.nodeId, telemetry);
 }

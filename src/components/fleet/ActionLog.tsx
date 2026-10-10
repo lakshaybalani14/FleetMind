@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { ActionLogEntry } from "@/types/fleet";
 import { Cpu, Cloud, BrainCircuit, Zap } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 
 interface Props {
   logs: ActionLogEntry[];
 }
 
 export function ActionLog({ logs }: Props) {
+  const [filter, setFilter] = useState<"all" | "alerts" | "relay">("all");
+  const visibleLogs = logs.filter((log) => {
+    if (filter === "alerts") return log.eventType === "anomaly_detected" || log.severity !== "info";
+    if (filter === "relay") return log.eventType === "actuator_command";
+    return true;
+  });
   const getIcon = (source: ActionLogEntry["source"]) => {
     switch (source) {
       case "ESP32 FreeRTOS": return <Cpu className="w-4 h-4 text-emerald-400" />;
@@ -18,14 +23,23 @@ export function ActionLog({ logs }: Props) {
   };
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Closed-Loop Action Trace</CardTitle>
-        <CardDescription>Sensor → AWS IoT → Lambda ML → Actuator</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1 max-h-[380px]">
-          {logs.map((log) => (
+    <div className="space-y-4">
+        <div className="mb-3 flex gap-2" role="group" aria-label="Filter activity log">
+          {(["all", "alerts", "relay"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={filter === value}
+              onClick={() => setFilter(value)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium capitalize transition ${filter === value ? "border-blue-400/40 bg-blue-400/10 text-blue-200" : "border-zinc-800 text-zinc-400 hover:bg-zinc-900"}`}
+            >{value === "relay" ? "Relay" : value === "alerts" ? "Alerts" : "All"}</button>
+          ))}
+          {filter === "alerts" && <span className="self-center text-[11px] text-zinc-500">Threshold flags are prototype/demo indicators.</span>}
+        </div>
+        <div className="space-y-3 pr-1" aria-live="polite" aria-relevant="additions text">
+          {visibleLogs.length === 0 ? (
+            <p className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 text-xs text-zinc-500">No {filter === "all" ? "activity" : filter} events yet.</p>
+          ) : visibleLogs.map((log) => (
             <div
               key={log.id}
               className={`p-3.5 rounded-xl border transition-all text-xs ${
@@ -47,7 +61,6 @@ export function ActionLog({ logs }: Props) {
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

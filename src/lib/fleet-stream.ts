@@ -1,4 +1,5 @@
 import type { ActionLogEntry, FleetNode, TelemetryPoint } from "../types/fleet";
+import { demoThresholdReasons } from "./telemetry-analysis";
 
 const TELEMETRY_STALE_AFTER_MS = 90_000;
 const ALLOWED_CLOCK_SKEW_MS = 30_000;
@@ -9,6 +10,8 @@ export type TelemetryStreamMessage = {
   eventId: string;
   nodeId: string;
   timestamp: string;
+  /** Server receipt time orders current state against DynamoDB snapshots. */
+  receivedAt?: string;
   temperature: number;
   humidity: number;
   gasLevel: number;
@@ -21,6 +24,11 @@ export function telemetryStatusAt(timestampMs: number, nowMs: number): FleetNode
   const ageMs = nowMs - timestampMs;
   if (ageMs < -ALLOWED_CLOCK_SKEW_MS) return "degraded";
   return ageMs <= TELEMETRY_STALE_AFTER_MS ? "online" : "offline";
+}
+
+export function resolveSelectedNodeId(nodes: FleetNode[], requestedNodeId: string): string {
+  if (nodes.some((node) => node.id === requestedNodeId)) return requestedNodeId;
+  return nodes[0]?.id ?? "";
 }
 
 export function telemetryMessageToPoint(record: TelemetryStreamMessage): TelemetryPoint | undefined {
@@ -41,7 +49,7 @@ export function telemetryMessageToPoint(record: TelemetryStreamMessage): Telemet
     humidity: record.humidity,
     gasLevel: record.gasLevel,
     gasAdc: record.gasAdc,
-    isAnomaly: record.isAnomaly === true,
+    isAnomaly: record.isAnomaly === true || demoThresholdReasons(record).length > 0,
   };
 }
 
@@ -69,12 +77,14 @@ export function applyTelemetryToNodes(
   if (!point) return nodes;
 
   const current = nodes.find((node) => node.id === message.nodeId);
+  const receivedAtMs = message.receivedAt ? Date.parse(message.receivedAt) : Number.NaN;
+  const stateTimestampMs = Number.isFinite(receivedAtMs) ? receivedAtMs : point.timestampMs;
   const currentTimestampMs = current ? Date.parse(current.lastSeen) : Number.NaN;
   // A delayed frame may still be useful in chart history, but it must not
   // overwrite the current-value tiles or make an old reading look live.
-  if (current && Number.isFinite(currentTimestampMs) && point.timestampMs < currentTimestampMs) return nodes;
+  if (current && Number.isFinite(currentTimestampMs) && stateTimestampMs < currentTimestampMs) return nodes;
 
-  const status = telemetryStatusAt(point.timestampMs, nowMs);
+  const status = telemetryStatusAt(stateTimestampMs, nowMs);
   const updated: FleetNode = {
     id: message.nodeId,
     name: current?.name ?? `ESP32 ${message.nodeId}`,
@@ -83,12 +93,15 @@ export function applyTelemetryToNodes(
     humidity: message.humidity,
     gasLevel: message.gasLevel,
     gasAdc: message.gasAdc,
+    // Keep the firmware/model flag distinct from dashboard demo thresholds;
+    // dashboardAlertForNode evaluates the latter directly from sensor values.
+    isAnomaly: message.isAnomaly === true,
     actuatorState: message.actuatorState ?? current?.actuatorState ?? emptyActuatorState,
     actuatorStateStale: status !== "online",
     automationEnabled: current?.automationEnabled,
     lastActuatorActionId: current?.lastActuatorActionId,
     lastActuatorActionResult: current?.lastActuatorActionResult,
-    lastSeen: point.timestamp,
+    lastSeen: new Date(stateTimestampMs).toISOString(),
   };
 
   return current

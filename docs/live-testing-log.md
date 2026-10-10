@@ -7,6 +7,18 @@ connection IDs in this log.
 
 ## Current status — 2026-10-10
 
+- Local dashboard UI improvements now include a full-screen red prototype
+  alert, acknowledged overlay with a persistent active-alert banner, red chart
+  markers for threshold/firmware-flagged samples, sensor-rich live log rows,
+  log filters, and recent-window min/max/average/trend analysis. The warning is
+  based on the existing firmware flag or the documented demo triggers
+  (MQ-2-relative level 400 / 1000 and temperature 60 °C); it is explicitly not
+  an ML-model decision or a life-safety alarm.
+- Validation for these source changes: dashboard and infrastructure TypeScript
+  checks, dashboard/offline-policy tests, and the Next.js production build all
+  pass. The frontend source is local and has not been deployed to hosted
+  production; perform a live browser retest of the alert/activity behavior.
+
 - The ESP32 connected to AWS IoT Core and telemetry was visible in the MQTT test
   client.
 - The telemetry pipeline was confirmed working through the IoT rule, Lambda,
@@ -122,6 +134,78 @@ latency tuning is blocking the next project task.
   MQTT acknowledgement, this verifies the demo threshold ON/OFF loop through
   the device. It does not validate calibrated gas detection, and hysteresis
   boundary/cooldown behavior was not separately measured.
+
+## 2026-10-10 — MQTT test publishes missing from live alerts/activity
+
+- Root cause: the IoT-triggered Lambda accepted the firmware payload shape
+  (`temperatureC`, `humidityPct`, `gasLevelEstimate`) only. Normalized MQTT test
+  payloads (`temperature`, `humidity`, `gasLevel`) were being rejected before
+  storage or WebSocket broadcast.
+- A second ordering issue could discard a valid live frame: DynamoDB records
+  server `lastSeen` at receipt time, while WebSocket frames carried only the
+  earlier device timestamp. Live state now orders by server `receivedAt` while
+  chart history keeps the original reading timestamp.
+- Lambda event records now persist prototype threshold crossings as
+  `anomaly_detected` warning events with gas, temperature, humidity, and the
+  trigger reason. MQTT broadcasts include `receivedAt`, and deterministic log
+  IDs prevent duplicate rows when a live frame races with the initial `/logs`
+  snapshot.
+- Verification: dashboard stream tests passed (9/9); dashboard and
+  infrastructure TypeScript checks passed. The first alert-fix Lambda package
+  was uploaded and its deployed code hash matched the local ZIP. The subsequent
+  multi-node/offline package is also now confirmed deployed by its matching code
+  hash (see the audit below).
+
+## 2026-10-10 — Multi-node alert selection and offline test publishes
+
+- Removed the frontend's `node-01` selection default. It now selects the first
+  available node, keeps an explicitly selected valid node, and displays alerts
+  for every current node ID rather than coupling the alert list to one ID.
+- Alert evaluation now receives freshness-adjusted node statuses. A node whose
+  online telemetry/heartbeat has gone stale no longer keeps a live alert on
+  screen.
+- MQTT telemetry (including firmware-shaped or normalized test-client payloads)
+  is now accepted only when its target node has an explicit online status and a
+  `lastSeen` within the 90-second freshness window. The firmware's status
+  heartbeat restores online state after reconnect before telemetry resumes.
+- Verification: dashboard stream/analysis tests passed (10/10), telemetry
+  online-policy tests passed (4/4), and dashboard/infrastructure TypeScript
+  checks passed. A later AWS resource scan confirmed the deployed
+  `fleetmind-telemetry-api` code hash matches the multi-node/offline ZIP built
+  for this fix. Recent Lambda log events showed no ERROR/WARN messages; run a
+  live multi-node/offline test to verify behavior from the device and dashboard.
+
+## 2026-10-10 — Frontend/backend/AWS pipeline audit
+
+- Verified the deployed MQTT rules for telemetry, node status, and actuator
+  acknowledgements are enabled and invoke `fleetmind-telemetry-api` in
+  `ap-southeast-2`.
+- Verified the authenticated HTTP API has the dashboard routes for `GET
+  /nodes`, `GET /telemetry`, `GET /logs`, `POST /ws-ticket`, relay, and
+  automation. The live WebSocket API has authenticated `$connect` and
+  `$disconnect` routes. The drawer uses the existing `/logs` snapshot plus the
+  same live WebSocket stream; no new AWS route or permission is needed for it.
+- Verified the telemetry Lambda role has the DynamoDB, S3 history, IoT command
+  publish, and WebSocket `ManageConnections` permissions required by the flow.
+  The deployed Lambda package hash matches the local multi-node/offline alert
+  package. Recent Lambda and WebSocket handler logs contained no ERROR/WARN
+  events during the inspected period.
+- Noted local CDK vs deployed-resource drift to reconcile before the next CDK
+  deployment: the live HTTP API does not include the locally declared
+  `POST /telemetry`; the live status IoT rule is named
+  `FleetMindNodeStatus` while local CDK declares `FleetMindStatusToLambda`; the
+  live WebSocket stage is `production` while local CDK declares `prod`; and the
+  live telemetry Lambda runtime is Node.js 24 while local CDK declares Node.js
+  22. None of these differences blocks the current MQTT-to-dashboard alert
+  path, but reconcile them before deploying the stack to avoid unintended
+  changes.
+- Local verification after the audit: dashboard tests 10/10, offline-policy
+  tests 4/4, infrastructure TypeScript check, dashboard TypeScript check, and
+  Next.js production build all passed. `git diff --check` passed with only
+  Windows line-ending warnings.
+- This audit did not publish test MQTT data or change AWS resources. The
+  browser/server error message was not included with the request; send the
+  exact console/network error if an issue remains after a fresh test.
 
 ## Repeatable live-test checklist
 

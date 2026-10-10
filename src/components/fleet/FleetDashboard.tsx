@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useFleetData } from "@/hooks/useFleetData";
 import { TelemetryChart } from "./TelemetryChart";
-import { ActionLog } from "./ActionLog";
-import { StatusTile } from "./StatusTile";
+import { MonitoringBento } from "./MonitoringBento";
 import { NodeSelector } from "./NodeSelector";
-import { Cpu } from "lucide-react";
+import { FleetPageNavigation } from "./FleetPageNavigation";
+import { Activity, Cpu } from "lucide-react";
 import { beginCognitoLogin, clearCognitoSession, cognitoLogoutUrl, getCognitoIdToken } from "@/lib/cognito";
+import { HazardAlertOverlay } from "./HazardAlertOverlay";
+import { MonitorDrawer } from "./MonitorDrawer";
+import { dashboardAlertForNode } from "@/lib/telemetry-analysis";
 
 export default function FleetDashboard() {
   const [idToken, setIdToken] = useState<string | null>(null);
@@ -17,7 +20,24 @@ export default function FleetDashboard() {
   const [pendingActionId, setPendingActionId] = useState("");
   const [controlMessage, setControlMessage] = useState("");
   const [controlError, setControlError] = useState("");
+  const [dismissedAlertKeys, setDismissedAlertKeys] = useState<string[]>([]);
+  const [monitorDrawerOpen, setMonitorDrawerOpen] = useState(false);
   const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState, telemetryAge, sendRelayCommand, setAutomationEnabled } = useFleetData(idToken);
+  const activeAlerts = nodes.flatMap((node) => {
+    const alert = dashboardAlertForNode(node);
+    return alert ? [alert] : [];
+  });
+  const activeAlertKeys = activeAlerts.map((alert) => alert.key).join("|");
+  const visibleAlert = activeAlerts.find((alert) => !dismissedAlertKeys.includes(alert.key));
+  const closeMonitorDrawer = useCallback(() => setMonitorDrawerOpen(false), []);
+
+  useEffect(() => {
+    const activeKeys = new Set(activeAlertKeys ? activeAlertKeys.split("|") : []);
+    setDismissedAlertKeys((previous) => {
+      const next = previous.filter((key) => activeKeys.has(key));
+      return next.length === previous.length ? previous : next;
+    });
+  }, [activeAlertKeys]);
 
   useEffect(() => {
     setIdToken(getCognitoIdToken());
@@ -97,25 +117,23 @@ export default function FleetDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-200 p-4 sm:p-8 font-sans">
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800/80 pb-6 mb-8 gap-4">
-        <div>
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-              <Cpu className="w-5 h-5 text-blue-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">FleetMind Platform</h1>
-          </div>
-          <p className="text-xs text-zinc-500 mt-1">AWS IoT Fleet Telemetry & Edge Automation Control</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className={`rounded-full px-3 py-1 text-xs ${streamState === "connected" ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-300"}`}>
-            Live stream: {streamState}
-          </span>
-          <NodeSelector nodes={nodes} selectedNodeId={selectedNodeId} onChange={setSelectedNodeId} />
-          <button onClick={signOut} className="rounded-lg border border-zinc-700 px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-800">Sign out</button>
-        </div>
-      </header>
+    <FleetPageNavigation current="monitoring" streamState={streamState} onSignOut={signOut}>
+    <main className="min-h-screen bg-[#09090b] p-4 font-sans text-zinc-200 sm:p-8">
+      <div className="mb-4 flex items-center justify-between gap-3" role="group" aria-label="Monitoring controls">
+        <NodeSelector compact nodes={nodes} selectedNodeId={selectedNodeId} onChange={setSelectedNodeId} />
+        <button
+          type="button"
+          onClick={() => setMonitorDrawerOpen(true)}
+          className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-800 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          aria-haspopup="dialog"
+          aria-expanded={monitorDrawerOpen}
+          aria-label={`Open alerts and activity${activeAlerts.length ? `, ${activeAlerts.length} active alerts` : ""}`}
+          title="Alerts & activity"
+        >
+          <Activity className="h-5 w-5" aria-hidden="true" />
+          {activeAlerts.length > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white">{activeAlerts.length}</span>}
+        </button>
+      </div>
 
       {!selectedNode ? (
         <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-400">
@@ -123,35 +141,8 @@ export default function FleetDashboard() {
         </div>
       ) : <>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatusTile
-          title="MQ-2 Relative Level"
-          value={`${Math.round(selectedNode.gasLevel)} / 1000`}
-          subText={`Raw ADC ${selectedNode.gasAdc ?? "—"} / 4095 · demo trigger 400`}
-          status={selectedNode.gasLevel >= 400 ? "warning" : "neutral"}
-        />
-        <StatusTile
-          title="Ambient Temp"
-          value={`${selectedNode.temperature} °C`}
-          subText={`Humidity: ${selectedNode.humidity}%`}
-          status="neutral"
-        />
-        <StatusTile
-          title="Actuator State"
-          value={selectedNode.actuatorStateStale
-            ? `Last known: Relay ${selectedNode.actuatorState.relayActive ? "Active" : "Idle"}`
-            : selectedNode.actuatorState.relayActive ? "Relay Active" : "Relay Idle"}
-          subText={selectedNode.actuatorStateStale
-            ? "Device offline — actuator state may have changed"
-            : selectedNode.actuatorState.fanActive ? "Exhaust Fan Running" : "Standby Mode"}
-          status={selectedNode.actuatorStateStale ? "warning" : selectedNode.actuatorState.relayActive ? "warning" : "neutral"}
-        />
-        <StatusTile
-          title="Device Telemetry"
-          value={selectedNode.status.toUpperCase()}
-          subText={telemetryAge}
-          status={selectedNode.status === "online" ? "success" : selectedNode.status === "degraded" ? "warning" : "danger"}
-        />
+      <div className="mb-8">
+        <MonitoringBento node={selectedNode} telemetry={activeTelemetry} telemetryAge={telemetryAge} />
       </div>
 
       <section className="mb-8 flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -181,19 +172,21 @@ export default function FleetDashboard() {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <TelemetryChart
-            data={activeTelemetry}
-            nodeName={selectedNode.name}
-            isLive={streamState === "connected" && selectedNode.status === "online"}
-          />
-        </div>
-        <div className="lg:col-span-1">
-          <ActionLog logs={logs} />
-        </div>
-      </div>
+      <TelemetryChart
+        data={activeTelemetry}
+        nodeName={selectedNode.name}
+        isLive={streamState === "connected" && selectedNode.status === "online"}
+      />
       </>}
-    </div>
+      <MonitorDrawer open={monitorDrawerOpen} activeAlerts={activeAlerts} logs={logs} onClose={closeMonitorDrawer} />
+      {visibleAlert && (
+        <HazardAlertOverlay
+          alert={visibleAlert}
+          otherActiveAlerts={activeAlerts.length - 1}
+          onAcknowledge={() => setDismissedAlertKeys((previous) => previous.includes(visibleAlert.key) ? previous : [...previous, visibleAlert.key])}
+        />
+      )}
+    </main>
+    </FleetPageNavigation>
   );
 }

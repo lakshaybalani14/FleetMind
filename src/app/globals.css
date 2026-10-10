@@ -30,3 +30,110 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #52525b;
 }
+
+.hazard-alert-backdrop {
+  background-color: rgba(69, 10, 10, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: hazard-alert-background 1.6s ease-in-out infinite;
+}
+
+.hazard-alert-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.hazard-alert-icon {
+  animation: hazard-alert-icon 1.1s ease-in-out infinite;
+}
+
+@keyframes hazard-alert-background {
+  0%,
+  100% {
+    background-color: rgba(69, 10, 10, 0.3);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.42);
+  }
+}
+
+@keyframes hazard-alert-icon {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hazard-alert-backdrop,
+  .hazard-alert-icon {
+    animation: none;
+  }
+}
+
+.monitor-drawer-enter {
+  animation: monitor-drawer-enter 180ms ease-out both;
+}
+
+.fleet-sidebar-enter {
+  animation: fleet-sidebar-enter 180ms ease-out both;
+}
+
+.scroll-fade {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.scroll-fade::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-fade::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-fade::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #3f3f46;
+}
+
+.scroll-fade::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+@keyframes monitor-drawer-enter {
+  from {
+    opacity: 0.75;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fleet-sidebar-enter {
+  from {
+    opacity: 0.8;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monitor-drawer-enter {
+    animation: none;
+  }
+
+  .fleet-sidebar-enter {
+    animation: none;
+  }
+}

@@ -17,6 +17,13 @@ secrets, or credentials.
 
 ## Current project status
 
+Overall estimate: **about 70% of the agreed prototype scope is complete**. This
+is a planning estimate, not a production-readiness rating. The base telemetry,
+dashboard, and relay loop are working; the Isolation Forest service and its
+SNS-driven automation integration are the largest remaining project milestone.
+See [`docs/project-status.md`](docs/project-status.md) for the full handoff and
+next steps.
+
 | Area | Status |
 | --- | --- |
 | ESP32 firmware | User confirmed the live board test works with 2-second telemetry updates and immediate relay-status updates. |
@@ -24,8 +31,9 @@ secrets, or credentials.
 | Storage and backend | Live telemetry has been verified through Lambda, DynamoDB, and S3. |
 | Authentication and APIs | Cognito-authenticated HTTP API and API Gateway WebSocket dashboard flow are configured and working. |
 | Dashboard and relay control | Live readings/status and manual relay ON/OFF have been verified on the board. Synthetic telemetry also verified automatic threshold ON and OFF with device acknowledgement. MQ-2 is a relative prototype level, not CO ppm; automatic demo mode remains opt-in. |
+| Dashboard alerts and analytics | Local UI source includes a full-screen prototype threshold/anomaly warning, alert markers, sensor-rich live logs, log filters, and analysis of the latest 50 readings. Production build passes; final live retest of multi-node/offline alert behavior is pending. This does not add an ML model or a certified safety alarm. |
 | Infrastructure source | CDK source is in `infra/`; the current AWS resources were configured manually, so review differences before any CDK deployment. |
-| Live-test follow-up | User confirmed online/offline status, live readings, and the moving chart work without manual refresh. Next: continue with anomaly detection. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
+| Live-test follow-up | User confirmed online/offline status, live readings, moving chart, manual relay, and synthetic threshold ON/OFF with device acknowledgement. AWS scan confirms the latest MQTT parsing/offline-gating Lambda package is deployed. Next: retest multi-node/offline alert behavior and begin the teammate-owned anomaly service. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
 
 ## Resume live testing
 
@@ -43,6 +51,11 @@ secrets, or credentials.
    a current requirement.
 4. Revisit latency measurements only if future live tests show noticeable lag
    or stale dashboard state.
+5. Re-run the safe synthetic alert test on an online node and test that publishes
+   are rejected while it is offline. Verify every node ID independently, the
+   activity drawer, temperature chart spike, full-screen alert, and event log.
+   The thresholds are demo values, not calibrated gas limits. See
+   [`docs/live-testing-log.md`](docs/live-testing-log.md).
 
 The hands-on setup, observed behavior, and repeatable test checklist are in
 [`docs/live-testing-log.md`](docs/live-testing-log.md). Backend endpoints,

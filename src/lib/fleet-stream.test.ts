@@ -6,9 +6,11 @@ import {
   mergeActionLogs,
   mergeNodeSnapshot,
   mergeTelemetryPoints,
+  resolveSelectedNodeId,
   telemetryMessageToPoint,
   type TelemetryStreamMessage,
 } from "./fleet-stream";
+import { dashboardAlertForNode, summarizeTelemetry } from "./telemetry-analysis";
 
 const now = Date.parse("2026-10-10T09:30:00.000Z");
 const currentNode: FleetNode = {
@@ -76,6 +78,21 @@ test("a fresh temperature WebSocket frame updates the current tile state and cha
   assert.equal(chartPoint?.timestampMs, Date.parse(incoming.timestamp));
 });
 
+test("a live frame still updates current state when the backend snapshot has its later receive time", () => {
+  const incoming = telemetry({
+    timestamp: "2026-10-10T09:29:59.500Z",
+    receivedAt: "2026-10-10T09:29:59.900Z",
+  });
+  const snapshotNode = { ...currentNode, lastSeen: incoming.receivedAt!, temperature: 24.7 };
+
+  const nextNodes = applyTelemetryToNodes([snapshotNode], incoming, now);
+
+  assert.equal(nextNodes[0].temperature, 61);
+  assert.equal(nextNodes[0].lastSeen, incoming.receivedAt);
+  assert.equal(nextNodes[0].status, "online");
+  assert.equal(dashboardAlertForNode(nextNodes[0])?.source, "demo-threshold");
+});
+
 test("an older telemetry frame cannot roll the live tile backward", () => {
   const stale = telemetry({ timestamp: "2026-10-10T08:46:46.000Z", temperature: 61 });
   const nodes = [currentNode];
@@ -119,4 +136,34 @@ test("live action acknowledgements are not lost when the initial log request fin
   const merged = mergeActionLogs([ack], [staleSnapshot, snapshotEntry]);
 
   assert.deepEqual(merged.map((entry) => entry.message), ["Relay on: applied", "Previous relay action"]);
+});
+
+test("prototype dashboard alert catches either threshold and firmware flags", () => {
+  assert.equal(dashboardAlertForNode({ ...currentNode, gasLevel: 400 })?.source, "demo-threshold");
+  assert.match(dashboardAlertForNode({ ...currentNode, temperature: 60 })?.reasons.join(" ") ?? "", /Temperature reached/);
+  assert.equal(dashboardAlertForNode({ ...currentNode, isAnomaly: true })?.source, "firmware-flag");
+  assert.equal(dashboardAlertForNode(currentNode), undefined);
+  assert.equal(dashboardAlertForNode({ ...currentNode, id: "node-02", temperature: 61 })?.nodeId, "node-02");
+  assert.equal(dashboardAlertForNode({ ...currentNode, gasLevel: 900, status: "offline" }), undefined);
+});
+
+test("node selection follows available IDs instead of assuming node-01", () => {
+  const secondNode = { ...currentNode, id: "node-02" };
+  assert.equal(resolveSelectedNodeId([secondNode], "node-01"), "node-02");
+  assert.equal(resolveSelectedNodeId([currentNode, secondNode], "node-02"), "node-02");
+  assert.equal(resolveSelectedNodeId([], "node-01"), "");
+});
+
+test("recent telemetry summary includes range, average, trend, and threshold sample count", () => {
+  const summary = summarizeTelemetry([
+    point("a", 1_000, 24),
+    { ...point("b", 2_000, 61), gasLevel: 450, humidity: 60 },
+  ]);
+  assert.equal(summary?.count, 2);
+  assert.equal(summary?.alertCount, 1);
+  assert.equal(summary?.temperatureMin, 24);
+  assert.equal(summary?.temperatureMax, 61);
+  assert.equal(summary?.temperatureAverage, 42.5);
+  assert.equal(summary?.temperatureDelta, 37);
+  assert.equal(summary?.gasMax, 450);
 });

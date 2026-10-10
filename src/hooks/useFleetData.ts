@@ -5,10 +5,12 @@ import {
   mergeActionLogs,
   mergeNodeSnapshot,
   mergeTelemetryPoints,
+  resolveSelectedNodeId,
   telemetryMessageToPoint,
   telemetryStatusAt,
   type TelemetryStreamMessage,
 } from "@/lib/fleet-stream";
+import { demoThresholdReasons } from "@/lib/telemetry-analysis";
 
 const ALLOWED_CLOCK_SKEW_MS = 30_000;
 
@@ -64,7 +66,7 @@ function formatTelemetryAge(value: string, now: number): string {
 }
 
 export function useFleetData(idToken: string | null) {
-  const [selectedNodeId, setSelectedNodeId] = useState("node-01");
+  const [selectedNodeId, setSelectedNodeId] = useState("");
   const [nodes, setNodes] = useState<FleetNode[]>([]);
   const [telemetryHistory, setTelemetryHistory] = useState<Record<string, TelemetryPoint[]>>({});
   const [logs, setLogs] = useState<ActionLogEntry[]>([]);
@@ -77,6 +79,11 @@ export function useFleetData(idToken: string | null) {
     const timer = setInterval(() => setNow(Date.now()), 5_000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const resolvedNodeId = resolveSelectedNodeId(nodes, selectedNodeId);
+    if (resolvedNodeId !== selectedNodeId) setSelectedNodeId(resolvedNodeId);
+  }, [nodes, selectedNodeId]);
 
   const fetchJson = useCallback(async (path: string, init?: RequestInit) => {
     if (!apiUrl || !idToken) throw new Error("Fleet API or Cognito session is not configured");
@@ -224,6 +231,8 @@ export function useFleetData(idToken: string | null) {
           if (message.type !== "telemetry") return;
           const point = telemetryMessageToPoint(message);
           if (!point) return;
+          const thresholdReasons = demoThresholdReasons(message);
+          const hasAlert = message.isAnomaly === true || thresholdReasons.length > 0;
           setNodes((previous) => applyTelemetryToNodes(previous, message));
           setTelemetryHistory((previous) => ({
             ...previous,
@@ -233,10 +242,18 @@ export function useFleetData(idToken: string | null) {
             id: `${message.nodeId}-${message.eventId}-${message.timestamp}`,
             timestamp: formatTimestamp(message.timestamp),
             nodeId: message.nodeId,
-            eventType: message.isAnomaly ? "anomaly_detected" : "telemetry",
-            message: message.isAnomaly ? `Prototype trigger: MQ-2 relative level ${Math.round(message.gasLevel)}/1000` : `Live MQ-2 relative level: ${Math.round(message.gasLevel)}/1000`,
+            eventType: hasAlert ? "anomaly_detected" : "telemetry",
+            message: [
+              hasAlert ? "PROTOTYPE ALERT" : "Telemetry",
+              `MQ-2 relative level ${Math.round(message.gasLevel)}/1000`,
+              `temperature ${message.temperature.toFixed(1)} °C`,
+              `humidity ${message.humidity.toFixed(1)}%`,
+              ...(typeof message.gasAdc === "number" ? [`raw ADC ${message.gasAdc}/4095`] : []),
+              ...thresholdReasons,
+              ...(message.isAnomaly && thresholdReasons.length === 0 ? ["firmware anomaly flag set"] : []),
+            ].join(" · "),
             source: "AWS IoT Core",
-            severity: message.isAnomaly ? "warning" : "info",
+            severity: hasAlert ? "critical" : "info",
           };
           setLogs((previous) => mergeActionLogs([logEntry], previous));
         };
@@ -296,7 +313,8 @@ export function useFleetData(idToken: string | null) {
     }) as Promise<{ automationEnabled: boolean; controlMode: "manual" | "automatic" }>;
   }, [fetchJson, selectedNodeId]);
 
-  const node = nodes.find((item) => item.id === selectedNodeId) ?? nodes[0];
+  const currentNodes = nodes.map((item) => ({ ...item, status: currentNodeStatus(item, now) }));
+  const node = currentNodes.find((item) => item.id === selectedNodeId);
   const status = node ? currentNodeStatus(node, now) : undefined;
   const selectedNode = node && status ? {
     ...node,
@@ -307,7 +325,7 @@ export function useFleetData(idToken: string | null) {
   return {
     selectedNodeId,
     setSelectedNodeId,
-    nodes,
+    nodes: currentNodes,
     selectedNode,
     activeTelemetry: telemetryHistory[selectedNodeId] ?? [],
     logs,
