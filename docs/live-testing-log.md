@@ -43,6 +43,18 @@ connection IDs in this log.
 - Leaving the AWS IoT MQTT test client page ends that page's own subscription; it
   does not disconnect the ESP32 or stop the IoT rule from processing device
   publishes.
+- Local source now includes a complete bidirectional relay path: Cognito-
+  authenticated dashboard command → API Lambda → AWS IoT command topic → ESP32
+  relay → device acknowledgement → IoT rule/Lambda → DynamoDB and dashboard
+  WebSocket. Both manual control and opt-in threshold automation share the same
+  command/ack path. AWS Core verification on 2026-10-10 confirmed the deployed
+  Lambda package matches the local actuator ZIP, the scoped IoT publish
+  permission and acknowledgement rule exist, and both Cognito-protected HTTP
+  routes are deployed. The board round-trip is still pending.
+- Automatic mode is intentionally off unless `AUTO_CONTROL_ENABLED=true` and
+  gas/temperature on/off thresholds are set. MQ-2's current PPM value is an
+  estimate, so calibrate it before enabling automatic relay behavior.
+- Procedure and the configuration checklist: [`actuator-control.md`](actuator-control.md).
 
 ## Current timing and status behavior
 

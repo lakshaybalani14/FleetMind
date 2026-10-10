@@ -26,7 +26,21 @@ type NodeStatusStreamMessage = {
   uptimeMs?: number;
   commandQueueOverflow?: boolean;
 };
-type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage;
+type ControlModeStreamMessage = {
+  type: "control-mode";
+  nodeId: string;
+  automationEnabled: boolean;
+  timestamp: string;
+};
+type ActuatorAckStreamMessage = {
+  type: "actuator-ack";
+  nodeId: string;
+  actionId: string;
+  relayOn: boolean;
+  result: string;
+  timestamp: string;
+};
+type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage | ControlModeStreamMessage | ActuatorAckStreamMessage;
 
 const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
 
@@ -100,13 +114,20 @@ export function useFleetData(idToken: string | null) {
     return () => clearInterval(timer);
   }, []);
 
-  const fetchJson = useCallback(async (path: string) => {
+  const fetchJson = useCallback(async (path: string, init?: RequestInit) => {
     if (!apiUrl || !idToken) throw new Error("Fleet API or Cognito session is not configured");
+    const headers = new Headers(init?.headers);
+    headers.set("authorization", `Bearer ${idToken}`);
+    if (init?.body && !headers.has("content-type")) headers.set("content-type", "application/json");
     const response = await fetch(`${apiUrl}${path}`, {
-      headers: { authorization: `Bearer ${idToken}` },
+      ...init,
+      headers,
       cache: "no-store",
     });
-    if (!response.ok) throw new Error(`Fleet API returned ${response.status}`);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => undefined) as { error?: unknown } | undefined;
+      throw new Error(typeof errorBody?.error === "string" ? errorBody.error : `Fleet API returned ${response.status}`);
+    }
     return response.json();
   }, [apiUrl, idToken]);
 
@@ -128,6 +149,9 @@ export function useFleetData(idToken: string | null) {
             gasLevel: node.gasLevel ?? 0,
             actuatorState: node.actuatorState ?? emptyActuatorState,
             actuatorStateStale: node.status === "offline",
+            automationEnabled: node.automationEnabled === true,
+            lastActuatorActionId: node.lastActuatorActionId,
+            lastActuatorActionResult: node.lastActuatorActionResult,
             lastSeen,
           };
         }));
@@ -200,6 +224,34 @@ export function useFleetData(idToken: string | null) {
                 lastSeen,
               }];
             });
+            return;
+          }
+          if (message.type === "control-mode") {
+            if (typeof message.automationEnabled !== "boolean") return;
+            setNodes((previous) => previous.map((node) => node.id === message.nodeId
+              ? { ...node, automationEnabled: message.automationEnabled }
+              : node));
+            return;
+          }
+          if (message.type === "actuator-ack") {
+            if (typeof message.relayOn !== "boolean" || !message.actionId) return;
+            setNodes((previous) => previous.map((node) => node.id === message.nodeId ? {
+              ...node,
+              actuatorState: { relayActive: message.relayOn, fanActive: message.relayOn, buzzerActive: false },
+              actuatorStateStale: false,
+              lastActuatorActionId: message.actionId,
+              lastActuatorActionResult: message.result,
+            } : node));
+            const ackLog: ActionLogEntry = {
+              id: message.actionId,
+              timestamp: formatTimestamp(message.timestamp),
+              nodeId: message.nodeId,
+              eventType: "actuator_command",
+              message: `Relay ${message.relayOn ? "on" : "off"}: ${message.result}`,
+              source: "AWS IoT Core",
+              severity: message.result === "applied" ? "info" : "warning",
+            };
+            setLogs((previous) => [ackLog, ...previous.filter((entry) => entry.id !== ackLog.id)].slice(0, 50));
             return;
           }
           if (message.type !== "telemetry") return;
@@ -278,6 +330,20 @@ export function useFleetData(idToken: string | null) {
     return () => { cancelled = true; };
   }, [idToken, apiUrl, selectedNodeId, fetchJson]);
 
+  const sendRelayCommand = useCallback(async (relayOn: boolean) => {
+    return fetchJson(`/nodes/${encodeURIComponent(selectedNodeId)}/relay`, {
+      method: "POST",
+      body: JSON.stringify({ relayOn }),
+    }) as Promise<{ actionId: string; awaitingDeviceAck: boolean }>;
+  }, [fetchJson, selectedNodeId]);
+
+  const setAutomationEnabled = useCallback(async (enabled: boolean) => {
+    return fetchJson(`/nodes/${encodeURIComponent(selectedNodeId)}/automation`, {
+      method: "POST",
+      body: JSON.stringify({ enabled }),
+    }) as Promise<{ automationEnabled: boolean; controlMode: "manual" | "automatic" }>;
+  }, [fetchJson, selectedNodeId]);
+
   const node = nodes.find((item) => item.id === selectedNodeId) ?? nodes[0];
   const status = node ? currentNodeStatus(node, now) : undefined;
   const selectedNode = node && status ? {
@@ -294,6 +360,8 @@ export function useFleetData(idToken: string | null) {
     activeTelemetry: telemetryHistory[selectedNodeId] ?? [],
     logs,
     streamState,
+    sendRelayCommand,
+    setAutomationEnabled,
     telemetryAge: selectedNode ? formatTelemetryAge(selectedNode.lastSeen, now) : "No telemetry received",
   };
 }

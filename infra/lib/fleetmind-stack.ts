@@ -19,6 +19,10 @@ export class FleetMindStack extends cdk.Stack {
     super(scope, id, props);
 
     const appOrigin = this.node.tryGetContext("appOrigin") ?? "http://localhost:3000";
+    const contextString = (key: string, fallback = ""): string => {
+      const value = this.node.tryGetContext(key);
+      return typeof value === "string" ? value : fallback;
+    };
 
     const fleetTable = new dynamodb.Table(this, "FleetData", {
       partitionKey: { name: "PK", type: dynamodb.AttributeType.STRING },
@@ -147,6 +151,13 @@ export class FleetMindStack extends cdk.Stack {
         HISTORY_BUCKET_NAME: historyBucket.bucketName,
         WEBSOCKET_TABLE_NAME: websocketTable.tableName,
         TELEMETRY_TTL_DAYS: "30",
+        IOT_DATA_ENDPOINT: contextString("iotDataEndpoint"),
+        AUTO_CONTROL_ENABLED: contextString("autoControlEnabled", "false"),
+        AUTO_GAS_ON_PPM: contextString("autoGasOnPpm"),
+        AUTO_GAS_OFF_PPM: contextString("autoGasOffPpm"),
+        AUTO_TEMP_ON_C: contextString("autoTempOnC"),
+        AUTO_TEMP_OFF_C: contextString("autoTempOffC"),
+        AUTO_COMMAND_COOLDOWN_SECONDS: contextString("autoCommandCooldownSeconds", "10"),
       },
       logGroup: lambdaLogs,
       bundling: {
@@ -177,6 +188,16 @@ export class FleetMindStack extends cdk.Stack {
       actions: ["s3:PutObject"],
       resources: [historyBucket.arnForObjects("telemetry/*")],
     }));
+    // Limit cloud-to-device publishing to the command topic namespace only.
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["iot:Publish"],
+      resources: [this.formatArn({
+        service: "iot",
+        resource: "topic",
+        resourceName: "fleetmind/node-*/commands",
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      })],
+    }));
 
     const jwtAuthorizer = new authorizers.HttpJwtAuthorizer(
       "FleetMindCognitoAuthorizer",
@@ -190,6 +211,8 @@ export class FleetMindStack extends cdk.Stack {
       readonly methods: readonly apigwv2.HttpMethod[];
     }> = [
       { path: "/nodes", methods: [apigwv2.HttpMethod.GET] },
+      { path: "/nodes/{nodeId}/relay", methods: [apigwv2.HttpMethod.POST] },
+      { path: "/nodes/{nodeId}/automation", methods: [apigwv2.HttpMethod.POST] },
       { path: "/telemetry", methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST] },
       { path: "/logs", methods: [apigwv2.HttpMethod.GET] },
       { path: "/ws-ticket", methods: [apigwv2.HttpMethod.POST] },
@@ -301,6 +324,34 @@ export class FleetMindStack extends cdk.Stack {
     handler.addPermission("AllowIoTRuleInvoke", {
       principal: new iam.ServicePrincipal("iot.amazonaws.com"),
       sourceArn: telemetryRule.attrArn,
+    });
+
+    const statusRule = new iot.CfnTopicRule(this, "FleetMindStatusRule", {
+      ruleName: "FleetMindStatusToLambda",
+      topicRulePayload: {
+        sql: "SELECT * FROM 'fleetmind/+/status'",
+        awsIotSqlVersion: "2016-03-23",
+        ruleDisabled: false,
+        actions: [{ lambda: { functionArn: handler.functionArn } }],
+      },
+    });
+    handler.addPermission("AllowIoTStatusRuleInvoke", {
+      principal: new iam.ServicePrincipal("iot.amazonaws.com"),
+      sourceArn: statusRule.attrArn,
+    });
+
+    const actuatorAckRule = new iot.CfnTopicRule(this, "FleetMindActuatorAckRule", {
+      ruleName: "FleetMindActuatorAckToLambda",
+      topicRulePayload: {
+        sql: "SELECT * FROM 'fleetmind/+/events' WHERE eventType = 'actuator_ack'",
+        awsIotSqlVersion: "2016-03-23",
+        ruleDisabled: false,
+        actions: [{ lambda: { functionArn: handler.functionArn } }],
+      },
+    });
+    handler.addPermission("AllowIoTActuatorAckRuleInvoke", {
+      principal: new iam.ServicePrincipal("iot.amazonaws.com"),
+      sourceArn: actuatorAckRule.attrArn,
     });
 
     wsApi.grantManageConnections(handler);

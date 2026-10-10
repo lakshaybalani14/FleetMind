@@ -1,9 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
 import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { IoTDataPlaneClient, PublishCommand } from "@aws-sdk/client-iot-data-plane";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { DynamoDBDocumentClient, DeleteCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, DeleteCommand, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { decideAutomaticRelay, loadAutomationThresholds } from "./actuator-control";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: { removeUndefinedValues: true },
@@ -13,6 +15,9 @@ const tableName = process.env.FLEET_TABLE_NAME;
 const bucketName = process.env.HISTORY_BUCKET_NAME;
 const websocketTableName = process.env.WEBSOCKET_TABLE_NAME;
 const websocketEndpoint = process.env.WEBSOCKET_API_ENDPOINT;
+const iotDataEndpoint = process.env.IOT_DATA_ENDPOINT;
+const iotData = iotDataEndpoint ? new IoTDataPlaneClient({ endpoint: iotDataEndpoint }) : undefined;
+const automaticControlEnabled = process.env.AUTO_CONTROL_ENABLED === "true";
 const ttlDays = Number(process.env.TELEMETRY_TTL_DAYS ?? "30");
 const websocketManagementClient = websocketEndpoint && process.env.AWS_REGION
   ? new ApiGatewayManagementApiClient({
@@ -45,12 +50,24 @@ interface DeviceStatusInput {
   readonly commandQueueOverflow?: boolean;
 }
 
+interface ActuatorAckInput {
+  readonly nodeId: string;
+  readonly actionId: string;
+  readonly relayOn: boolean;
+  readonly result: string;
+}
+
 function response(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
   return {
     statusCode,
     headers: { "content-type": "application/json; charset=utf-8" },
     body: JSON.stringify(body),
   };
+}
+
+// The ESP32 command queue reserves 32 bytes for the action ID including NUL.
+function createActionId(): string {
+  return randomUUID().replaceAll("-", "").slice(0, 24);
 }
 
 function parseTelemetry(body: string | undefined): TelemetryInput | undefined {
@@ -112,6 +129,12 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
 
   // AWS IoT Rules invoke this Lambda with the firmware JSON as the event payload.
   if (!(event as APIGatewayProxyEventV2).requestContext?.http) {
+    const acknowledgement = parseDeviceActuatorAck(event as unknown as Record<string, unknown>);
+    if (acknowledgement) {
+      await storeAndBroadcastActuatorAck(acknowledgement);
+      return response(202, { accepted: true, nodeId: acknowledgement.nodeId, type: "actuator-ack" });
+    }
+
     const status = parseDeviceStatus(event as unknown as Record<string, unknown>);
     if (status) {
       await storeAndBroadcastStatus(status);
@@ -185,6 +208,20 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       ConditionExpression: "attribute_not_exists(PK)",
     }));
     return response(201, { ticket, expiresAt });
+  }
+
+  const relayRoute = route.match(/^\/nodes\/(node-[a-zA-Z0-9-]{1,40})\/relay$/);
+  if (method === "POST" && relayRoute) {
+    const body = parseObject(event.body);
+    if (!body || typeof body.relayOn !== "boolean") return response(400, { error: "Expected relayOn to be true or false" });
+    return requestManualRelay(relayRoute[1], body.relayOn);
+  }
+
+  const automationRoute = route.match(/^\/nodes\/(node-[a-zA-Z0-9-]{1,40})\/automation$/);
+  if (method === "POST" && automationRoute) {
+    const body = parseObject(event.body);
+    if (!body || typeof body.enabled !== "boolean") return response(400, { error: "Expected enabled to be true or false" });
+    return setNodeAutomation(automationRoute[1], body.enabled);
   }
 
   if (method === "POST" && route === "/telemetry") {
@@ -287,6 +324,168 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     persistence,
     broadcastTelemetry({ type: "telemetry", ...telemetry }),
   ]);
+  if (source === "AWS IoT Core") await evaluateThresholdAutomation(telemetry.nodeId, telemetry);
+}
+
+function parseObject(body: string | undefined): Record<string, unknown> | undefined {
+  if (!body || body.length > 4096) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(body);
+    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function getNode(nodeId: string): Promise<Record<string, unknown> | undefined> {
+  if (!tableName) return undefined;
+  const result = await ddb.send(new GetCommand({
+    TableName: tableName,
+    Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+  }));
+  return result.Item;
+}
+
+async function publishRelayCommand(
+  nodeId: string,
+  relayOn: boolean,
+  source: "dashboard" | "threshold" | "anomaly",
+  actionId = createActionId(),
+): Promise<string> {
+  if (!iotData) throw new Error("IOT_DATA_ENDPOINT is not configured");
+  await iotData.send(new PublishCommand({
+    topic: `fleetmind/${nodeId}/commands`,
+    qos: 1,
+    payload: Buffer.from(JSON.stringify({ actionId, relayOn, source })),
+  }));
+  return actionId;
+}
+
+async function requestManualRelay(nodeId: string, relayOn: boolean): Promise<APIGatewayProxyResultV2> {
+  if (!iotData || !tableName) return response(503, { error: "Relay command service is not configured" });
+  const node = await getNode(nodeId);
+  const lastSeenMs = typeof node?.lastSeen === "string" ? Date.parse(node.lastSeen) : Number.NaN;
+  if (node?.status !== "online" || !Number.isFinite(lastSeenMs) || Date.now() - lastSeenMs > 90_000) {
+    return response(409, { error: "Node is offline or its status is stale; relay command was not sent" });
+  }
+
+  const actionId = createActionId();
+  await ddb.send(new UpdateCommand({
+    TableName: tableName,
+    Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+    UpdateExpression: "SET automationEnabled = :disabled, controlMode = :manual, pendingActionId = :actionId, pendingRelayOn = :relayOn",
+    ExpressionAttributeValues: {
+      ":disabled": false,
+      ":manual": "manual",
+      ":actionId": actionId,
+      ":relayOn": relayOn,
+    },
+  }));
+
+  try {
+    await publishRelayCommand(nodeId, relayOn, "dashboard", actionId);
+  } catch (error) {
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+      UpdateExpression: "REMOVE pendingActionId, pendingRelayOn",
+    }));
+    console.error("Could not publish manual relay command", error);
+    return response(502, { error: "AWS IoT Core could not accept the relay command" });
+  }
+
+  await broadcastTelemetry({ type: "control-mode", nodeId, automationEnabled: false, timestamp: new Date().toISOString() });
+  return response(202, { accepted: true, actionId, nodeId, relayOn, awaitingDeviceAck: true });
+}
+
+async function setNodeAutomation(nodeId: string, enabled: boolean): Promise<APIGatewayProxyResultV2> {
+  if (!tableName) return response(503, { error: "Fleet table is not configured" });
+  if (enabled && (!automaticControlEnabled || !loadAutomationThresholds())) {
+    return response(409, { error: "Automatic thresholds are not configured; automation remains off" });
+  }
+  const node = await getNode(nodeId);
+  if (!node) return response(404, { error: "Node not found" });
+  if (enabled) {
+    const lastSeenMs = typeof node.lastSeen === "string" ? Date.parse(node.lastSeen) : Number.NaN;
+    if (node.status !== "online" || !Number.isFinite(lastSeenMs) || Date.now() - lastSeenMs > 90_000) {
+      return response(409, { error: "Node is offline or its status is stale; automatic control was not enabled" });
+    }
+  }
+
+  await ddb.send(new UpdateCommand({
+    TableName: tableName,
+    Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+    UpdateExpression: "SET automationEnabled = :enabled, controlMode = :mode",
+    ExpressionAttributeValues: { ":enabled": enabled, ":mode": enabled ? "automatic" : "manual" },
+  }));
+  await broadcastTelemetry({ type: "control-mode", nodeId, automationEnabled: enabled, timestamp: new Date().toISOString() });
+
+  if (enabled) {
+    const node = await getNode(nodeId);
+    if (node && typeof node.gasLevel === "number" && typeof node.temperature === "number") {
+      await evaluateThresholdAutomation(nodeId, {
+        gasLevel: node.gasLevel,
+        temperature: node.temperature,
+        ...(typeof node.isAnomaly === "boolean" ? { isAnomaly: node.isAnomaly } : {}),
+      });
+    }
+  }
+  return response(200, { nodeId, automationEnabled: enabled, controlMode: enabled ? "automatic" : "manual" });
+}
+
+async function evaluateThresholdAutomation(nodeId: string, reading: Pick<TelemetryInput, "gasLevel" | "temperature" | "isAnomaly">): Promise<void> {
+  if (!automaticControlEnabled || !iotData || !tableName) return;
+  const thresholds = loadAutomationThresholds();
+  if (!thresholds) return;
+  const node = await getNode(nodeId);
+  if (node?.automationEnabled !== true) return;
+  const actuatorState = typeof node.actuatorState === "object" && node.actuatorState !== null
+    ? node.actuatorState as Record<string, unknown>
+    : undefined;
+  const currentRelayOn = typeof actuatorState?.relayActive === "boolean" ? actuatorState.relayActive : undefined;
+  const desiredRelayOn = decideAutomaticRelay(reading, currentRelayOn, thresholds);
+  if (desiredRelayOn === undefined) return;
+
+  const now = new Date();
+  const cooldownSeconds = Number(process.env.AUTO_COMMAND_COOLDOWN_SECONDS ?? "10");
+  const safeCooldownSeconds = Number.isFinite(cooldownSeconds) && cooldownSeconds >= 1 && cooldownSeconds <= 3600
+    ? cooldownSeconds
+    : 10;
+  const cutoff = new Date(now.getTime() - safeCooldownSeconds * 1000).toISOString();
+    const actionId = createActionId();
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+      UpdateExpression: "SET automationLastCommandAt = :now, automationLastActionId = :actionId, pendingActionId = :actionId, pendingRelayOn = :relayOn",
+      ConditionExpression: "automationEnabled = :enabled AND (attribute_not_exists(automationLastCommandAt) OR automationLastCommandAt <= :cutoff)",
+      ExpressionAttributeValues: {
+        ":now": now.toISOString(),
+        ":cutoff": cutoff,
+        ":actionId": actionId,
+        ":relayOn": desiredRelayOn,
+        ":enabled": true,
+      },
+    }));
+  } catch (error) {
+    if (error instanceof Error && error.name === "ConditionalCheckFailedException") return;
+    throw error;
+  }
+
+  try {
+    await publishRelayCommand(nodeId, desiredRelayOn, reading.isAnomaly ? "anomaly" : "threshold", actionId);
+  } catch (error) {
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+      UpdateExpression: "REMOVE pendingActionId, pendingRelayOn",
+      ConditionExpression: "pendingActionId = :actionId",
+      ExpressionAttributeValues: { ":actionId": actionId },
+    }));
+    console.error("Could not publish automatic relay command", { nodeId, actionId, error });
+  }
 }
 
 async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void> {
@@ -343,6 +542,74 @@ async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void>
     ...(status.uptimeMs !== undefined ? { uptimeMs: status.uptimeMs } : {}),
     ...(status.commandQueueOverflow !== undefined ? { commandQueueOverflow: status.commandQueueOverflow } : {}),
   });
+}
+
+async function storeAndBroadcastActuatorAck(ack: ActuatorAckInput): Promise<void> {
+  if (!tableName) throw new Error("Fleet table is not configured");
+  const receivedAt = new Date().toISOString();
+  const expiresAt = Math.floor(Date.now() / 1000) + ttlDays * 24 * 60 * 60;
+  const actuatorState = {
+    relayActive: ack.relayOn,
+    fanActive: ack.relayOn,
+    buzzerActive: false,
+  };
+  await Promise.all([
+    ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${ack.nodeId}` },
+      UpdateExpression: "SET actuatorState = :actuatorState, lastActuatorActionId = :actionId, lastActuatorActionResult = :result",
+      ExpressionAttributeValues: {
+        ":actuatorState": actuatorState,
+        ":actionId": ack.actionId,
+        ":result": ack.result,
+      },
+    })),
+    ddb.send(new PutCommand({
+      TableName: tableName,
+      Item: {
+        PK: "FLEET",
+        SK: `EVENT#${receivedAt}#${ack.nodeId}#${ack.actionId}`,
+        id: ack.actionId,
+        timestamp: receivedAt,
+        nodeId: ack.nodeId,
+        eventType: "actuator_command",
+        message: `Relay ${ack.relayOn ? "on" : "off"}: ${ack.result}`,
+        source: "AWS IoT Core",
+        severity: ack.result === "applied" ? "info" : "warning",
+        expiresAt,
+      },
+    })),
+  ]);
+  try {
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${ack.nodeId}` },
+      UpdateExpression: "REMOVE pendingActionId, pendingRelayOn",
+      ConditionExpression: "pendingActionId = :actionId",
+      ExpressionAttributeValues: { ":actionId": ack.actionId },
+    }));
+  } catch (error) {
+    if (!(error instanceof Error) || error.name !== "ConditionalCheckFailedException") throw error;
+  }
+  await broadcastTelemetry({
+    type: "actuator-ack",
+    nodeId: ack.nodeId,
+    actionId: ack.actionId,
+    relayOn: ack.relayOn,
+    result: ack.result,
+    timestamp: receivedAt,
+  });
+}
+
+function parseDeviceActuatorAck(record: Record<string, unknown>): ActuatorAckInput | undefined {
+  const { eventType, nodeId, actionId, relayOn, result } = record;
+  if (
+    eventType !== "actuator_ack" ||
+    typeof nodeId !== "string" || !/^node-[a-zA-Z0-9-]{1,40}$/.test(nodeId) ||
+    typeof actionId !== "string" || !/^[a-zA-Z0-9_-]{1,80}$/.test(actionId) ||
+    typeof relayOn !== "boolean" || typeof result !== "string" || !/^[a-zA-Z0-9_-]{1,40}$/.test(result)
+  ) return undefined;
+  return { nodeId, actionId, relayOn, result };
 }
 
 function parseDeviceStatus(record: Record<string, unknown>): DeviceStatusInput | undefined {

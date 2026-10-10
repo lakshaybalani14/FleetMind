@@ -21,6 +21,9 @@ export interface FleetNode {
     buzzerActive: boolean;
   };
   actuatorStateStale?: boolean;
+  automationEnabled?: boolean;
+  lastActuatorActionId?: string;
+  lastActuatorActionResult?: string;
   lastSeen: string;
 }
 

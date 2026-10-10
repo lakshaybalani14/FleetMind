@@ -26,7 +26,8 @@ This CDK stack provides the authenticated dashboard API and a real-time telemetr
 - One on-demand DynamoDB table for WebSocket connection IDs and expiring tickets.
 - A private, encrypted S3 bucket for historical telemetry JSON objects.
 - Node.js 22 Lambda handlers for API requests, IoT telemetry ingestion, WebSocket authorization, and connection lifecycle.
-- An AWS IoT Core rule routing `fleetmind/+/telemetry` messages to the ingestion Lambda.
+- AWS IoT Core rules routing `fleetmind/+/telemetry`, `fleetmind/+/status`, and `actuator_ack` events on `fleetmind/+/events` to the ingestion Lambda.
+- A narrowly scoped Lambda permission to publish relay commands to `fleetmind/node-*/commands`.
 - CloudWatch log groups with 30-day retention.
 
 All regional resources are pinned to `ap-southeast-2`. The Managed Login app client uses authorization code (not implicit) with a local callback at `http://localhost:3000/auth/callback`; the frontend still needs to implement PKCE. The default API browser origin is `http://localhost:3000`; set `-c appOrigin=https://your-dashboard.example` on a later synth/deploy for the deployed frontend origin.
@@ -47,6 +48,8 @@ Telemetry and event items receive a 30-day DynamoDB TTL; the S3 history objects 
 All routes require a Cognito JWT in `Authorization: Bearer <token>`.
 
 - `GET /nodes`
+- `POST /nodes/{nodeId}/relay` sends a QoS 1 relay command to the selected node and waits for the device acknowledgement before showing the confirmed state. Manual control selects manual mode.
+- `POST /nodes/{nodeId}/automation` selects manual or threshold mode. Threshold mode is rejected unless automation is explicitly enabled and all four validated thresholds are configured.
 - `GET /telemetry?nodeId=node-01&limit=50`
 - `POST /telemetry` with `eventId`, `nodeId`, ISO `timestamp`, `temperature`, `humidity`, and `gasLevel`; optional `isAnomaly` and `actuatorState` fields are preserved.
 - `GET /logs?limit=50`
@@ -82,9 +85,9 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 ## Remaining cloud work
 
-1. Update the dashboard so online/offline and relay status change immediately
-   from the existing `node-status` WebSocket event; show old actuator values as
-   stale/unknown while offline.
+1. Run the board test in [`../docs/actuator-control.md`](../docs/actuator-control.md).
+   AWS routes, Lambda package, publish permission, and acknowledgement rule are
+   configured; automatic mode remains disabled pending MQ-2 calibration.
 2. Build and review the Isolation Forest training/inference image as a separate
    feature branch, following
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
@@ -93,10 +96,10 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 3. Continue end-to-end testing as the anomaly service is integrated; revisit
    latency measurements if live behavior regresses. See
    [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
-4. After the live path is stable, continue with controlled command/automation
-   flows, alarms, and frontend hosting.
+4. After the live path is stable, continue with alarms and frontend hosting.
 
-The device Thing/certificate and firmware shadow/downlink hooks exist for the
-current prototype; a complete dashboard command workflow is still future work.
-Production-grade fleet provisioning, robust offline buffering, anomaly
-detection, automation hardening, and frontend hosting also remain future work.
+The device Thing/certificate and firmware downlink/acknowledgement hooks exist
+for the current prototype. The dashboard command flow and matching AWS
+configuration are in place; the board test is pending. Production-
+grade fleet provisioning, robust offline buffering, anomaly detection,
+automation hardening, and frontend hosting also remain future work.
