@@ -152,6 +152,7 @@ directly until ownership, authorization, and audit behavior are reviewed.
   `AUTO_CONTROL_ENABLED` is `false`, the scoped IoT publish permission and
   acknowledgement rule exist, and both Cognito-protected HTTP routes are
   deployed to `$default`.
-- Not board-verified: dashboard-to-relay-to-ack round trip or automated
-  threshold behavior.
+- Board-verified: manual relay ON/OFF produced a relay click and LED state
+  changes, and the dashboard showed running/standby after each action.
+- Not board-verified: automated threshold behavior.
 - Not ready to enable: production threshold automation before MQ-2 calibration.

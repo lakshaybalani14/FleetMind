@@ -50,10 +50,16 @@ connection IDs in this log.
   command/ack path. AWS Core verification on 2026-10-10 confirmed the deployed
   Lambda package matches the local actuator ZIP, the scoped IoT publish
   permission and acknowledgement rule exist, and both Cognito-protected HTTP
-  routes are deployed. The board round-trip is still pending.
+  routes are deployed. On 2026-10-10, the user tested manual relay ON and OFF:
+  the relay clicked, the module LED changed state, and the dashboard showed
+  running/standby after each command. This verifies the manual command and
+  acknowledgement round trip with the board.
 - Automatic mode is intentionally off unless `AUTO_CONTROL_ENABLED=true` and
   gas/temperature on/off thresholds are set. MQ-2's current PPM value is an
   estimate, so calibrate it before enabling automatic relay behavior.
+- Next: calibrate the MQ-2 sensor, agree on safe gas/temperature thresholds,
+  then test baseline automatic mode with controlled readings. Keep automation
+  disabled until calibration is complete.
 - Procedure and the configuration checklist: [`actuator-control.md`](actuator-control.md).
 
 ## Current timing and status behavior

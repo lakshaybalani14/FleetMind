@@ -23,17 +23,17 @@ secrets, or credentials.
 | AWS IoT Core | Device connection and telemetry topic verified. `FleetMindTelemetryToLambda` routes `fleetmind/+/telemetry` to the ingestion Lambda. |
 | Storage and backend | Live telemetry has been verified through Lambda, DynamoDB, and S3. |
 | Authentication and APIs | Cognito-authenticated HTTP API and API Gateway WebSocket dashboard flow are configured and working. |
-| Dashboard and relay control | Live readings/status work; the authenticated relay routes and updated Lambda are configured in AWS. Manual board round-trip remains to be tested; automatic mode is disabled pending MQ-2 calibration. |
+| Dashboard and relay control | Live readings/status and manual relay ON/OFF have been verified on the board. Automatic mode remains disabled pending MQ-2 calibration and safe threshold settings. |
 | Infrastructure source | CDK source is in `infra/`; the current AWS resources were configured manually, so review differences before any CDK deployment. |
 | Live-test follow-up | User confirmed online/offline status, live readings, and the moving chart work without manual refresh. Next: continue with anomaly detection. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
 
 ## Resume live testing
 
-1. Reconnect the board and test the bidirectional manual relay flow using
-   [`docs/actuator-control.md`](docs/actuator-control.md). Automation remains
-   disabled until gas sensor thresholds are calibrated and explicitly set.
-2. Calibrate the gas sensor, then verify threshold automation with safe test
-   readings before enabling it.
+1. Calibrate the gas sensor and select safe thresholds; keep automatic mode off
+   until this is complete. Then follow the threshold-automation test in
+   [`docs/actuator-control.md`](docs/actuator-control.md).
+2. Verify automatic threshold ON/OFF behavior with controlled readings and
+   device acknowledgements.
 3. Build anomaly detection as a separate teammate branch using
    [`docs/anomaly-service-plan.md`](docs/anomaly-service-plan.md).
 4. Revisit latency measurements only if future live tests show noticeable lag
