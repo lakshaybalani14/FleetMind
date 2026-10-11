@@ -1,17 +1,19 @@
 # FleetMind project status and handoff
 
-Last consolidated: 2026-10-10. This is the resume point for the next work
-session and the teammate's anomaly-service branch.
+Last consolidated: 2026-10-11. This is the resume point for the next work
+session. The immediate next work is the existing threshold-based health and
+notification extension; the ML detector remains offline/future work.
 
 ## Overall completion
 
-**Estimated completion: about 70% of the agreed prototype scope.** This is a
+**Estimated completion: about 70% of the core prototype.** This is a
 scope-based planning estimate, not a measure of production readiness. The
 device-to-cloud telemetry path, live dashboard, manual relay, and demo threshold
-automation loop have been exercised. The Isolation Forest service and its
-closed-loop integration are not implemented yet and make up the largest
-remaining feature milestone. Hosting, security/operations hardening, broader
-multi-node tests, and acceptance testing also remain.
+automation loop have been exercised. The newly agreed EC2/CloudWatch/SNS,
+Bedrock explanation, Athena, and EC2 administration additions are not built yet
+and are outside that 70% estimate. The ML detector is an offline experiment,
+not a live feature. Hosting, security/operations hardening, broader multi-node
+tests, and acceptance testing also remain.
 
 | Workstream | Current state | Remaining work |
 | --- | --- | --- |
@@ -22,8 +24,10 @@ multi-node tests, and acceptance testing also remain.
 | Manual relay loop | Board test confirmed relay click/LED state and acknowledged ON/OFF state in dashboard. | Optional retry/failure UX and additional board/load checks. |
 | Threshold automation | User confirmed synthetic temperature test caused physical relay ON and OFF and received MQTT acknowledgement. | Exercise hysteresis/cooldown boundaries and automation failure cases with a harmless low-voltage load. This is demo logic, not calibrated gas detection. |
 | Multi-node/offline alerts | Frontend no longer assumes `node-01`; Lambda rejects MQTT telemetry unless that node has a fresh explicit online status. AWS package hash matches the latest offline-gating ZIP. | Perform live online/offline tests for each node ID and verify rejection/acceptance in logs, DynamoDB, and UI. |
-| ML anomaly service (Phase 5) | Plan and dataset/API contract are documented; implementation is queued for teammate's separate branch. | Prepare/clean normal data, train/evaluate Isolation Forest, build FastAPI `/score`, Dockerize, publish a versioned image to ECR, and deploy to K3s on EC2 with a secured Lambda connection. |
-| ML-driven automation and notifications (Phase 6) | Existing IoT command/ack path can be reused; no model score flow or SNS anomaly alerts yet. | Persist deduplicated `AnomalyEvent`, publish SNS alert, trigger relay via current command path, prevent repeated command/alert storms, and measure the sub-5-second reading-to-ack target. |
+| Offline ML experiment | Prototype is merged to `main` but is not deployed. On the supplied holdout, it flagged 19 user-confirmed normal room readings and one synthetic 61°C test reading. | Keep it out of live alerts and relay control. Revisit after collecting reviewed, safely generated evaluation examples and reducing false alarms. |
+| Threshold-alert explanations | Existing threshold rules already create demo alert events. Bedrock explanation has not been implemented. | Optionally send the threshold result and its measured values/reason to Bedrock for a short explanation in the activity log/SNS message. Keep alert decisions in existing code and provide a fixed-text fallback. |
+| EC2 health monitor, CloudWatch, and SNS | Not implemented; no resources created for this feature. | Build a small EC2 service to check device/system health, publish a small set of metrics, and use CloudWatch alarms to notify an SNS topic. This is for offline/sensor/system health, not ML gas-anomaly decisions. |
+| S3 history analysis and EC2 access | Athena and Session Manager are not configured for this project. | Use Athena to query approved S3 telemetry; use Systems Manager Session Manager for EC2 access without public SSH. |
 | Production operation | Current regional resources are in `ap-southeast-2`; infrastructure source is CDK but live resources were configured/updated manually. | Reconcile drift, finish hosted frontend/domain and operational alerting, review security/cost/retention, and run a final acceptance pass. |
 
 ## What is working end to end
@@ -48,35 +52,28 @@ independent and do not test by releasing gas or applying unsafe heat.
 
 ## Immediate next steps
 
-1. Start the dashboard and sign in as usual. Open Alerts & activity and keep the
-   Lambda CloudWatch log stream available. MQTT test-client subscription is
-   separate from the ESP32 connection and ends when leaving that console page.
-2. With the target node online, publish a fresh valid high-temperature or
-   high-relative-gas test payload to its own
-   `fleetmind/<nodeId>/telemetry` topic. Expect the matching node's live value,
-   chart point, alert overlay/drawer item, and `anomaly_detected` activity row.
-   Use the current node ID, unique event/sequence value, and current timestamp.
-3. Publish a status-offline event (or disconnect the target device), then try a
-   telemetry test for that node. Expect Lambda to return/reason `node_offline`
-   and **no new telemetry history, alert, or live telemetry frame**. Reconnect
-   and wait for a fresh online status before repeating the accepted test.
-4. Repeat for a second node ID if available. Confirm the UI and event are not
-   hard-coded to `node-01`. See the step-by-step checklist in
-   [`live-testing-log.md`](live-testing-log.md).
-5. Teammate proceeds on a feature branch with Phase 5 from
-   [`anomaly-service-plan.md`](anomaly-service-plan.md). Review and merge source
-   through a PR; do not deploy an unreviewed branch to live resources.
+1. Live-test the latest pushed dashboard changes: verify alerts stay visible
+   until acknowledged and only configured node IDs appear.
+2. Re-run the safe threshold-alert test on an online node. Check the live tile,
+   chart, overlay, activity log, and that the existing threshold values have not
+   changed. Do not use the ML model for this test.
+3. Plan the EC2 health monitor and CloudWatch-to-SNS notifications. Define the
+   health conditions and alert window before creating resources.
+4. Add Bedrock explanations only after a threshold alert exists; keep a fixed
+   explanation fallback and do not let Bedrock trigger alerts or relays.
+5. Query the existing approved S3 telemetry with Athena and set up Session
+   Manager access for EC2. Check project spend and selected Region before any
+   resource creation.
 
-## Phase 5 and 6 AWS/data needs
+## Deferred ML infrastructure
 
-Planned, not yet provisioned for the model service: an EC2 training environment;
-an approved private S3 dataset/model-artifact location (do not assume the
-existing telemetry-history bucket is approved for training artifacts); an ECR
-repository; an EC2 inference host with K3s; and an SNS anomaly-alert topic with
-approved subscribers. Lambda-to-FastAPI networking and service authentication
-must be designed before enabling scores to actuate hardware. SQS is optional,
-not required by the agreed direct-call approach; introduce it only if measured
-throughput/retry needs justify a separate result-return path.
+The earlier Phase 5/6 proposal for EC2 model training, ECR, K3s inference, Lambda
+model scoring, SNS ML alerts, and model-triggered relay is deferred. Do not
+provision or deploy this path as part of the next monitoring work. The saved
+prototype is not reliable enough for live alerts: it flagged 19 readings
+confirmed normal by the user and one synthetic high-temperature test. See
+[`anomaly-service-plan.md`](anomaly-service-plan.md) for the historical design
+and dataset constraints.
 
 Dataset rows should preserve node ID, sequence, device timestamp and server
 `receivedAt`, temperature in °C, humidity percentage, raw MQ-2 ADC, relative gas
@@ -86,12 +83,10 @@ fit unlabeled normal data, but reviewed controlled labels are needed to estimate
 false positives and missed events and to choose a useful threshold. A few hours
 or days of data are a starting point, not evidence of safety or accuracy.
 
-The teammate's Git branch does not isolate shared AWS resources. Invite her
-through AWS Settings → Team and share the FleetMind project with only the access
-needed. Keep training/deployment changes reviewed; confirm service availability
-in the selected Region and project spend limits before creating EC2/ECR/SNS
-resources. Do not share credentials or deploy live resources from the feature
-branch.
+The teammate's Git branch does not isolate shared AWS resources. Keep cloud
+changes reviewed; confirm service availability in `ap-southeast-2` and project
+spend limits before creating EC2, SNS, CloudWatch, Bedrock, or Athena resources.
+Do not share credentials or deploy unreviewed code to live resources.
 
 ## Live AWS scan: findings and caveats
 

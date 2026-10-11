@@ -1,5 +1,28 @@
 # FleetMind live-testing log
 
+## 2026-10-11 — Resume handoff and selected next features
+
+- Pushed commit `0daaf8d` to `main`. It keeps alert items pending until
+  acknowledgement and filters dashboard nodes to configured IDs. These latest
+  dashboard changes still need a live browser/device retest.
+- Reviewed the hybrid model holdout file with the user. Of 20 model-flagged
+  readings, 19 were confirmed as normal room readings and one 61°C reading was
+  a deliberately sent synthetic test payload. The model is not connected to
+  the dashboard or AWS alert flow and stays offline/future work.
+- The user selected this future feature set: an EC2 device-health monitor;
+  CloudWatch metrics and alarms; SNS notifications for device/system health;
+  Bedrock plain-language explanations for existing threshold alerts; Athena
+  queries over S3 telemetry; and Systems Manager Session Manager for EC2
+  access. The existing threshold rules and relay behavior are to remain
+  unchanged. Bedrock is only an explainer, not an alert or actuator decision
+  maker.
+- No AWS resources were created or changed for this plan. Before building,
+  define health conditions/alert windows, confirm approved S3 access for
+  Athena, and check service availability and project spend in `ap-southeast-2`.
+- Next session: first retest persistent alert acknowledgement and configured
+  node filtering in the live dashboard. Then implement the cloud-health path in
+  small steps, keeping ML predictions out of SNS and relay control.
+
 This document records what has been exercised against the real ESP32 and AWS
 resources, what problems were found, and what remains for the next live test.
 Do not put private keys, device certificates, Cognito tokens, or full WebSocket

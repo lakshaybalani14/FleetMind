@@ -90,17 +90,19 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
    mode remains opt-in. Optional follow-up: test hysteresis-band and cooldown
    boundaries with a harmless low-voltage load. MQ-2 supplies a relative demo
    level, not calibrated gas/CO concentration.
-2. Build and review the Isolation Forest training/inference service as a
-   separate feature branch, following
-   [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md). The
-   agreed prototype target is EC2 training, FastAPI `/score` in Docker/ECR,
-   K3s on one EC2 inference node, Lambda scoring/persistence, and SNS alerts for
-   high scores. Secure and test the Lambda-to-service network path before
-   enabling live predictions.
-3. Continue end-to-end testing as the anomaly service is integrated; revisit
-   latency measurements if live behavior regresses. See
+2. Keep the ML anomaly prototype offline. It flagged 19 readings confirmed
+   normal and one synthetic temperature test; it is not ready for live alerts.
+   The previous EC2-training/ECR/K3s/Lambda-scoring plan is deferred in
+   [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
+3. Plan a separate EC2 device-health monitor. Use CloudWatch metrics and alarms
+   with SNS for device/system health. Bedrock may explain an existing
+   threshold-based alert in plain language, but must not decide whether to alert
+   or trigger a relay. Use Athena for historical S3 telemetry analysis and
+   Systems Manager Session Manager to access EC2 without public SSH.
+4. Continue end-to-end testing as these features are added; revisit latency
+   measurements if live behavior regresses. See
    [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
-4. After the live path is stable, continue with alarms and frontend hosting.
+5. After the live path is stable, review hosting, security, and operating costs.
 
 The device Thing/certificate and firmware downlink/acknowledgement hooks exist
 for the current prototype. The dashboard command flow and matching AWS
@@ -111,10 +113,10 @@ future work.
 
 ## SNS and queue status
 
-SNS is a **pending Phase 6 resource**: create an anomaly-alert topic and
-subscribe the approved alert recipient(s); the Lambda publishes only for a
-deduplicated high-score anomaly. SNS alerts are separate from the dashboard's
-live WebSocket updates and do not carry relay commands.
+SNS is a **planned health-notification resource**: use it for CloudWatch alarms
+and agreed device/system-health notifications. Bedrock can optionally provide
+plain-language context for existing threshold alerts. Do not send unvalidated
+ML predictions to SNS or use them to control the relay.
 
 SQS is **not required by the original Phase 5/6 flow**. It is an optional later
 buffer between ingestion and inference if the EC2 model worker needs retries or

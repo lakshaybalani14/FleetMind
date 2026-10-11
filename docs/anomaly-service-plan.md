@@ -1,5 +1,26 @@
 # FleetMind anomaly-service handoff
 
+## Current decision — 2026-10-11
+
+The teammate's offline prototype is merged to `main`, but is not connected to
+the dashboard, AWS ingestion, SNS, or relay. Review of
+`fleetmind_hybrid_holdout_scores.csv` found 20 flagged readings: the user
+confirmed 19 were normal room readings and the 61°C reading was a deliberately
+sent synthetic test payload. The model therefore produced 19 false alarms in
+this flagged set. Keep it as an offline experiment and future work; do not use
+its output for live alerts or device control.
+
+The next agreed cloud work is separate from this ML plan: EC2 device-health
+monitoring, CloudWatch metrics/alarms, SNS health notifications, optional
+Bedrock wording for existing threshold alerts, Athena queries over S3 history,
+and Systems Manager Session Manager access to EC2. These features have not been
+implemented or provisioned. Bedrock must only explain an alert raised by the
+existing threshold code; it must not determine sensor status or drive relay
+actions.
+
+The Phase 5/6 proposal below is retained as a possible later ML path, not the
+current implementation plan.
+
 ## Status and scope
 
 Status: queued as the first teammate-owned feature workstream. Implement on a
