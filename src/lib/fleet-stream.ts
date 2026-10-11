@@ -4,6 +4,16 @@ import { demoThresholdReasons } from "./telemetry-analysis";
 const TELEMETRY_STALE_AFTER_MS = 90_000;
 const ALLOWED_CLOCK_SKEW_MS = 30_000;
 const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
+const configuredNodeIds = new Set(
+  (process.env.NEXT_PUBLIC_FLEET_NODE_IDS ?? "node-01,node-02")
+    .split(",")
+    .map((nodeId) => nodeId.trim())
+    .filter(Boolean),
+);
+
+export function isConfiguredFleetNode(nodeId: string): boolean {
+  return configuredNodeIds.has(nodeId);
+}
 
 export type TelemetryStreamMessage = {
   type: "telemetry";

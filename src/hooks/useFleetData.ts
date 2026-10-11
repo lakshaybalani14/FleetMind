@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { TelemetryPoint, FleetNode, ActionLogEntry } from "@/types/fleet";
 import {
   applyTelemetryToNodes,
+  isConfiguredFleetNode,
   mergeActionLogs,
   mergeNodeSnapshot,
   mergeTelemetryPoints,
@@ -109,7 +110,7 @@ export function useFleetData(idToken: string | null) {
       .then(([nodeResult, logResult]) => {
         if (cancelled) return;
         const receivedAt = Date.now();
-        const snapshotNodes = (nodeResult.nodes as ApiNode[]).map((node) => {
+        const snapshotNodes = (nodeResult.nodes as ApiNode[]).filter((node) => isConfiguredFleetNode(node.id)).map((node) => {
           const lastSeen = node.lastSeen ?? "";
           return {
             id: node.id,
@@ -161,7 +162,7 @@ export function useFleetData(idToken: string | null) {
         socket.onmessage = (event) => {
           let message: StreamMessage;
           try { message = JSON.parse(String(event.data)) as StreamMessage; } catch { return; }
-          if (!message.nodeId) return;
+          if (!message.nodeId || !isConfiguredFleetNode(message.nodeId)) return;
           if (message.type === "node-status") {
             if (typeof message.online !== "boolean") return;
             const statusTime = Date.parse(message.timestamp);

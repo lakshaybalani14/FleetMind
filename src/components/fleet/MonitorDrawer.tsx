@@ -81,7 +81,7 @@ export function MonitorDrawer({ open, activeAlerts, logs, onClose }: Props) {
               <Activity className="h-5 w-5 text-blue-300" aria-hidden="true" />
               Alerts & activity
             </h2>
-            <p className="mt-1 text-xs text-zinc-400">Live alerts and recent fleet events</p>
+            <p className="mt-1 text-xs text-zinc-400">Pending alerts and recent fleet events</p>
           </div>
           <button ref={closeButton} type="button" onClick={onClose} className="rounded-lg border border-zinc-700 p-2 text-zinc-300 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Close drawer">
             <X className="h-4 w-4" aria-hidden="true" />
@@ -92,12 +92,12 @@ export function MonitorDrawer({ open, activeAlerts, logs, onClose }: Props) {
           <section aria-labelledby="drawer-alerts-title">
             <div className="mb-3 flex items-center justify-between">
               <h3 id="drawer-alerts-title" className="flex items-center gap-2 text-sm font-semibold text-red-200">
-                <AlertTriangle className="h-4 w-4" aria-hidden="true" /> Active alerts
+                <AlertTriangle className="h-4 w-4" aria-hidden="true" /> Pending alerts
               </h3>
               <span className="rounded-full bg-red-500/15 px-2.5 py-1 text-xs font-semibold text-red-200">{activeAlerts.length}</span>
             </div>
             {activeAlerts.length === 0 ? (
-              <p className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-400">No active prototype alerts.</p>
+              <p className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-400">No pending prototype alerts.</p>
             ) : (
               <ul className="space-y-3">
                 {activeAlerts.map((alert) => (

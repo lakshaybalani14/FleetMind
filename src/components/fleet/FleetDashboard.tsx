@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useFleetData } from "@/hooks/useFleetData";
 import { TelemetryChart } from "./TelemetryChart";
 import { MonitoringBento } from "./MonitoringBento";
@@ -10,7 +10,7 @@ import { Activity, Cpu } from "lucide-react";
 import { beginCognitoLogin, clearCognitoSession, cognitoLogoutUrl, getCognitoIdToken } from "@/lib/cognito";
 import { HazardAlertOverlay } from "./HazardAlertOverlay";
 import { MonitorDrawer } from "./MonitorDrawer";
-import { dashboardAlertForNode } from "@/lib/telemetry-analysis";
+import { dashboardAlertForNode, type DashboardAlert } from "@/lib/telemetry-analysis";
 
 export default function FleetDashboard() {
   const [idToken, setIdToken] = useState<string | null>(null);
@@ -21,14 +21,16 @@ export default function FleetDashboard() {
   const [controlMessage, setControlMessage] = useState("");
   const [controlError, setControlError] = useState("");
   const [dismissedAlertKeys, setDismissedAlertKeys] = useState<string[]>([]);
+  const [pendingAlerts, setPendingAlerts] = useState<Record<string, DashboardAlert>>({});
   const [monitorDrawerOpen, setMonitorDrawerOpen] = useState(false);
   const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState, telemetryAge, sendRelayCommand, setAutomationEnabled } = useFleetData(idToken);
-  const activeAlerts = nodes.flatMap((node) => {
+  const activeAlerts = useMemo(() => nodes.flatMap((node) => {
     const alert = dashboardAlertForNode(node);
     return alert ? [alert] : [];
-  });
-  const activeAlertKeys = activeAlerts.map((alert) => alert.key).join("|");
-  const visibleAlert = activeAlerts.find((alert) => !dismissedAlertKeys.includes(alert.key));
+  }), [nodes]);
+  const activeAlertKeys = useMemo(() => activeAlerts.map((alert) => alert.key).join("|"), [activeAlerts]);
+  const pendingAlertList = Object.values(pendingAlerts);
+  const visibleAlert = pendingAlertList.find((alert) => !dismissedAlertKeys.includes(alert.key));
   const closeMonitorDrawer = useCallback(() => setMonitorDrawerOpen(false), []);
 
   useEffect(() => {
@@ -37,7 +39,19 @@ export default function FleetDashboard() {
       const next = previous.filter((key) => activeKeys.has(key));
       return next.length === previous.length ? previous : next;
     });
-  }, [activeAlertKeys]);
+    if (activeAlerts.length > 0) {
+      setPendingAlerts((previous) => {
+        let changed = false;
+        const next = { ...previous };
+        for (const alert of activeAlerts) {
+          if (dismissedAlertKeys.includes(alert.key) || next[alert.key]) continue;
+          next[alert.key] = alert;
+          changed = true;
+        }
+        return changed ? next : previous;
+      });
+    }
+  }, [activeAlertKeys, activeAlerts, dismissedAlertKeys]);
 
   useEffect(() => {
     setIdToken(getCognitoIdToken());
@@ -127,11 +141,11 @@ export default function FleetDashboard() {
           className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-800 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
           aria-haspopup="dialog"
           aria-expanded={monitorDrawerOpen}
-          aria-label={`Open alerts and activity${activeAlerts.length ? `, ${activeAlerts.length} active alerts` : ""}`}
+          aria-label={`Open alerts and activity${pendingAlertList.length ? `, ${pendingAlertList.length} pending alerts` : ""}`}
           title="Alerts & activity"
         >
           <Activity className="h-5 w-5" aria-hidden="true" />
-          {activeAlerts.length > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white">{activeAlerts.length}</span>}
+          {pendingAlertList.length > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white">{pendingAlertList.length}</span>}
         </button>
       </div>
 
@@ -178,12 +192,21 @@ export default function FleetDashboard() {
         isLive={streamState === "connected" && selectedNode.status === "online"}
       />
       </>}
-      <MonitorDrawer open={monitorDrawerOpen} activeAlerts={activeAlerts} logs={logs} onClose={closeMonitorDrawer} />
+      <MonitorDrawer open={monitorDrawerOpen} activeAlerts={pendingAlertList} logs={logs} onClose={closeMonitorDrawer} />
       {visibleAlert && (
         <HazardAlertOverlay
           alert={visibleAlert}
-          otherActiveAlerts={activeAlerts.length - 1}
-          onAcknowledge={() => setDismissedAlertKeys((previous) => previous.includes(visibleAlert.key) ? previous : [...previous, visibleAlert.key])}
+          otherActiveAlerts={pendingAlertList.length - 1}
+          onAcknowledge={() => {
+            setPendingAlerts((previous) => {
+              const next = { ...previous };
+              delete next[visibleAlert.key];
+              return next;
+            });
+            if (activeAlerts.some((alert) => alert.key === visibleAlert.key)) {
+              setDismissedAlertKeys((previous) => previous.includes(visibleAlert.key) ? previous : [...previous, visibleAlert.key]);
+            }
+          }}
         />
       )}
     </main>
