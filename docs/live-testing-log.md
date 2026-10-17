@@ -1,5 +1,31 @@
 # FleetMind live-testing log
 
+## 2026-10-18 — EC2 health monitor setup handoff
+
+- Confirmed the SNS topic and email subscription, scoped EC2 role/policy,
+  deployed `fleetmind-telemetry-api` update, and the authenticated
+  `POST /nodes/{nodeId}/monitoring` route. AWS reports the Lambda update
+  successful, and the monitoring route uses the same Lambda integration and
+  JWT authorizer as the existing automation route.
+- Created EC2 instance `i-0db768c88c910361b` (`t3.micro`) with
+  `FleetMindHealthMonitorRole`, IMDSv2 required, and no inbound SSH rule. SSM
+  reports it Online.
+- Uploaded `fleetmind-health-monitor.zip` to the existing telemetry S3 bucket
+  under `health-monitor/`. The systemd timer is enabled and active. The monitor
+  service ran successfully on consecutive minutes and AWS showed
+  `FleetMind/Health` → `MonitorHeartbeat=1`.
+- The monitor log reports `Monitoring disabled for node-01`; this is expected
+  because the dashboard toggle is still off. The next live step is to enable
+  notifications for `node-01`, verify `StatusWithin180Seconds=1`, and then
+  create/test the device, monitor-heartbeat, and EC2 status-check alarms.
+- `node-sim-20261010` also exists in DynamoDB but is excluded from the monitor;
+  only the physical board `node-01` is configured.
+- AWS emitted a non-blocking boto3 warning because the installed Amazon Linux
+  `python3` resolves to Python 3.9. The monitor ran successfully; update the
+  virtual environment to a supported Python version during follow-up.
+- Dashboard toggle source is local; confirm whether the live dashboard is
+  local or hosted before expecting the control to appear in a hosted site.
+
 ## 2026-10-11 — Resume handoff and selected next features
 
 - Pushed commit `0daaf8d` to `main`. It keeps alert items pending until

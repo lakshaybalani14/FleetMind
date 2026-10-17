@@ -123,6 +123,7 @@ export function useFleetData(idToken: string | null) {
             actuatorState: node.actuatorState ?? emptyActuatorState,
             actuatorStateStale: node.status === "offline",
             automationEnabled: node.automationEnabled === true,
+            monitoringEnabled: node.monitoringEnabled === true,
             lastActuatorActionId: node.lastActuatorActionId,
             lastActuatorActionResult: node.lastActuatorActionResult,
             lastSeen,
@@ -314,6 +315,17 @@ export function useFleetData(idToken: string | null) {
     }) as Promise<{ automationEnabled: boolean; controlMode: "manual" | "automatic" }>;
   }, [fetchJson, selectedNodeId]);
 
+  const setMonitoringEnabled = useCallback(async (enabled: boolean) => {
+    const result = await fetchJson(`/nodes/${encodeURIComponent(selectedNodeId)}/monitoring`, {
+      method: "POST",
+      body: JSON.stringify({ enabled }),
+    }) as { monitoringEnabled: boolean };
+    setNodes((previous) => previous.map((item) => item.id === selectedNodeId
+      ? { ...item, monitoringEnabled: result.monitoringEnabled }
+      : item));
+    return result;
+  }, [fetchJson, selectedNodeId]);
+
   const currentNodes = nodes.map((item) => ({ ...item, status: currentNodeStatus(item, now) }));
   const node = currentNodes.find((item) => item.id === selectedNodeId);
   const status = node ? currentNodeStatus(node, now) : undefined;
@@ -333,6 +345,7 @@ export function useFleetData(idToken: string | null) {
     streamState,
     sendRelayCommand,
     setAutomationEnabled,
+    setMonitoringEnabled,
     telemetryAge: selectedNode ? formatTelemetryAge(selectedNode.lastSeen, now) : "No telemetry received",
   };
 }

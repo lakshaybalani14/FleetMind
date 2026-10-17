@@ -25,6 +25,7 @@ export interface FleetNode {
   };
   actuatorStateStale?: boolean;
   automationEnabled?: boolean;
+  monitoringEnabled?: boolean;
   lastActuatorActionId?: string;
   lastActuatorActionResult?: string;
   lastSeen: string;

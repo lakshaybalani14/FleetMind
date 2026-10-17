@@ -94,11 +94,13 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
    normal and one synthetic temperature test; it is not ready for live alerts.
    The previous EC2-training/ECR/K3s/Lambda-scoring plan is deferred in
    [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
-3. Plan a separate EC2 device-health monitor. Use CloudWatch metrics and alarms
-   with SNS for device/system health. Bedrock may explain an existing
-   threshold-based alert in plain language, but must not decide whether to alert
-   or trigger a relay. Use Athena for historical S3 telemetry analysis and
-   Systems Manager Session Manager to access EC2 without public SSH.
+3. Finish the separate EC2 device-health monitor with CloudWatch alarms and
+   SNS acceptance tests, following
+   [`../docs/cloud-health-monitor-console-guide.md`](../docs/cloud-health-monitor-console-guide.md).
+   Bedrock may explain an existing threshold-based alert in plain language, but
+   must not decide whether to alert or trigger a relay. Use Athena for historical
+   S3 telemetry analysis and Systems Manager Session Manager to access EC2
+   without public SSH.
 4. Continue end-to-end testing as these features are added; revisit latency
    measurements if live behavior regresses. See
    [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
@@ -113,8 +115,9 @@ future work.
 
 ## SNS and queue status
 
-SNS is a **planned health-notification resource**: use it for CloudWatch alarms
-and agreed device/system-health notifications. Bedrock can optionally provide
+The `fleetmind-device-health` SNS topic and its confirmed email subscription are
+configured. CloudWatch alarms still need to target it for agreed
+device/system-health notifications. Bedrock can optionally provide
 plain-language context for existing threshold alerts. Do not send unvalidated
 ML predictions to SNS or use them to control the relay.
 

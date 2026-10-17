@@ -1,0 +1,16 @@
+[Unit]
+Description=FleetMind device health metric publisher
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=fleetmind
+Group=fleetmind
+EnvironmentFile=/etc/fleetmind-health-monitor/config
+ExecStart=/opt/fleetmind-health-monitor/venv/bin/python /opt/fleetmind-health-monitor/monitor.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/fleetmind-health-monitor

@@ -19,9 +19,11 @@ secrets, or credentials.
 
 Overall estimate: **about 70% of the core prototype is complete**. This is a
 planning estimate, not a production-readiness rating. The sensor telemetry,
-dashboard, and relay loop are working. The newly agreed cloud-monitoring and
-notification features have not been built yet. The ML anomaly model remains an
-offline experiment and is not part of the live alert path. See
+dashboard, and relay loop are working. The health-monitor backend and EC2
+publisher are deployed, and the monitor heartbeat is verified. Device alarms
+and the end-to-end SNS test remain; the dashboard switch is currently available
+in the local app. The ML anomaly model remains an offline experiment and is not
+part of the live alert path. See
 [`docs/project-status.md`](docs/project-status.md) for the full handoff and next
 steps.
 
@@ -34,6 +36,7 @@ steps.
 | Dashboard and relay control | Live readings/status and manual relay ON/OFF have been verified on the board. Synthetic telemetry also verified automatic threshold ON and OFF with device acknowledgement. MQ-2 is a relative prototype level, not CO ppm; automatic demo mode remains opt-in. |
 | Dashboard alerts and analytics | Source now keeps alerts pending until acknowledged and filters nodes against configured IDs. It also includes alert markers, sensor-rich logs, filters, and recent-reading analysis. Live retest of the latest alert-persistence/node-filtering changes is pending. These remain demo threshold warnings, not a certified safety alarm. |
 | Infrastructure source | CDK source is in `infra/`; the current AWS resources were configured manually, so review differences before any CDK deployment. |
+| Device health notifications | Lambda route and EC2 monitor are deployed; CloudWatch `MonitorHeartbeat=1` is verified. The per-device switch is off and alarms are not configured yet. |
 | Live-test follow-up | User confirmed online/offline status, live readings, moving chart, manual relay, and synthetic threshold ON/OFF with device acknowledgement. The latest dashboard alert-persistence and configured-node changes are pushed to `main` but need a live retest. See [`docs/live-testing-log.md`](docs/live-testing-log.md). |
 
 ## Resume live testing
@@ -48,10 +51,8 @@ steps.
    were normal and one synthetic 61°C test reading. Do not connect its results
    to the dashboard, SNS, or relay. Revisit it only after collecting reviewed
    test examples; see [`docs/anomaly-service-plan.md`](docs/anomaly-service-plan.md).
-4. Plan the next cloud-monitoring feature: an EC2 device-health monitor with
-   CloudWatch metrics/alarms and SNS notifications for device/system health.
-   Bedrock may explain existing threshold alerts in plain language; it must not
-   decide whether to alert or control the relay.
+4. Continue the cloud-monitoring setup in
+   [`docs/cloud-health-monitor-console-guide.md`](docs/cloud-health-monitor-console-guide.md): enable health notifications for `node-01`, verify its status metric, create CloudWatch alarms, then run the safe SNS acceptance checks. Bedrock may explain existing threshold alerts in plain language; it must not decide whether to alert or control the relay.
 5. Add Athena queries for historical S3 telemetry and use Systems Manager
    Session Manager to access EC2 without opening SSH to the internet.
 6. Revisit latency measurements only if future live tests show noticeable lag

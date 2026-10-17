@@ -213,6 +213,7 @@ export class FleetMindStack extends cdk.Stack {
       { path: "/nodes", methods: [apigwv2.HttpMethod.GET] },
       { path: "/nodes/{nodeId}/relay", methods: [apigwv2.HttpMethod.POST] },
       { path: "/nodes/{nodeId}/automation", methods: [apigwv2.HttpMethod.POST] },
+      { path: "/nodes/{nodeId}/monitoring", methods: [apigwv2.HttpMethod.POST] },
       { path: "/telemetry", methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST] },
       { path: "/logs", methods: [apigwv2.HttpMethod.GET] },
       { path: "/ws-ticket", methods: [apigwv2.HttpMethod.POST] },

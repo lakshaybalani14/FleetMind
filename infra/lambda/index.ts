@@ -217,6 +217,26 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
     return response(200, { nodes: result.Items ?? [] });
   }
 
+  const monitoringMatch = route.match(/^\/nodes\/(node-[a-zA-Z0-9-]{1,40})\/monitoring$/);
+  if (method === "POST" && monitoringMatch) {
+    let body: unknown;
+    try { body = JSON.parse(event.body ?? ""); } catch { return response(400, { error: "Request body must be valid JSON" }); }
+    if (typeof body !== "object" || body === null || typeof (body as Record<string, unknown>).enabled !== "boolean") {
+      return response(400, { error: "Provide enabled as true or false" });
+    }
+    const nodeId = monitoringMatch[1];
+    const enabled = (body as { enabled: boolean }).enabled;
+    const node = await getNode(nodeId);
+    if (!node) return response(404, { error: "Node not found" });
+    await ddb.send(new UpdateCommand({
+      TableName: tableName,
+      Key: { PK: "FLEET", SK: `NODE#${nodeId}` },
+      UpdateExpression: "SET monitoringEnabled = :enabled",
+      ExpressionAttributeValues: { ":enabled": enabled },
+    }));
+    return response(200, { nodeId, monitoringEnabled: enabled });
+  }
+
   if (method === "GET" && route === "/telemetry") {
     const nodeId = event.queryStringParameters?.nodeId;
     const limit = limitFromQuery(event.queryStringParameters?.limit, 50);
@@ -567,8 +587,13 @@ async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void>
     ":name": `ESP32 ${status.nodeId}`,
     ":status": status.online ? "online" : "offline",
     ":lastSeen": receivedAt,
+    ":lastStatusReceivedAt": receivedAt,
   };
-  const assignments = ["#name = :name", "#status = :status", "lastSeen = :lastSeen"];
+  const assignments = ["#name = :name", "#status = :status", "lastSeen = :lastSeen", "lastStatusReceivedAt = :lastStatusReceivedAt"];
+  if (status.online) {
+    assignments.push("lastOnlineStatusAt = :lastOnlineStatusAt");
+    values[":lastOnlineStatusAt"] = receivedAt;
+  }
 
   if (status.relayOn !== undefined) {
     assignments.push("actuatorState = :actuatorState");

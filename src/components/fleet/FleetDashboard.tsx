@@ -23,7 +23,7 @@ export default function FleetDashboard() {
   const [dismissedAlertKeys, setDismissedAlertKeys] = useState<string[]>([]);
   const [pendingAlerts, setPendingAlerts] = useState<Record<string, DashboardAlert>>({});
   const [monitorDrawerOpen, setMonitorDrawerOpen] = useState(false);
-  const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState, telemetryAge, sendRelayCommand, setAutomationEnabled } = useFleetData(idToken);
+  const { selectedNodeId, setSelectedNodeId, nodes, selectedNode, activeTelemetry, logs, streamState, telemetryAge, sendRelayCommand, setAutomationEnabled, setMonitoringEnabled } = useFleetData(idToken);
   const activeAlerts = useMemo(() => nodes.flatMap((node) => {
     const alert = dashboardAlertForNode(node);
     return alert ? [alert] : [];
@@ -130,6 +130,23 @@ export default function FleetDashboard() {
     }
   };
 
+  const toggleHealthMonitoring = async () => {
+    if (!selectedNode) return;
+    setControlBusy(true);
+    setControlError("");
+    setControlMessage("");
+    try {
+      const result = await setMonitoringEnabled(!selectedNode.monitoringEnabled);
+      setControlMessage(result.monitoringEnabled
+        ? "Health notifications enabled. SNS alerts if status is missing for 180 seconds."
+        : "Health notifications paused for this device.");
+    } catch (error) {
+      setControlError(error instanceof Error ? error.message : "Could not change health monitoring.");
+    } finally {
+      setControlBusy(false);
+    }
+  };
+
   return (
     <FleetPageNavigation current="monitoring" streamState={streamState} onSignOut={signOut}>
     <main className="min-h-screen bg-[#09090b] p-4 font-sans text-zinc-200 sm:p-8">
@@ -184,6 +201,20 @@ export default function FleetDashboard() {
             {pendingActionId ? "Waiting for device…" : selectedNode.actuatorState.relayActive ? "Turn fan off" : "Turn fan on"}
           </button>
         </div>
+      </section>
+
+      <section className="mb-8 flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-white">Device health notifications</h2>
+          <p className="mt-1 text-xs text-zinc-400">{selectedNode.monitoringEnabled
+            ? "On: SNS can alert after 180 seconds without a status heartbeat."
+            : "Off: intentional downtime will not send an SNS device alert."} Dashboard online/offline updates are unchanged.</p>
+        </div>
+        <button type="button" onClick={() => void toggleHealthMonitoring()} disabled={controlBusy}
+          aria-pressed={selectedNode.monitoringEnabled === true}
+          className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50">
+          {selectedNode.monitoringEnabled ? "Pause notifications" : "Enable notifications"}
+        </button>
       </section>
 
       <TelemetryChart

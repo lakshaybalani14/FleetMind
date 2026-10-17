@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadFleetNodeStatusOnly",
+      "Effect": "Allow",
+      "Action": "dynamodb:GetItem",
+      "Resource": "REPLACE_WITH_FLEETMINDDATA_TABLE_ARN"
+    },
+    {
+      "Sid": "PublishFleetMindHealthMetricsOnly",
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {"cloudwatch:namespace": "FleetMind/Health"}
+      }
+    },
+    {
+      "Sid": "DownloadOnlyTheHealthMonitorPackage",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "REPLACE_WITH_HISTORY_BUCKET_ARN/health-monitor/*"
+    }
+  ]
+}

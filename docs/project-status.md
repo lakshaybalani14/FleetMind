@@ -1,19 +1,20 @@
 # FleetMind project status and handoff
 
-Last consolidated: 2026-10-11. This is the resume point for the next work
-session. The immediate next work is the existing threshold-based health and
-notification extension; the ML detector remains offline/future work.
+Last consolidated: 2026-10-18. This is the resume point for the next work
+session. The EC2 health-monitor service is running; next verify the enabled
+device metric and complete CloudWatch alarm acceptance. The ML detector remains
+offline/future work.
 
 ## Overall completion
 
 **Estimated completion: about 70% of the core prototype.** This is a
 scope-based planning estimate, not a measure of production readiness. The
 device-to-cloud telemetry path, live dashboard, manual relay, and demo threshold
-automation loop have been exercised. The newly agreed EC2/CloudWatch/SNS,
-Bedrock explanation, Athena, and EC2 administration additions are not built yet
-and are outside that 70% estimate. The ML detector is an offline experiment,
-not a live feature. Hosting, security/operations hardening, broader multi-node
-tests, and acceptance testing also remain.
+automation loop have been exercised. The device-health feature is partially
+deployed and remains outside that 70% estimate. Bedrock explanation and Athena
+are not implemented. The ML detector is an offline experiment, not a live
+feature. Hosting, security/operations hardening, broader multi-node tests, and
+acceptance testing also remain.
 
 | Workstream | Current state | Remaining work |
 | --- | --- | --- |
@@ -26,8 +27,8 @@ tests, and acceptance testing also remain.
 | Multi-node/offline alerts | Frontend no longer assumes `node-01`; Lambda rejects MQTT telemetry unless that node has a fresh explicit online status. AWS package hash matches the latest offline-gating ZIP. | Perform live online/offline tests for each node ID and verify rejection/acceptance in logs, DynamoDB, and UI. |
 | Offline ML experiment | Prototype is merged to `main` but is not deployed. On the supplied holdout, it flagged 19 user-confirmed normal room readings and one synthetic 61°C test reading. | Keep it out of live alerts and relay control. Revisit after collecting reviewed, safely generated evaluation examples and reducing false alarms. |
 | Threshold-alert explanations | Existing threshold rules already create demo alert events. Bedrock explanation has not been implemented. | Optionally send the threshold result and its measured values/reason to Bedrock for a short explanation in the activity log/SNS message. Keep alert decisions in existing code and provide a fixed-text fallback. |
-| EC2 health monitor, CloudWatch, and SNS | Not implemented; no resources created for this feature. | Build a small EC2 service to check device/system health, publish a small set of metrics, and use CloudWatch alarms to notify an SNS topic. This is for offline/sensor/system health, not ML gas-anomaly decisions. |
-| S3 history analysis and EC2 access | Athena and Session Manager are not configured for this project. | Use Athena to query approved S3 telemetry; use Systems Manager Session Manager for EC2 access without public SSH. |
+| EC2 health monitor, CloudWatch, and SNS | Lambda monitoring route and EC2 publisher deployed in `ap-southeast-2`; monitor timer is active and `MonitorHeartbeat=1` has been verified. The `node-01` switch is still off, and CloudWatch alarms have not been created. | Enable the `node-01` switch, verify `StatusWithin180Seconds=1`, create the device/monitor/EC2 alarms, then run a controlled connectivity test. This is for connectivity/system health, not ML gas-anomaly decisions. |
+| S3 history analysis and EC2 access | Session Manager access is working for the new EC2 instance; Athena is not configured. | Use Athena to query approved S3 telemetry; continue managing EC2 through Session Manager without public SSH. |
 | Production operation | Current regional resources are in `ap-southeast-2`; infrastructure source is CDK but live resources were configured/updated manually. | Reconcile drift, finish hosted frontend/domain and operational alerting, review security/cost/retention, and run a final acceptance pass. |
 
 ## What is working end to end
@@ -57,8 +58,8 @@ independent and do not test by releasing gas or applying unsafe heat.
 2. Re-run the safe threshold-alert test on an online node. Check the live tile,
    chart, overlay, activity log, and that the existing threshold values have not
    changed. Do not use the ML model for this test.
-3. Plan the EC2 health monitor and CloudWatch-to-SNS notifications. Define the
-   health conditions and alert window before creating resources.
+3. Continue the deployed EC2 health-monitor setup using
+   [`cloud-health-monitor-console-guide.md`](cloud-health-monitor-console-guide.md): enable `node-01`, verify the device metric, create CloudWatch alarms, and perform safe SNS acceptance tests.
 4. Add Bedrock explanations only after a threshold alert exists; keep a fixed
    explanation fallback and do not let Bedrock trigger alerts or relays.
 5. Query the existing approved S3 telemetry with Athena and set up Session
