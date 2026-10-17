@@ -1,9 +1,9 @@
 # FleetMind project status and handoff
 
 Last consolidated: 2026-10-18. This is the resume point for the next work
-session. The EC2 health-monitor service is running; next verify the enabled
-device metric and complete CloudWatch alarm acceptance. The ML detector remains
-offline/future work.
+session. The EC2 health-monitor service is installed, and the instance is
+stopped until resume. Start it before verifying the device metric and completing
+CloudWatch alarm acceptance. The ML detector remains offline/future work.
 
 ## Overall completion
 
@@ -27,7 +27,7 @@ acceptance testing also remain.
 | Multi-node/offline alerts | Frontend no longer assumes `node-01`; Lambda rejects MQTT telemetry unless that node has a fresh explicit online status. AWS package hash matches the latest offline-gating ZIP. | Perform live online/offline tests for each node ID and verify rejection/acceptance in logs, DynamoDB, and UI. |
 | Offline ML experiment | Prototype is merged to `main` but is not deployed. On the supplied holdout, it flagged 19 user-confirmed normal room readings and one synthetic 61°C test reading. | Keep it out of live alerts and relay control. Revisit after collecting reviewed, safely generated evaluation examples and reducing false alarms. |
 | Threshold-alert explanations | Existing threshold rules already create demo alert events. Bedrock explanation has not been implemented. | Optionally send the threshold result and its measured values/reason to Bedrock for a short explanation in the activity log/SNS message. Keep alert decisions in existing code and provide a fixed-text fallback. |
-| EC2 health monitor, CloudWatch, and SNS | Lambda monitoring route and EC2 publisher deployed in `ap-southeast-2`; monitor timer is active and `MonitorHeartbeat=1` has been verified. The `node-01` switch is still off, and CloudWatch alarms have not been created. | Enable the `node-01` switch, verify `StatusWithin180Seconds=1`, create the device/monitor/EC2 alarms, then run a controlled connectivity test. This is for connectivity/system health, not ML gas-anomaly decisions. |
+| EC2 health monitor, CloudWatch, and SNS | Lambda route and EC2 publisher deployed in `ap-southeast-2`; timer installed and `MonitorHeartbeat=1` verified before the instance was stopped until resume. The `node-01` switch is off and alarms are not created. | Start the instance, enable `node-01`, verify `StatusWithin180Seconds=1`, create the device/monitor/EC2 alarms, then run a controlled connectivity test. This is for connectivity/system health, not ML gas-anomaly decisions. |
 | S3 history analysis and EC2 access | Session Manager access is working for the new EC2 instance; Athena is not configured. | Use Athena to query approved S3 telemetry; continue managing EC2 through Session Manager without public SSH. |
 | Production operation | Current regional resources are in `ap-southeast-2`; infrastructure source is CDK but live resources were configured/updated manually. | Reconcile drift, finish hosted frontend/domain and operational alerting, review security/cost/retention, and run a final acceptance pass. |
 

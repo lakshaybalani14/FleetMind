@@ -6,16 +6,17 @@
   are configured in `ap-southeast-2`.
 - Lambda `fleetmind-telemetry-api` includes `POST /nodes/{nodeId}/monitoring`.
   The `$default` API stage auto-deploy is enabled.
-- EC2 instance `i-0db768c88c910361b` is running and reachable through Session
-  Manager. Its timer is active, and `MonitorHeartbeat=1` has been seen in
-  `FleetMind/Health`.
+- EC2 instance `i-0db768c88c910361b` was reachable through Session Manager.
+  Its timer was active, and `MonitorHeartbeat=1` was seen in `FleetMind/Health`.
+  The instance is now stopped until the next session; start it and wait for
+  status checks before reconnecting.
 - Monitoring is currently disabled for the real board `node-01`. The other
   DynamoDB node, `node-sim-20261010`, is a simulated node and is not included in
   the monitor configuration.
-- Resume by enabling notifications for `node-01` in the dashboard, confirming
-  `StatusWithin180Seconds=1`, then creating and safely testing the CloudWatch
-  alarms below. The dashboard switch is present in the local app; hosted UI
-  publication has not been confirmed.
+- Resume by starting the instance, enabling notifications for `node-01` in the
+  dashboard, confirming `StatusWithin180Seconds=1`, then creating and safely
+  testing the CloudWatch alarms below. The dashboard switch is present in the
+  local app; hosted UI publication has not been confirmed.
 
 Use this after deploying the application code that adds `lastOnlineStatusAt`
 and the dashboard monitoring switch. Do each batch, then verify the listed

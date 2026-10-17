@@ -9,11 +9,14 @@
   JWT authorizer as the existing automation route.
 - Created EC2 instance `i-0db768c88c910361b` (`t3.micro`) with
   `FleetMindHealthMonitorRole`, IMDSv2 required, and no inbound SSH rule. SSM
-  reports it Online.
+  reported it Online; the instance is now stopped until the next session at the
+  user's request.
 - Uploaded `fleetmind-health-monitor.zip` to the existing telemetry S3 bucket
   under `health-monitor/`. The systemd timer is enabled and active. The monitor
   service ran successfully on consecutive minutes and AWS showed
-  `FleetMind/Health` → `MonitorHeartbeat=1`.
+  `FleetMind/Health` → `MonitorHeartbeat=1` before the instance was stopped.
+- On resume, start the EC2 instance and wait for its status checks to pass. Its
+  public IPv4 address will be reassigned, so reconnect through Session Manager.
 - The monitor log reports `Monitoring disabled for node-01`; this is expected
   because the dashboard toggle is still off. The next live step is to enable
   notifications for `node-01`, verify `StatusWithin180Seconds=1`, and then

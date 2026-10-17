@@ -1,10 +1,11 @@
 # FleetMind device-health SNS monitor
 
 Status as of 2026-10-18: the Lambda monitoring route and EC2 monitor are
-deployed in `ap-southeast-2`. The EC2 timer is active and CloudWatch
-`MonitorHeartbeat=1` has been verified. The dashboard switch remains off for
-`node-01`; device metrics and CloudWatch alarms still need live verification.
-Resume with the batches in [`cloud-health-monitor-console-guide.md`](cloud-health-monitor-console-guide.md).
+deployed in `ap-southeast-2`. The EC2 timer is installed, and CloudWatch
+`MonitorHeartbeat=1` was verified before the instance was stopped until the
+next session. The dashboard switch remains off for `node-01`; device metrics
+and CloudWatch alarms still need live verification. Resume with the batches in
+[`cloud-health-monitor-console-guide.md`](cloud-health-monitor-console-guide.md).
 
 ## Behavior
 
