@@ -12,7 +12,11 @@ This standalone PlatformIO project checks the ESP32 wiring without AWS IoT crede
 | Onboard LED | P2 | Blinks at each sensor sample if the board has an LED on P2. |
 | Common ground | GND | Grounds must be common unless the relay input is specifically isolated and wired per its datasheet. |
 
-Power the MQ-2 and relay according to their exact module specifications. A standard MQ-2 sensing element has a 5 V heater; do not assume 3.3 V gives valid operation. Never feed more than 3.3 V into ESP32 P34. Do not connect a fan to an ESP32 pin; initially test relay switching without a fan, then use an appropriate separate low-voltage supply through the relay contacts. No mains wiring.
+![FleetMind ESP32 logical GPIO wiring map](../../docs/diagrams/esp32-logical-pin-map.svg)
+
+This is a logical GPIO map, not a physical DevKit header layout. Board pin positions vary; match the GPIO numbers printed on your board.
+
+Power the MQ-2 and relay according to their exact module specifications. A standard MQ-2 sensing element has a 5 V heater; do not assume 3.3 V gives valid operation. The MQ-2 analog output may exceed 3.3 V: measure/check it and use a correctly sized divider before GPIO 34. Never feed more than 3.3 V into the ESP32. Do not connect a fan to an ESP32 pin; initially test relay switching without a fan, then use an appropriate separate low-voltage supply through the relay contacts. No mains wiring.
 
 ## Build and upload
 

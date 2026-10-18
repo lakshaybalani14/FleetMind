@@ -1,6 +1,44 @@
 # FleetMind live-testing log
 
-## 2026-10-18 — EC2 health monitor setup handoff
+## 2026-10-18 — Bedrock explanation and activity-history update
+
+- The user completed a synthetic threshold test and confirmed that its alert
+  explanation and activity entry appeared in the dashboard. Bedrock supplies
+  wording only after the existing threshold logic has raised the alert.
+- A later activity-history Lambda package added separate `ALERTS` and `ACTIONS`
+  DynamoDB partitions and updated `GET /logs` to merge, deduplicate, and sort
+  those records alongside ordinary activity. The dashboard now preserves
+  priority alert/action rows while new telemetry continues to arrive.
+- AWS Console verification after upload: `fleetmind-telemetry-api` showed a
+  successful update and code SHA-256 (Base64)
+  `1JCEkz2hFyH+cVY1ILlgvLcNdRZeX2mjL3mq6AuuNZA=`, matching the local
+  `infra/fleetmind-activity-history.zip` package.
+- Still to verify: toggle the relay once after this deployment and confirm the
+  relay acknowledgement remains in **Alerts & activity** after fresh telemetry
+  continues to arrive.
+- The user reports the monitoring switch, CloudWatch alarms, and SNS notification
+  flow were configured and tested successfully. Repeat the ON/OFF health-monitor
+  acceptance sequence when the board and EC2 monitor are available; the older
+  setup handoff below described the earlier pre-acceptance state.
+
+## Important implementation takeaways
+
+- The dashboard's 90-second online/offline freshness and the SNS monitor's
+  180-second enabled-device rule are separate behaviors. Disarming SNS
+  monitoring must not stop normal dashboard status updates.
+- Use fresh timestamps for synthetic telemetry. A stale event can be rejected
+  as offline or appear behind current board values.
+- Keep raw `gasAdc` beside the relative MQ-2 scale. A relative 0–1000 level is
+  not ppm and cannot identify a specific gas.
+- A requested relay state is not proof the relay moved; the board's
+  `actuator_ack` with the matching action ID confirms the result.
+- Keep health alarms, threshold alerts, and the offline ML experiment as
+  separate workflows. Bedrock only explains a threshold result already made by
+  deterministic code.
+- The CDK stack is intended infrastructure, while the deployed resources were
+  configured manually. Review the live/synth diff before deploying.
+
+## 2026-10-18 — Initial EC2 health monitor setup handoff (historical)
 
 - Confirmed the SNS topic and email subscription, scoped EC2 role/policy,
   deployed `fleetmind-telemetry-api` update, and the authenticated

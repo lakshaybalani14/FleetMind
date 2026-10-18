@@ -1,127 +1,72 @@
-# FleetMind project status and handoff
+# FleetMind project status
 
-Last consolidated: 2026-10-18. This is the resume point for the next work
-session. The EC2 health-monitor service is installed, and the instance is
-stopped until resume. Start it before verifying the device metric and completing
-CloudWatch alarm acceptance. The ML detector remains offline/future work.
+Last reviewed: **2026-10-18**. This is the current project handoff. Live AWS setup details are based on the user's console checks unless explicitly marked as independently verified below.
 
-## Overall completion
+## Overall status
 
-**Estimated completion: about 70% of the core prototype.** This is a
-scope-based planning estimate, not a measure of production readiness. The
-device-to-cloud telemetry path, live dashboard, manual relay, and demo threshold
-automation loop have been exercised. The device-health feature is partially
-deployed and remains outside that 70% estimate. Bedrock explanation and Athena
-are not implemented. The ML detector is an offline experiment, not a live
-feature. Hosting, security/operations hardening, broader multi-node tests, and
-acceptance testing also remain.
+**Estimated completion: about 80% of the demo prototype.** The main device-to-dashboard loop and the selected cloud features are implemented and have been exercised. This is a planning estimate; the project is not production-ready or a certified safety system.
 
-| Workstream | Current state | Remaining work |
+| Workstream | Status | Remaining |
 | --- | --- | --- |
-| ESP32 telemetry and status | Board has sent live sensor readings and online/offline/relay status; user confirmed approximately 2-second readings and live chart/state updates. | Retest with each actual node ID; hardware serial/USB troubleshooting can resume when needed. |
-| AWS ingestion and storage | IoT rules route telemetry, status, and actuator acknowledgements into Lambda; DynamoDB and S3 writes are configured. | Review CDK/live-resource drift before any stack deployment; test edge cases and data retention. |
-| Dashboard monitoring | Monitoring, node selector, live chart, telemetry tiles, alert overlay, and Alerts & activity drawer are implemented locally. | Browser acceptance with current AWS events; verify responsive layout and multiple real node IDs. |
-| Analysis page | Dedicated `/analysis` page includes recent-window sensor summaries and charts/alert distribution. | Confirm its values and historical range match the API data on a live multi-node run. |
-| Manual relay loop | Board test confirmed relay click/LED state and acknowledged ON/OFF state in dashboard. | Optional retry/failure UX and additional board/load checks. |
-| Threshold automation | User confirmed synthetic temperature test caused physical relay ON and OFF and received MQTT acknowledgement. | Exercise hysteresis/cooldown boundaries and automation failure cases with a harmless low-voltage load. This is demo logic, not calibrated gas detection. |
-| Multi-node/offline alerts | Frontend no longer assumes `node-01`; Lambda rejects MQTT telemetry unless that node has a fresh explicit online status. AWS package hash matches the latest offline-gating ZIP. | Perform live online/offline tests for each node ID and verify rejection/acceptance in logs, DynamoDB, and UI. |
-| Offline ML experiment | Prototype is merged to `main` but is not deployed. On the supplied holdout, it flagged 19 user-confirmed normal room readings and one synthetic 61°C test reading. | Keep it out of live alerts and relay control. Revisit after collecting reviewed, safely generated evaluation examples and reducing false alarms. |
-| Threshold-alert explanations | Existing threshold rules already create demo alert events. Bedrock explanation has not been implemented. | Optionally send the threshold result and its measured values/reason to Bedrock for a short explanation in the activity log/SNS message. Keep alert decisions in existing code and provide a fixed-text fallback. |
-| EC2 health monitor, CloudWatch, and SNS | Lambda route and EC2 publisher deployed in `ap-southeast-2`; timer installed and `MonitorHeartbeat=1` verified before the instance was stopped until resume. The `node-01` switch is off and alarms are not created. | Start the instance, enable `node-01`, verify `StatusWithin180Seconds=1`, create the device/monitor/EC2 alarms, then run a controlled connectivity test. This is for connectivity/system health, not ML gas-anomaly decisions. |
-| S3 history analysis and EC2 access | Session Manager access is working for the new EC2 instance; Athena is not configured. | Use Athena to query approved S3 telemetry; continue managing EC2 through Session Manager without public SSH. |
-| Production operation | Current regional resources are in `ap-southeast-2`; infrastructure source is CDK but live resources were configured/updated manually. | Reconcile drift, finish hosted frontend/domain and operational alerting, review security/cost/retention, and run a final acceptance pass. |
+| ESP32 sensor telemetry and status | Board readings, heartbeat/status updates, dashboard freshness behavior, and real-time updates have been exercised. | Repeat acceptance with each physical node ID and document any board-specific pin differences. |
+| AWS ingestion and persistence | IoT rules invoke the telemetry Lambda; readings and events are written to DynamoDB and raw telemetry to S3. | Reconcile console resources against CDK before any stack deployment; review retention and failure behavior. |
+| Dashboard | Authenticated dashboard, node selection, live cards/chart, alert overlay, analysis view, and activity drawer are implemented. | Final browser acceptance for responsive layout, alert persistence, and multi-node behavior. |
+| Threshold alerts | Existing gas-relative-level and temperature conditions create activity events. A synthetic high reading was used to verify the flow. | Keep values explicitly documented as demo thresholds; test software boundaries with safe synthetic input only. |
+| Manual relay | Board changed relay state and returned acknowledgement; dashboard displayed the confirmed state. | Confirm the latest retained action-history change with one relay toggle while telemetry continues. |
+| Automatic relay demo | User confirmed synthetic temperature test caused relay ON then OFF with MQTT acknowledgement. | Optionally test hysteresis/cooldown boundaries using a harmless low-voltage load. |
+| Alert history | Alert visibility was fixed by mirroring alerts to an alert partition. The current activity-history ZIP is deployed and its Lambda hash was independently matched on 2026-10-18. | Confirm relay ACK remains in activity after new telemetry arrives. |
+| Bedrock explanations | Nova Micro is enabled for short explanations of existing threshold alerts; a synthetic alert explanation appeared in the dashboard. Fallback wording is retained. | Optional: review cost/latency and verify fallback behavior after a controlled Bedrock failure. It must not decide alerts or relay actions. |
+| Device-health SNS notifications | User reports the per-node monitoring switch, 180-second missing-status rule, CloudWatch alarms, and SNS acceptance test are working. Dashboard online/offline behavior remains separate. | Repeat final acceptance with monitoring enabled and disabled when the EC2 monitor and board are available; record exact test date/results. |
+| Offline ML experiment | Python models and score files are evaluation-only. On the reviewed holdout, 19 normal room readings and one synthetic 61 °C test were flagged. | Do not connect it to dashboard alerts, SNS, or relay. Reconsider only with reviewed, representative FleetMind data and measured false-positive/false-negative results. |
+| S3 history / Athena | Raw history is stored in S3. | Athena analysis is optional future work; it is not required for the current live dashboard. |
+| Production operation | Regional resources are in `ap-southeast-2`; local CDK describes intended infrastructure. | Reconcile CDK drift, publish/host the dashboard as needed, finish security/cost/retention review, and run a broader acceptance pass. |
 
-## What is working end to end
+## What has been demonstrated end to end
 
-1. ESP32 publishes to `fleetmind/<nodeId>/telemetry`; separate status and event
-   topics carry online/offline state and actuator acknowledgements.
-2. Enabled AWS IoT rules invoke `fleetmind-telemetry-api` in
-   `ap-southeast-2`.
-3. Lambda validates firmware-format or normalized MQTT test-client telemetry,
-   stores readings/events in DynamoDB and raw JSON in S3, then broadcasts live
-   frames over API Gateway WebSocket.
-4. The authenticated Next.js dashboard gets node/log/history snapshots from
-   the HTTP API and applies WebSocket events without requiring a page reload.
-5. Manual and threshold-based relay requests use the existing IoT command topic;
-   the device acknowledgement updates state and the activity log.
+1. ESP32 publishes sensor readings to `fleetmind/{nodeId}/telemetry`, retained status to `fleetmind/{nodeId}/status`, and actuator acknowledgements to `fleetmind/{nodeId}/events`.
+2. AWS IoT rules invoke `fleetmind-telemetry-api` in `ap-southeast-2`.
+3. The Lambda validates and normalizes payloads, stores telemetry and event history in DynamoDB, writes ingested telemetry JSON to S3, and broadcasts live events over API Gateway WebSocket.
+4. The authenticated dashboard shows readings and status without requiring a page refresh.
+5. A relay request is correlated with a device acknowledgement and persisted as an action event.
+6. A threshold-crossing test appears in activity history. Bedrock can add explanation text after the threshold code has already determined that an alert exists.
+7. The separate health monitor reports CloudWatch metrics for enabled devices and sends SNS alerts through configured CloudWatch alarms, according to the user's live console verification.
 
-The current dashboard threshold indicators are **prototype/demo alerts**:
-MQ-2 relative value 400/1000 and temperature 60 °C (with 350/1000 and 58 °C
-OFF hysteresis in the demo automation). MQ-2 is not calibrated, does not report
-CO ppm, and is not a certified life-safety device. Keep certified CO alarms
-independent and do not test by releasing gas or applying unsafe heat.
+## Prototype thresholds and safety boundary
 
-## Immediate next steps
+The current Lambda demo alert conditions are MQ-2 relative level `>= 400 / 1000` or temperature `>= 60 °C`; the firmware carries a threshold-derived `isAnomaly` flag. The gas value is a relative estimate scaled from raw ADC, not calibrated ppm and not a carbon-monoxide measurement. Keep certified CO alarms independent. Do not release gas, create smoke, or apply unsafe heat as a test.
 
-1. Live-test the latest pushed dashboard changes: verify alerts stay visible
-   until acknowledged and only configured node IDs appear.
-2. Re-run the safe threshold-alert test on an online node. Check the live tile,
-   chart, overlay, activity log, and that the existing threshold values have not
-   changed. Do not use the ML model for this test.
-3. Continue the deployed EC2 health-monitor setup using
-   [`cloud-health-monitor-console-guide.md`](cloud-health-monitor-console-guide.md): enable `node-01`, verify the device metric, create CloudWatch alarms, and perform safe SNS acceptance tests.
-4. Add Bedrock explanations only after a threshold alert exists; keep a fixed
-   explanation fallback and do not let Bedrock trigger alerts or relays.
-5. Query the existing approved S3 telemetry with Athena and set up Session
-   Manager access for EC2. Check project spend and selected Region before any
-   resource creation.
+Automatic relay behavior has extra gates: the deployment must permit it, the node must be online, the dashboard mode must be automatic, threshold settings must be valid, and the cooldown must allow a command. A threshold alert by itself is not proof that the relay moved; the board acknowledgement is the confirmation.
 
-## Deferred ML infrastructure
+## Current follow-up list
 
-The earlier Phase 5/6 proposal for EC2 model training, ECR, K3s inference, Lambda
-model scoring, SNS ML alerts, and model-triggered relay is deferred. Do not
-provision or deploy this path as part of the next monitoring work. The saved
-prototype is not reliable enough for live alerts: it flagged 19 readings
-confirmed normal by the user and one synthetic high-temperature test. See
-[`anomaly-service-plan.md`](anomaly-service-plan.md) for the historical design
-and dataset constraints.
+1. Toggle the relay once after the latest Lambda package deployment; verify its row stays visible in **Alerts & activity** despite incoming telemetry.
+2. With the board and health monitor available, verify `StatusWithin180Seconds=1` while the node is online and monitoring is enabled; verify an SNS outage alert after status is absent for over 180 seconds plus alarm evaluation; verify monitoring OFF suppresses the device alert while dashboard online/offline continues updating.
+3. Run the final safe threshold test and inspect the tile/chart/overlay/activity row and explanation. Use a fresh timestamp and label the payload synthetic.
+4. Push the current source/documentation changes to GitHub after reviewing the diff. Keep ZIP packages, local generated bundles, datasets with sensitive data, and build output out of the source commit unless specifically intended.
+5. Before CDK deployment, compare the synthesized template to live AWS resources and resolve the known differences below.
 
-Dataset rows should preserve node ID, sequence, device timestamp and server
-`receivedAt`, temperature in °C, humidity percentage, raw MQ-2 ADC, relative gas
-estimate, sensor validity, relay state, uptime, schema version, and data-quality
-reasons. Use chronological/session-aware evaluation splits. Isolation Forest can
-fit unlabeled normal data, but reviewed controlled labels are needed to estimate
-false positives and missed events and to choose a useful threshold. A few hours
-or days of data are a starting point, not evidence of safety or accuracy.
+## Known infrastructure differences to resolve before CDK deployment
 
-The teammate's Git branch does not isolate shared AWS resources. Keep cloud
-changes reviewed; confirm service availability in `ap-southeast-2` and project
-spend limits before creating EC2, SNS, CloudWatch, Bedrock, or Athena resources.
-Do not share credentials or deploy unreviewed code to live resources.
+The live AWS resources were configured/updated manually. Previous review found these differences from `infra/lib/fleetmind-stack.ts`:
 
-## Live AWS scan: findings and caveats
+- Live HTTP API has `GET /telemetry`; the CDK stack also declares `POST /telemetry`.
+- Live status IoT rule was named `FleetMindNodeStatus`; CDK declares `FleetMindStatusToLambda`.
+- Live WebSocket stage was `production`; CDK declares `prod`.
+- Live telemetry Lambda runtime was Node.js 24; CDK declares Node.js 22.
 
-Read-only AWS inspection confirmed the MQTT rules, expected HTTP/WebSocket
-routes, Lambda-to-DynamoDB/S3/IoT permissions, and WebSocket
-`execute-api:ManageConnections` permission are present. The deployed Lambda
-package SHA-256 (Base64) matches
-`infra/fleetmind-multinode-offline-alert-fix-20261010.zip`. No AWS resources
-were changed by the scan.
+These differences did not block the observed MQTT-to-dashboard path. Do not deploy the entire stack until the current console state and synthesized diff have been reviewed.
 
-The scan found configuration drift between live resources and local CDK:
+## Git and deployment handoff
 
-- Live HTTP API has `GET /telemetry` but no `POST /telemetry`, which local CDK
-  declares. MQTT test-client publishes do not use this HTTP route.
-- Live status rule is named `FleetMindNodeStatus`; local CDK declares
-  `FleetMindStatusToLambda`.
-- Live WebSocket stage is `production`; local CDK declares `prod`.
-- Live telemetry Lambda runtime is Node.js 24; local CDK declares Node.js 22.
+At the time of this review, `main` matches `origin/main` at `edb0a6f`, while the activity-history source changes in `infra/lambda/index.ts` and `src/lib/fleet-stream.ts` are local modifications. The Lambda ZIP `infra/fleetmind-activity-history.zip` is an untracked deployment artifact. There are additional untracked ZIP/build artifacts in the workspace; inspect `git status` and stage only the intended source/docs before committing.
 
-These differences do not block the current MQTT → Lambda → database/WebSocket →
-dashboard alert path. Before running CDK deploy, inspect and reconcile the diff
-to avoid duplicate rules, route changes, or stage/runtime replacements. The
-current `GET /logs` route and WebSocket permissions already support the activity
-drawer; no additional AWS permission or route is required for it.
+The deployed Lambda package hash independently observed in the AWS Console is `1JCEkz2hFyH+cVY1ILlgvLcNdRZeX2mjL3mq6AuuNZA=`. This confirms the activity-history package was uploaded; it does not by itself confirm a fresh relay ACK has been exercised after deployment.
 
-## Validation and worktree notes
+## Resume guide
 
-At handoff, verification passed: dashboard tests 10/10, MQTT offline-policy
-tests 4/4, infrastructure TypeScript typecheck, dashboard TypeScript check,
-Next.js production build, and `git diff --check`. The production build passes;
-the previously captured local dev error was a blocked Google Fonts request
-(`connect EACCES`), not an AWS route/permission failure. The exact browser error
-from the latest report was not attached, so capture the current browser console
-or Network error if one persists.
-
-The Lambda deployment ZIPs and generated build folders are local artifacts and
-are not source-of-truth; this handoff pushes source, tests, and documentation.
+- Full event data path: [Project events and workflows](project-events.md)
+- Console setup and acceptance: [Cloud-health monitor guide](cloud-health-monitor-console-guide.md)
+- Observed checks and dated changes: [Live-testing log](live-testing-log.md)
+- Board pinout and firmware: [Firmware README](../firmware/README.md)
+- AWS routes and infrastructure caveats: [Infrastructure README](../infra/README.md)
+- ML scope and dataset limitations: [Anomaly-service plan](anomaly-service-plan.md)

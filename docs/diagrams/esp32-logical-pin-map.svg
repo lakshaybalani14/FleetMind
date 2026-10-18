@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="720" viewBox="0 0 1120 720" role="img" aria-labelledby="title desc">
+  <title id="title">FleetMind ESP32 logical GPIO wiring map</title>
+  <desc id="desc">Logical wiring for DHT22 on GPIO 4, MQ-2 analog output on GPIO 34, relay input on GPIO 26, and onboard LED on GPIO 2. This is not a physical ESP32 board layout.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f8fafc}.board{fill:#172554;stroke:#0f172a;stroke-width:4}.module{fill:#fff;stroke:#94a3b8;stroke-width:2}.title{font:700 27px Arial,sans-serif;fill:#0f172a}.sub{font:16px Arial,sans-serif;fill:#475569}.boardTitle{font:700 22px Arial,sans-serif;fill:#fff}.pin{font:700 16px Arial,sans-serif;fill:#e2e8f0}.label{font:700 18px Arial,sans-serif;fill:#0f172a}.body{font:15px Arial,sans-serif;fill:#334155}.small{font:13px Arial,sans-serif;fill:#475569}.wireData{stroke:#2563eb;stroke-width:5;fill:none}.wirePower{stroke:#dc2626;stroke-width:5;fill:none}.wireGround{stroke:#475569;stroke-width:5;fill:none}.wireAct{stroke:#16a34a;stroke-width:5;fill:none}.wireLed{stroke:#a855f7;stroke-width:5;fill:none}.gpio{fill:#f8fafc;stroke:#60a5fa;stroke-width:2}.warn{fill:#fff7ed;stroke:#fb923c;stroke-width:2}.warnText{font:700 14px Arial,sans-serif;fill:#9a3412}
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1120" height="720" rx="20"/>
+  <text class="title" x="44" y="52">FleetMind ESP32 — logical GPIO wiring</text>
+  <text class="sub" x="44" y="82">GPIO numbers are firmware assignments. ESP32 DevKit board layouts and header positions vary.</text>
+
+  <rect class="board" x="420" y="142" width="280" height="430" rx="30"/>
+  <rect x="485" y="166" width="150" height="82" rx="16" fill="#334155" stroke="#64748b" stroke-width="2"/>
+  <text x="560" y="200" text-anchor="middle" font="700 16px Arial" fill="#e2e8f0">USB / serial</text>
+  <text x="560" y="226" text-anchor="middle" font="14px Arial" fill="#cbd5e1">DevKit-style board</text>
+  <text class="boardTitle" x="560" y="298" text-anchor="middle">ESP32</text>
+  <text x="560" y="326" text-anchor="middle" font="15px Arial" fill="#cbd5e1">FleetMind node</text>
+  <rect class="gpio" x="385" y="354" width="122" height="34" rx="8"/><text x="446" y="377" text-anchor="middle" font="700 15px Arial" fill="#1e3a8a">GPIO 4</text>
+  <rect class="gpio" x="385" y="414" width="122" height="34" rx="8"/><text x="446" y="437" text-anchor="middle" font="700 15px Arial" fill="#1e3a8a">GPIO 34</text>
+  <rect class="gpio" x="613" y="354" width="122" height="34" rx="8"/><text x="674" y="377" text-anchor="middle" font="700 15px Arial" fill="#1e3a8a">GPIO 26</text>
+  <rect class="gpio" x="613" y="414" width="122" height="34" rx="8"/><text x="674" y="437" text-anchor="middle" font="700 15px Arial" fill="#1e3a8a">GPIO 2</text>
+  <text x="560" y="511" text-anchor="middle" font="14px Arial" fill="#cbd5e1">3V3 · 5V/VIN · GND</text>
+
+  <rect class="module" x="54" y="230" width="250" height="138" rx="14"/>
+  <text class="label" x="78" y="266">DHT22</text>
+  <text class="body" x="78" y="296">DATA → GPIO 4</text>
+  <text class="body" x="78" y="322">VCC → 3V3 · GND → GND</text>
+  <text class="small" x="78" y="348">4.7–10 kΩ pull-up if needed</text>
+
+  <rect class="module" x="54" y="440" width="250" height="138" rx="14"/>
+  <text class="label" x="78" y="476">MQ-2 module</text>
+  <text class="body" x="78" y="506">AO → GPIO 34</text>
+  <text class="body" x="78" y="532">Power per module datasheet</text>
+  <text class="small" x="78" y="558">Use divider if AO can exceed 3.3 V</text>
+
+  <rect class="module" x="816" y="230" width="250" height="138" rx="14"/>
+  <text class="label" x="840" y="266">Relay module</text>
+  <text class="body" x="840" y="296">IN → GPIO 26</text>
+  <text class="body" x="840" y="322">Logic power per datasheet</text>
+  <text class="small" x="840" y="348">Separate rated supply for load</text>
+
+  <rect class="module" x="816" y="440" width="250" height="138" rx="14"/>
+  <text class="label" x="840" y="476">Onboard LED</text>
+  <text class="body" x="840" y="506">GPIO 2</text>
+  <text class="body" x="840" y="532">Board-dependent indicator</text>
+  <text class="small" x="840" y="558">No external LED required in firmware</text>
+
+  <path class="wireData" d="M304 292 H350 V371 H385"/>
+  <path class="wireData" d="M304 506 H340 V431 H385"/>
+  <path class="wireAct" d="M735 371 H780 V292 H816"/>
+  <path class="wireLed" d="M735 431 H780 V506 H816"/>
+  <text x="330" y="282" font="12px Arial" fill="#1d4ed8">DATA</text>
+  <text x="328" y="498" font="12px Arial" fill="#1d4ed8">ANALOG</text>
+  <text x="766" y="282" font="12px Arial" fill="#15803d">CONTROL</text>
+  <text x="765" y="498" font="12px Arial" fill="#7e22ce">LED</text>
+
+  <rect class="warn" x="340" y="610" width="726" height="72" rx="12"/>
+  <text class="warnText" x="364" y="640">Electrical safety:</text>
+  <text x="484" y="640" font="14px Arial" fill="#7c2d12">GPIO 34 is input-only and must never receive more than 3.3 V.</text>
+  <text x="364" y="664" font="14px Arial" fill="#7c2d12">Never power a relay coil or fan from an ESP32 pin; use a correctly rated module and safe low-voltage demo load.</text>
+</svg>

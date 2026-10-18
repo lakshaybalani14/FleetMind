@@ -74,6 +74,12 @@ interface ActuatorAckInput {
   readonly result: string;
 }
 
+interface StoredLogEntry {
+  readonly id: string;
+  readonly timestamp: string;
+  readonly [key: string]: unknown;
+}
+
 function response(statusCode: number, body: unknown): APIGatewayProxyResultV2 {
   return {
     statusCode,
@@ -258,14 +264,38 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
   if (method === "GET" && route === "/logs") {
     const limit = limitFromQuery(event.queryStringParameters?.limit, 50);
     if (limit === undefined) return response(400, { error: "limit must be between 1 and 100" });
-    const result = await ddb.send(new QueryCommand({
-      TableName: tableName,
-      KeyConditionExpression: "PK = :fleet AND begins_with(SK, :eventPrefix)",
-      ExpressionAttributeValues: { ":fleet": "FLEET", ":eventPrefix": "EVENT#" },
-      ScanIndexForward: false,
-      Limit: limit,
-    }));
-    return response(200, { logs: (result.Items ?? []).map(({ PK: _pk, SK: _sk, ...item }) => item) });
+    const [activityResult, alertResult, actionResult] = await Promise.all([
+      ddb.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "PK = :fleet AND begins_with(SK, :eventPrefix)",
+        ExpressionAttributeValues: { ":fleet": "FLEET", ":eventPrefix": "EVENT#" },
+        ScanIndexForward: false,
+        Limit: limit,
+      })),
+      ddb.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "PK = :alerts AND begins_with(SK, :eventPrefix)",
+        ExpressionAttributeValues: { ":alerts": "ALERTS", ":eventPrefix": "EVENT#" },
+        ScanIndexForward: false,
+        Limit: limit,
+      })),
+      ddb.send(new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "PK = :actions AND begins_with(SK, :eventPrefix)",
+        ExpressionAttributeValues: { ":actions": "ACTIONS", ":eventPrefix": "EVENT#" },
+        ScanIndexForward: false,
+        Limit: limit,
+      })),
+    ]);
+    const uniqueLogs = new Map<string, StoredLogEntry>();
+    for (const item of [...(activityResult.Items ?? []), ...(alertResult.Items ?? []), ...(actionResult.Items ?? [])]) {
+      const { PK: _pk, SK: _sk, ...log } = item;
+      uniqueLogs.set(String(log.id), log as StoredLogEntry);
+    }
+    const logs = Array.from(uniqueLogs.values())
+      .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+      .slice(0, limit * 3);
+    return response(200, { logs });
   }
 
   if (method === "POST" && route === "/ws-ticket") {
@@ -364,6 +394,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     ...(alertExplanation ? { explanation: alertExplanation, explanationSource: "fallback" } : {}),
     expiresAt,
   };
+  const alertLog = isAlert ? { ...log, PK: "ALERTS" } : undefined;
   const latestNode = {
     PK: "FLEET",
     SK: `NODE#${telemetry.nodeId}`,
@@ -410,6 +441,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
   const persistence = Promise.all([
     ddb.send(new PutCommand({ TableName: tableName, Item: item })),
     ddb.send(new PutCommand({ TableName: tableName, Item: log })),
+    ...(alertLog ? [ddb.send(new PutCommand({ TableName: tableName, Item: alertLog }))] : []),
     updateLatestNode(),
     s3.send(new PutObjectCommand({
       Bucket: bucketName,
@@ -439,12 +471,12 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     });
     if (explanation) {
       try {
-        await ddb.send(new UpdateCommand({
+        await Promise.all(["FLEET", "ALERTS"].map((partitionKey) => ddb.send(new UpdateCommand({
           TableName: tableName,
-          Key: { PK: "FLEET", SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}` },
+          Key: { PK: partitionKey, SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}` },
           UpdateExpression: "SET explanation = :explanation, explanationSource = :source",
           ExpressionAttributeValues: { ":explanation": explanation, ":source": "bedrock" },
-        }));
+        }))));
         await broadcastTelemetry({
           type: "alert-explanation",
           nodeId: telemetry.nodeId,
@@ -692,6 +724,18 @@ async function storeAndBroadcastActuatorAck(ack: ActuatorAckInput): Promise<void
     fanActive: ack.relayOn,
     buzzerActive: false,
   };
+  const actionLog = {
+    PK: "FLEET",
+    SK: `EVENT#${receivedAt}#${ack.nodeId}#${ack.actionId}`,
+    id: ack.actionId,
+    timestamp: receivedAt,
+    nodeId: ack.nodeId,
+    eventType: "actuator_command",
+    message: `Relay ${ack.relayOn ? "on" : "off"}: ${ack.result}`,
+    source: "AWS IoT Core",
+    severity: ack.result === "applied" ? "info" : "warning",
+    expiresAt,
+  };
   await Promise.all([
     ddb.send(new UpdateCommand({
       TableName: tableName,
@@ -705,18 +749,11 @@ async function storeAndBroadcastActuatorAck(ack: ActuatorAckInput): Promise<void
     })),
     ddb.send(new PutCommand({
       TableName: tableName,
-      Item: {
-        PK: "FLEET",
-        SK: `EVENT#${receivedAt}#${ack.nodeId}#${ack.actionId}`,
-        id: ack.actionId,
-        timestamp: receivedAt,
-        nodeId: ack.nodeId,
-        eventType: "actuator_command",
-        message: `Relay ${ack.relayOn ? "on" : "off"}: ${ack.result}`,
-        source: "AWS IoT Core",
-        severity: ack.result === "applied" ? "info" : "warning",
-        expiresAt,
-      },
+      Item: actionLog,
+    })),
+    ddb.send(new PutCommand({
+      TableName: tableName,
+      Item: { ...actionLog, PK: "ACTIONS" },
     })),
   ]);
   try {

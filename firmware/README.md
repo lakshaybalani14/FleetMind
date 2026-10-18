@@ -14,7 +14,16 @@ For a bench test that needs no AWS credentials, use the separate [hardware-test 
 | Status LED | GPIO 2 | Built-in LED on many ESP32 dev boards. |
 | Unused | GPIO 27 | Reserved/free; no button is configured in the current firmware. |
 
-Do not power a fan directly from an ESP32 GPIO. The relay module must have a suitable driver/power supply and the correct electrical isolation.
+![FleetMind ESP32 logical GPIO wiring map](../docs/diagrams/esp32-logical-pin-map.svg)
+
+The picture shows logical signal assignments. It is **not** a physical ESP32 DevKit pin-position drawing; board header layouts vary. Match the GPIO numbers printed on your board.
+
+### Power and signal cautions
+
+- GPIO 34 is input-only and must never receive more than 3.3 V. MQ-2 modules commonly use a 5 V heater and their analog output may exceed the ESP32 input limit. Check the module output and use a correctly sized voltage divider when needed.
+- Power the DHT22, MQ-2, and relay module according to their exact datasheets. Use common ground for non-isolated signal modules.
+- GPIO 26 drives only the relay module's logic input. Do not power the relay coil, fan, or other load from an ESP32 pin. For the demo, use a suitable isolated/rated relay and low-voltage load; no mains wiring.
+- The current connected firmware has a relay output and status LED; it does not configure a separate buzzer GPIO.
 
 ## Setup and flash
 

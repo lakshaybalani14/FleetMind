@@ -3,19 +3,29 @@
 ## Current live-test status
 
 The HTTP API, Cognito authentication, WebSocket API, telemetry Lambda, DynamoDB,
-S3, and AWS IoT telemetry rule have been configured manually in
-`ap-southeast-2`. The ESP32-to-storage path and authenticated dashboard stream
-have been exercised. A `403 AccessDeniedException` on WebSocket callback delivery
-was fixed by scoping the Lambda role's `execute-api:ManageConnections` permission
-to the WebSocket API's `POST/@connections/*` connection path.
+S3, AWS IoT rules, EC2 health monitor, CloudWatch alarms, SNS notifications,
+and Bedrock alert explanations have been configured or exercised in
+`ap-southeast-2`. The user reported the health-notification flow and synthetic
+Bedrock explanation working. On 2026-10-18, the Lambda activity-history package
+was deployed; its AWS code hash matched the local `fleetmind-activity-history`
+ZIP. One post-deployment relay-history check remains.
 
-The CDK stack below documents the intended infrastructure as code; it is not
-confirmed to be the source of the existing console-created resources. In
-particular, compare the synthesized template with the live resources before
-deploying, so CDK does not create duplicates or replace manually configured
-resources.
+A previous `403 AccessDeniedException` on WebSocket callback delivery was fixed
+by scoping the Lambda role's `execute-api:ManageConnections` permission to the
+WebSocket API's `POST/@connections/*` connection path.
+
+The CDK stack below documents intended infrastructure; it is not a confirmed
+snapshot of the console-created resources. Known live/CDK differences are
+listed in [`../docs/project-status.md`](../docs/project-status.md). Compare the
+synthesized template with current live resources before deploying, so CDK does
+not create duplicates or replace manually configured resources.
 
 This CDK stack provides the authenticated dashboard API and a real-time telemetry stream. It adds an AWS IoT Core rule for the existing firmware topic `fleetmind/<nodeId>/telemetry`; it does not create or change Things, certificates, or device policies.
+
+The separately configured EC2 health-monitor instance, its systemd timer,
+CloudWatch alarm definitions, and SNS topic are not a complete part of this
+CDK stack. Their current behavior and operating guide are in
+[`../docs/cloud-health-monitor-plan.md`](../docs/cloud-health-monitor-plan.md).
 
 ## What this stack creates
 
@@ -26,11 +36,12 @@ This CDK stack provides the authenticated dashboard API and a real-time telemetr
 - One on-demand DynamoDB table for WebSocket connection IDs and expiring tickets.
 - A private, encrypted S3 bucket for historical telemetry JSON objects.
 - Node.js 22 Lambda handlers for API requests, IoT telemetry ingestion, WebSocket authorization, and connection lifecycle.
+- Optional scoped Bedrock `InvokeModel` permission when the explanation context is enabled and a model ARN is supplied.
 - AWS IoT Core rules routing `fleetmind/+/telemetry`, `fleetmind/+/status`, and `actuator_ack` events on `fleetmind/+/events` to the ingestion Lambda.
 - A narrowly scoped Lambda permission to publish relay commands to `fleetmind/node-*/commands`.
 - CloudWatch log groups with 30-day retention.
 
-All regional resources are pinned to `ap-southeast-2`. The Managed Login app client uses authorization code (not implicit) with a local callback at `http://localhost:3000/auth/callback`; the frontend still needs to implement PKCE. The default API browser origin is `http://localhost:3000`; set `-c appOrigin=https://your-dashboard.example` on a later synth/deploy for the deployed frontend origin.
+All regional resources are pinned to `ap-southeast-2`. The Managed Login app client uses authorization code with PKCE and a local callback at `http://localhost:3000/auth/callback`; the frontend stores the verifier in session storage and exchanges the authorization code. The default API browser origin is `http://localhost:3000`; set `-c appOrigin=https://your-dashboard.example` on a later synth/deploy for the deployed frontend origin.
 
 ## Access patterns and data keys
 
@@ -38,7 +49,7 @@ All regional resources are pinned to `ap-southeast-2`. The Managed Login app cli
 | --- | --- | --- |
 | List fleet nodes | Query, no table scan | `PK=FLEET`, `SK begins_with NODE#` |
 | Recent telemetry for one node | Query by node partition | `PK=NODE#<nodeId>`, `SK begins_with TELEMETRY#` |
-| Recent fleet event log | Query, no table scan | `PK=FLEET`, `SK begins_with EVENT#` |
+| Recent activity / alert / action log | Query across `FLEET`, `ALERTS`, and `ACTIONS`, deduplicate by event ID, sort newest first | `SK begins_with EVENT#` |
 | Ingest telemetry | Put telemetry + event, conditionally update latest state | Same keys as above |
 
 Telemetry and event items receive a 30-day DynamoDB TTL; the S3 history objects are retained independently. The S3 object key is date- and node-partitioned and content-addressed by the node, timestamp, and event ID, so retrying the same event does not create a second object. This prototype stores one small object per event; for a higher-throughput fleet, replace direct S3 puts with a buffering delivery path such as Kinesis Data Firehose.
@@ -50,10 +61,17 @@ All routes require a Cognito JWT in `Authorization: Bearer <token>`.
 - `GET /nodes`
 - `POST /nodes/{nodeId}/relay` sends a QoS 1 relay command to the selected node and waits for the device acknowledgement before showing the confirmed state. Manual control selects manual mode.
 - `POST /nodes/{nodeId}/automation` selects manual or threshold mode. Threshold mode is rejected unless automation is explicitly enabled and all four validated thresholds are configured.
+- `POST /nodes/{nodeId}/monitoring` arms or disarms the 180-second device-health SNS monitor for one node; it does not change dashboard online/offline freshness.
 - `GET /telemetry?nodeId=node-01&limit=50`
 - `POST /telemetry` with `eventId`, `nodeId`, ISO `timestamp`, `temperature`, `humidity`, and `gasLevel`; optional `isAnomaly` and `actuatorState` fields are preserved.
 - `GET /logs?limit=50`
 - `POST /ws-ticket` issues a random, single-use ticket with a 60-second expiry. The WebSocket `$connect` Lambda authorizer atomically consumes it. The Cognito ID token is sent only to this HTTPS endpoint, not placed in the WebSocket URL.
+
+The route list above describes the checked-in CDK declaration. The live HTTP
+API has known drift: the last console inventory showed `GET /telemetry` but no
+`POST /telemetry`. MQTT test-client/device ingestion uses AWS IoT rules, not
+that optional HTTP route. See [project events](../docs/project-events.md) and
+[project status](../docs/project-status.md).
 
 `POST /telemetry` remains a Cognito-authenticated dashboard/test ingestion endpoint. Device messages arrive through the IoT Core rule, authenticated with the device certificate and IoT policy—not Cognito.
 
@@ -85,45 +103,19 @@ No stack is deployed by these steps. Before deployment, review the synthesized r
 
 ## Remaining cloud work
 
-1. The manual relay round trip and synthetic threshold ON/OFF test are verified
-   in [`../docs/actuator-control.md`](../docs/actuator-control.md). Automatic
-   mode remains opt-in. Optional follow-up: test hysteresis-band and cooldown
-   boundaries with a harmless low-voltage load. MQ-2 supplies a relative demo
-   level, not calibrated gas/CO concentration.
-2. Keep the ML anomaly prototype offline. It flagged 19 readings confirmed
-   normal and one synthetic temperature test; it is not ready for live alerts.
-   The previous EC2-training/ECR/K3s/Lambda-scoring plan is deferred in
-   [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
-3. Finish the separate EC2 device-health monitor with CloudWatch alarms and
-   SNS acceptance tests, following
-   [`../docs/cloud-health-monitor-console-guide.md`](../docs/cloud-health-monitor-console-guide.md).
-   Bedrock may explain an existing threshold-based alert in plain language, but
-   must not decide whether to alert or trigger a relay. Use Athena for historical
-   S3 telemetry analysis and Systems Manager Session Manager to access EC2
-   without public SSH.
-4. Continue end-to-end testing as these features are added; revisit latency
-   measurements if live behavior regresses. See
-   [`../docs/live-testing-log.md`](../docs/live-testing-log.md).
-5. After the live path is stable, review hosting, security, and operating costs.
+- Perform the post-deployment relay activity persistence check against the
+  deployed `fleetmind-activity-history` package.
+- Repeat the health-monitor acceptance test with monitoring ON and OFF when the
+  board and EC2 monitor are available. The user reports the console setup and
+  alert test already worked; this is a repeatable check, not initial setup.
+- Reconcile the CDK/live differences before any stack deployment.
+- Consider Athena for S3 history analysis, frontend hosting, and a final
+  security/cost/retention review as future project work.
+- Keep the current anomaly detector offline. It flagged 19 readings confirmed
+  normal and one synthetic reading; see
+  [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
 
-The device Thing/certificate and firmware downlink/acknowledgement hooks exist
-for the current prototype. The dashboard command flow and matching AWS
-configuration are in place; manual relay and synthetic threshold ON/OFF have
-been exercised. Production-grade fleet provisioning, robust offline buffering,
-anomaly detection, automation hardening, and frontend hosting also remain
-future work.
-
-## SNS and queue status
-
-The `fleetmind-device-health` SNS topic and its confirmed email subscription are
-configured. CloudWatch alarms still need to target it for agreed
-device/system-health notifications. Bedrock can optionally provide
-plain-language context for existing threshold alerts. Do not send unvalidated
-ML predictions to SNS or use them to control the relay.
-
-SQS is **not required by the original Phase 5/6 flow**. It is an optional later
-buffer between ingestion and inference if the EC2 model worker needs retries or
-back-pressure. A queue would require a worker/result-return path and may delay
-the automation decision, so first implement and measure the direct authenticated
-Lambda-to-FastAPI `/score` call against the sub-5-second target. The firmware's
-command queue is an on-device FreeRTOS queue, not SQS.
+Bedrock is an explanation step for an existing threshold alert. It cannot
+decide whether to alert, trigger SNS, or command a relay. The firmware's
+command queue is an on-device FreeRTOS queue; SQS is not currently part of the
+project architecture.

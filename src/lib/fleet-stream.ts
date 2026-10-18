@@ -153,12 +153,14 @@ export function mergeNodeSnapshot(currentNodes: FleetNode[], snapshotNodes: Flee
 
 export function mergeActionLogs(...groups: ActionLogEntry[][]): ActionLogEntry[] {
   const seen = new Set<string>();
-  const merged: ActionLogEntry[] = [];
+  const priority: ActionLogEntry[] = [];
+  const activity: ActionLogEntry[] = [];
   for (const entry of groups.flat()) {
     if (seen.has(entry.id)) continue;
     seen.add(entry.id);
-    merged.push(entry);
-    if (merged.length === 50) break;
+    if (entry.eventType !== "telemetry" || entry.severity !== "info") priority.push(entry);
+    else activity.push(entry);
   }
-  return merged;
+  return [...priority.slice(0, 50), ...activity.slice(0, 50)]
+    .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
 }

@@ -1,26 +1,20 @@
 # Console setup: EC2 + CloudWatch + SNS
 
-## Current handoff — 2026-10-18
+## Current status — 2026-10-18
 
-- SNS topic/email subscription, IAM policy/role, Lambda route, and EC2 instance
-  are configured in `ap-southeast-2`.
-- Lambda `fleetmind-telemetry-api` includes `POST /nodes/{nodeId}/monitoring`.
-  The `$default` API stage auto-deploy is enabled.
-- EC2 instance `i-0db768c88c910361b` was reachable through Session Manager.
-  Its timer was active, and `MonitorHeartbeat=1` was seen in `FleetMind/Health`.
-  The instance is now stopped until the next session; start it and wait for
-  status checks before reconnecting.
-- Monitoring is currently disabled for the real board `node-01`. The other
-  DynamoDB node, `node-sim-20261010`, is a simulated node and is not included in
-  the monitor configuration.
-- Resume by starting the instance, enabling notifications for `node-01` in the
-  dashboard, confirming `StatusWithin180Seconds=1`, then creating and safely
-  testing the CloudWatch alarms below. The dashboard switch is present in the
-  local app; hosted UI publication has not been confirmed.
+The user completed the console setup for SNS, the EC2 monitor role/instance,
+CloudWatch metrics/alarms, and the dashboard monitoring control, then reported
+that the notification flow was working. Earlier console checks confirmed
+Session Manager access and `MonitorHeartbeat=1`. The instance's current
+running/stopped state and the dashboard switch state may have changed since
+those checks; inspect them before a repeat test. The user has not asked to
+rebuild these resources.
 
-Use this after deploying the application code that adds `lastOnlineStatusAt`
-and the dashboard monitoring switch. Do each batch, then verify the listed
-result before moving to the next batch.
+Use the batches below as a reference if setup needs to be repeated or audited.
+For current project behavior and a short acceptance checklist, see
+[`cloud-health-monitor-plan.md`](cloud-health-monitor-plan.md). The Lambda
+monitoring route is `POST /nodes/{nodeId}/monitoring`; `{nodeId}` is the full
+node identifier such as `node-01`.
 
 ## Batch 1 — prepare notifications
 

@@ -1,5 +1,15 @@
 # FleetMind anomaly model: practice experiment
 
+## Current FleetMind result
+
+These scripts are offline experiments only. They are not invoked by the live
+Lambda, dashboard, SNS notification, or relay workflows. The user-reviewed
+holdout contained 19 real normal room readings and one intentionally synthetic
+61 °C test reading; the prototype flagged those as unusual. This shows that the
+current detector is too noisy for live use; it is not an accuracy result. See
+[`../../../docs/anomaly-service-plan.md`](../../../docs/anomaly-service-plan.md)
+before interpreting any score.
+
 This folder contains an offline learning exercise using the downloaded Bangladesh air-quality CSV. It does not connect to AWS, MQTT, the dashboard, or a live FleetMind sensor.
 
 The script uses only `mq2`, `temperature`, and `humidity` as model inputs. It sorts by timestamp and holds out the latest 20% of rows. For the initial experiment only, rows marked `AQI_Level == Good` in the earlier portion are used as a *provisional normal baseline*. That is an assumption for practice: AQI labels are not verified gas-anomaly labels.
@@ -8,7 +18,7 @@ From the FleetMind repository root, run:
 
 ```bash
 python3 ml/anomaly/practice/train_practice_model.py \
-  --input /Users/amandeep/Downloads/FleetMind-data-practice/practice_clean.csv
+  --input "<path-to-practice_clean.csv>"
 ```
 
 The script writes `practice_model.joblib`, `practice_holdout_scores.csv`, and `practice_model_metadata.json` to `ml/anomaly/practice/output/`. That output folder is Git-ignored; the downloaded dataset and model artifacts should not be committed.
@@ -28,7 +38,7 @@ repository root with:
 
 ```bash
 python3 ml/anomaly/practice/train_urbaniot_classifier.py \
-  --input-zip "/Users/amandeep/Downloads/archive (3).zip" \
+  --input-zip "<path-to-UrbanIoT-archive.zip>" \
   --feature-set all
 ```
 
@@ -49,7 +59,7 @@ To train using only temperature and humidity, use:
 
 ```bash
 python3 ml/anomaly/practice/train_urbaniot_classifier.py \
-  --input-zip "/Users/amandeep/Downloads/archive (3).zip" \
+  --input-zip "<path-to-UrbanIoT-archive.zip>" \
   --feature-set temperature_humidity
 ```
 
@@ -68,7 +78,7 @@ run this from the repository root:
 
 ```bash
 python3 ml/anomaly/practice/train_fleetmind_trial.py \
-  --input /Users/amandeep/Downloads/fleetmind_s3_telemetry.csv
+  --input "<path-to-fleetmind_s3_telemetry.csv>"
 ```
 
 The script uses only `node-01` rows with `sensorValid == True`, valid timestamps,
@@ -127,8 +137,8 @@ Train both components and score the chronological FleetMind holdout:
 
 ```bash
 python3 ml/anomaly/practice/train_hybrid_fleetmind.py \
-  --fleet-csv "/Users/amandeep/Downloads/fleetmind_s3_telemetry.csv" \
-  --urban-zip "/Users/amandeep/Downloads/archive (3).zip"
+  --fleet-csv "<path-to-fleetmind_s3_telemetry.csv>" \
+  --urban-zip "<path-to-UrbanIoT-archive.zip>"
 ```
 
 The run saved a joblib model bundle, FleetMind holdout scores, UrbanIoT
