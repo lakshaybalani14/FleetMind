@@ -20,6 +20,7 @@ export default function FleetDashboard() {
   const [pendingActionId, setPendingActionId] = useState("");
   const [controlMessage, setControlMessage] = useState("");
   const [controlError, setControlError] = useState("");
+  const [notificationError, setNotificationError] = useState("");
   const [dismissedAlertKeys, setDismissedAlertKeys] = useState<string[]>([]);
   const [pendingAlerts, setPendingAlerts] = useState<Record<string, DashboardAlert>>({});
   const [monitorDrawerOpen, setMonitorDrawerOpen] = useState(false);
@@ -133,15 +134,11 @@ export default function FleetDashboard() {
   const toggleHealthMonitoring = async () => {
     if (!selectedNode) return;
     setControlBusy(true);
-    setControlError("");
-    setControlMessage("");
+    setNotificationError("");
     try {
-      const result = await setMonitoringEnabled(!selectedNode.monitoringEnabled);
-      setControlMessage(result.monitoringEnabled
-        ? "Health notifications enabled. SNS alerts if status is missing for 180 seconds."
-        : "Health notifications paused for this device.");
+      await setMonitoringEnabled(!selectedNode.monitoringEnabled);
     } catch (error) {
-      setControlError(error instanceof Error ? error.message : "Could not change health monitoring.");
+      setNotificationError(error instanceof Error ? error.message : "Could not change health monitoring.");
     } finally {
       setControlBusy(false);
     }
@@ -209,11 +206,12 @@ export default function FleetDashboard() {
           <p className="mt-1 text-xs text-zinc-400">{selectedNode.monitoringEnabled
             ? "On: SNS can alert after 180 seconds without a status heartbeat."
             : "Off: intentional downtime will not send an SNS device alert."} Dashboard online/offline updates are unchanged.</p>
+          {notificationError && <p role="alert" className="mt-2 text-xs text-red-300">{notificationError}</p>}
         </div>
         <button type="button" onClick={() => void toggleHealthMonitoring()} disabled={controlBusy}
           aria-pressed={selectedNode.monitoringEnabled === true}
           className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50">
-          {selectedNode.monitoringEnabled ? "Pause notifications" : "Enable notifications"}
+          {selectedNode.monitoringEnabled ? "Pause notifications" : "Turn notifications on"}
         </button>
       </section>
 

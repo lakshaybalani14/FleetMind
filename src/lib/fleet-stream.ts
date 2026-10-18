@@ -109,6 +109,10 @@ export function applyTelemetryToNodes(
     actuatorState: message.actuatorState ?? current?.actuatorState ?? emptyActuatorState,
     actuatorStateStale: status !== "online",
     automationEnabled: current?.automationEnabled,
+    // Live telemetry arrives more often than the HTTP snapshot. Preserve the
+    // separately stored health-notification setting whenever a reading updates
+    // the node, or the dashboard toggle will revert on the next sensor frame.
+    monitoringEnabled: current?.monitoringEnabled,
     lastActuatorActionId: current?.lastActuatorActionId,
     lastActuatorActionResult: current?.lastActuatorActionResult,
     lastSeen: new Date(stateTimestampMs).toISOString(),
@@ -127,11 +131,20 @@ export function mergeNodeSnapshot(currentNodes: FleetNode[], snapshotNodes: Flee
     if (!current) return snapshot;
     const currentTime = Date.parse(current.lastSeen);
     const snapshotTime = Date.parse(snapshot.lastSeen);
-    // Initial HTTP requests can finish after WebSocket frames. Keep the live
-    // version when its source timestamp is equal or newer than the snapshot.
-    return Number.isFinite(currentTime) && (!Number.isFinite(snapshotTime) || currentTime >= snapshotTime)
-      ? current
-      : snapshot;
+    // Initial HTTP requests can finish after WebSocket frames. Keep the newest
+    // telemetry/status state, while hydrating control settings that WebSocket
+    // messages do not carry. Without this merge, a stream-created node can
+    // lose monitoringEnabled when the HTTP snapshot finishes.
+    const liveIsCurrent = Number.isFinite(currentTime)
+      && (!Number.isFinite(snapshotTime) || currentTime >= snapshotTime);
+    const preferred = liveIsCurrent ? current : snapshot;
+    const other = liveIsCurrent ? snapshot : current;
+    return {
+      ...other,
+      ...preferred,
+      automationEnabled: current.automationEnabled ?? snapshot.automationEnabled,
+      monitoringEnabled: current.monitoringEnabled ?? snapshot.monitoringEnabled,
+    };
   });
   return [...merged, ...currentNodes.filter((node) => !snapshotIds.has(node.id))];
 }
