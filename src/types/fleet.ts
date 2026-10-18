@@ -37,6 +37,8 @@ export interface ActionLogEntry {
   nodeId: string;
   eventType: "telemetry" | "anomaly_detected" | "actuator_command" | "shadow_update";
   message: string;
+  explanation?: string;
+  explanationSource?: "fallback" | "bedrock";
   source: "ESP32 FreeRTOS" | "AWS IoT Core" | "AWS Lambda ML" | "FleetMind API" | "Next.js App";
   severity: "info" | "warning" | "critical";
 }

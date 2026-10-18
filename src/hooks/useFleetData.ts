@@ -40,7 +40,14 @@ type ActuatorAckStreamMessage = {
   result: string;
   timestamp: string;
 };
-type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage | ControlModeStreamMessage | ActuatorAckStreamMessage;
+type AlertExplanationStreamMessage = {
+  type: "alert-explanation";
+  nodeId: string;
+  logId: string;
+  explanation: string;
+  explanationSource: "bedrock";
+};
+type StreamMessage = TelemetryStreamMessage | NodeStatusStreamMessage | ControlModeStreamMessage | ActuatorAckStreamMessage | AlertExplanationStreamMessage;
 
 const emptyActuatorState = { relayActive: false, fanActive: false, buzzerActive: false };
 
@@ -164,6 +171,13 @@ export function useFleetData(idToken: string | null) {
           let message: StreamMessage;
           try { message = JSON.parse(String(event.data)) as StreamMessage; } catch { return; }
           if (!message.nodeId || !isConfiguredFleetNode(message.nodeId)) return;
+          if (message.type === "alert-explanation") {
+            if (!message.logId || typeof message.explanation !== "string" || message.explanation.length > 400) return;
+            setLogs((previous) => previous.map((log) => log.id === message.logId
+              ? { ...log, explanation: message.explanation, explanationSource: "bedrock" }
+              : log));
+            return;
+          }
           if (message.type === "node-status") {
             if (typeof message.online !== "boolean") return;
             const statusTime = Date.parse(message.timestamp);
@@ -256,6 +270,12 @@ export function useFleetData(idToken: string | null) {
             ].join(" · "),
             source: "AWS IoT Core",
             severity: hasAlert ? "critical" : "info",
+            ...(typeof message.alertExplanation === "string"
+              ? {
+                  explanation: message.alertExplanation,
+                  explanationSource: message.alertExplanationSource === "bedrock" ? "bedrock" as const : "fallback" as const,
+                }
+              : {}),
           };
           setLogs((previous) => mergeActionLogs([logEntry], previous));
         };

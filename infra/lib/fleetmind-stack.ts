@@ -158,6 +158,8 @@ export class FleetMindStack extends cdk.Stack {
         AUTO_TEMP_ON_C: contextString("autoTempOnC"),
         AUTO_TEMP_OFF_C: contextString("autoTempOffC"),
         AUTO_COMMAND_COOLDOWN_SECONDS: contextString("autoCommandCooldownSeconds", "10"),
+        BEDROCK_EXPLANATIONS_ENABLED: contextString("bedrockExplanationsEnabled", "false"),
+        BEDROCK_MODEL_ID: contextString("bedrockModelId"),
       },
       logGroup: lambdaLogs,
       bundling: {
@@ -198,6 +200,13 @@ export class FleetMindStack extends cdk.Stack {
         arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
       })],
     }));
+    const bedrockModelArn = contextString("bedrockModelArn");
+    if (contextString("bedrockExplanationsEnabled", "false") === "true" && bedrockModelArn) {
+      handler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ["bedrock:InvokeModel"],
+        resources: [bedrockModelArn],
+      }));
+    }
 
     const jwtAuthorizer = new authorizers.HttpJwtAuthorizer(
       "FleetMindCognitoAuthorizer",

@@ -58,6 +58,9 @@ export function ActionLog({ logs }: Props) {
                 <span className="text-[10px] text-zinc-500">{log.timestamp}</span>
               </div>
               <p className="text-zinc-300 leading-relaxed">{log.message}</p>
+              {log.explanation && <p className="mt-2 border-t border-white/10 pt-2 text-zinc-400 leading-relaxed">
+                <span className="font-semibold text-zinc-300">{log.explanationSource === "bedrock" ? "Bedrock explanation:" : "Explanation:"}</span> {log.explanation}
+              </p>}
             </div>
           ))}
         </div>

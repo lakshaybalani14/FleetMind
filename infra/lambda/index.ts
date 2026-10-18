@@ -5,6 +5,7 @@ import { IoTDataPlaneClient, PublishCommand } from "@aws-sdk/client-iot-data-pla
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { DynamoDBDocumentClient, DeleteCommand, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { explainAlertWithBedrock, fallbackAlertExplanation } from "./alert-explanation";
 import { decideAutomaticRelay, loadAutomationThresholds } from "./actuator-control";
 import { canAcceptMqttTelemetry } from "./telemetry-policy";
 
@@ -325,6 +326,12 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
       : []),
   ];
   const isAlert = telemetry.isAnomaly === true || thresholdReasons.length > 0;
+  const alertExplanation = isAlert ? fallbackAlertExplanation({
+    gasLevel: telemetry.gasLevel,
+    temperature: telemetry.temperature,
+    reasons: thresholdReasons,
+    firmwareFlagged: telemetry.isAnomaly === true,
+  }) : undefined;
   const date = new Date(timestamp);
   const expiresAt = Math.floor(date.getTime() / 1000) + ttlDays * 24 * 60 * 60;
   const digest = createHash("sha256")
@@ -354,6 +361,7 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
     ].join(" · "),
     source,
     severity: isAlert ? "warning" : "info",
+    ...(alertExplanation ? { explanation: alertExplanation, explanationSource: "fallback" } : {}),
     expiresAt,
   };
   const latestNode = {
@@ -414,9 +422,43 @@ async function storeAndBroadcast(telemetry: TelemetryInput, source: string): Pro
   // wait for DynamoDB and S3 writes to finish first.
   await Promise.all([
     persistence,
-    broadcastTelemetry({ type: "telemetry", ...telemetry, receivedAt }),
+    broadcastTelemetry({
+      type: "telemetry",
+      ...telemetry,
+      receivedAt,
+      ...(alertExplanation ? { alertExplanation, alertExplanationSource: "fallback" } : {}),
+    }),
   ]);
   if (source === "AWS IoT Core") await evaluateThresholdAutomation(telemetry.nodeId, telemetry);
+  if (isAlert) {
+    const explanation = await explainAlertWithBedrock({
+      gasLevel: telemetry.gasLevel,
+      temperature: telemetry.temperature,
+      reasons: thresholdReasons,
+      firmwareFlagged: telemetry.isAnomaly === true,
+    });
+    if (explanation) {
+      try {
+        await ddb.send(new UpdateCommand({
+          TableName: tableName,
+          Key: { PK: "FLEET", SK: `EVENT#${timestamp}#${telemetry.nodeId}#${telemetry.eventId}` },
+          UpdateExpression: "SET explanation = :explanation, explanationSource = :source",
+          ExpressionAttributeValues: { ":explanation": explanation, ":source": "bedrock" },
+        }));
+        await broadcastTelemetry({
+          type: "alert-explanation",
+          nodeId: telemetry.nodeId,
+          logId: log.id,
+          explanation,
+          explanationSource: "bedrock",
+        });
+      } catch (error) {
+        console.warn("Could not save or broadcast Bedrock alert explanation", {
+          errorName: error instanceof Error ? error.name : "UnknownError",
+        });
+      }
+    }
+  }
 }
 
 function parseObject(body: string | undefined): Record<string, unknown> | undefined {

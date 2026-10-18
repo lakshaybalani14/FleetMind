@@ -27,6 +27,8 @@ export type TelemetryStreamMessage = {
   gasLevel: number;
   gasAdc?: number;
   isAnomaly?: boolean;
+  alertExplanation?: string;
+  alertExplanationSource?: "fallback" | "bedrock";
   actuatorState?: FleetNode["actuatorState"];
 };
 
