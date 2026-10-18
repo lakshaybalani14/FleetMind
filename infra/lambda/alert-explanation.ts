@@ -50,8 +50,13 @@ export async function explainAlertWithBedrock(input: AlertExplanationInput): Pro
       .join(" ")
       .replace(/\s+/g, " ")
       .trim();
-    if (!explanation || explanation.length > 400) return undefined;
-    return explanation;
+    if (!explanation) return undefined;
+    const safetyNote = "MQ-2 readings are relative prototype readings, not a measurement of a specific gas or a certified safety alarm.";
+    const safeExplanation = /relative prototype reading.*certified safety alarm/i.test(explanation)
+      ? explanation
+      : `${explanation} ${safetyNote}`;
+    if (safeExplanation.length > 400) return undefined;
+    return safeExplanation;
   } catch (error) {
     console.warn("Bedrock alert explanation unavailable; keeping rule-based fallback", {
       errorName: error instanceof Error ? error.name : "UnknownError",
