@@ -1,6 +1,6 @@
 # FleetMind device-health monitor
 
-Last updated: **2026-10-18**. The health-monitor route, EC2 timer, CloudWatch metrics/alarms, and SNS notification flow have been configured. The user reported that the alarm flow was tested and working. This page describes the current behavior; see the console guide for exact resource names and a repeatable acceptance check.
+Last updated: **2026-10-18**. The health-monitor route, EC2 timer, CloudWatch metrics/alarms, and SNS notification flow have been configured and tested, as confirmed by the user. This page describes the current behavior; the console guide retains the acceptance steps for reference or future retesting.
 
 ## Purpose and boundary
 

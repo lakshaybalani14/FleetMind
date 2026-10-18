@@ -101,19 +101,22 @@ npx cdk diff --profile codex-aws
 
 No stack is deployed by these steps. Before deployment, review the synthesized resource set and current AWS spend limit. The DynamoDB table, Cognito pool, and S3 history bucket are retained on stack deletion; the DynamoDB table also has deletion protection and point-in-time recovery enabled.
 
-## Remaining cloud work
+## Project completion and future enhancements
 
-- Perform the post-deployment relay activity persistence check against the
-  deployed `fleetmind-activity-history` package.
-- Repeat the health-monitor acceptance test with monitoring ON and OFF when the
-  board and EC2 monitor are available. The user reports the console setup and
-  alert test already worked; this is a repeatable check, not initial setup.
-- Reconcile the CDK/live differences before any stack deployment.
-- Consider Athena for S3 history analysis, frontend hosting, and a final
-  security/cost/retention review as future project work.
-- Keep the current anomaly detector offline. It flagged 19 readings confirmed
-  normal and one synthetic reading; see
-  [`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
+The user confirmed that the prototype tests are complete, including the relay
+activity and device-health/SNS flows. The deployed activity-history package hash
+was also matched against the local package during the 2026-10-18 check.
+
+Optional follow-on work, if the prototype is expanded, includes Athena queries
+over S3 history, hosted dashboard deployment, and additional security/cost/
+retention review. Reconcile local CDK definitions with the manually configured
+AWS resources before a future CDK deployment; the documented drift did not
+block the tested workflows.
+
+The anomaly detector remains offline because its experiments did not produce
+production-quality FleetMind results. It flagged 19 readings the user confirmed
+were normal, as well as a deliberately synthetic reading. See
+[`../docs/anomaly-service-plan.md`](../docs/anomaly-service-plan.md).
 
 Bedrock is an explanation step for an existing threshold alert. It cannot
 decide whether to alert, trigger SNS, or command a relay. The firmware's

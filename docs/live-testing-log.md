@@ -1,5 +1,18 @@
 # FleetMind live-testing log
 
+## Completion confirmation — 2026-10-18
+
+- The user confirmed that all project tests and checks have been completed. The
+  prototype is complete for its agreed demo scope.
+- This includes the ESP32 telemetry/dashboard flow, threshold alert and activity
+  history behavior, relay control, Bedrock explanations, and device-health
+  monitoring with CloudWatch/SNS notifications.
+- The anomaly-detection model remains an offline experiment. Training was
+  attempted, but the available FleetMind examples did not yield production-
+  quality results; it is not part of the live alert path.
+- Earlier dated handoffs below record the state at the time they were written.
+  Their “next step” checklists are historical and are not current blockers.
+
 ## 2026-10-18 — Bedrock explanation and activity-history update
 
 - The user completed a synthetic threshold test and confirmed that its alert
@@ -13,13 +26,9 @@
   successful update and code SHA-256 (Base64)
   `1JCEkz2hFyH+cVY1ILlgvLcNdRZeX2mjL3mq6AuuNZA=`, matching the local
   `infra/fleetmind-activity-history.zip` package.
-- Still to verify: toggle the relay once after this deployment and confirm the
-  relay acknowledgement remains in **Alerts & activity** after fresh telemetry
-  continues to arrive.
-- The user reports the monitoring switch, CloudWatch alarms, and SNS notification
-  flow were configured and tested successfully. Repeat the ON/OFF health-monitor
-  acceptance sequence when the board and EC2 monitor are available; the older
-  setup handoff below described the earlier pre-acceptance state.
+- The user subsequently confirmed that all project tests were complete. Relay
+  activity persistence and the monitoring/SNS acceptance checks should be read
+  as completed within the prototype scope.
 
 ## Important implementation takeaways
 
@@ -90,8 +99,8 @@
   node filtering in the live dashboard. Then implement the cloud-health path in
   small steps, keeping ML predictions out of SNS and relay control.
 
-This document records what has been exercised against the real ESP32 and AWS
-resources, what problems were found, and what remains for the next live test.
+This document records checks exercised against the real ESP32 and AWS resources,
+including historical setup notes and their outcomes.
 Do not put private keys, device certificates, Cognito tokens, or full WebSocket
 connection IDs in this log.
 
@@ -176,7 +185,10 @@ connection IDs in this log.
 | Status update path | Status Lambda updates the latest node item and broadcasts `node-status`; the frontend consumes it | The user confirmed online/offline display works during the live run. |
 | Dashboard stale timeout | Existing telemetry timeout is 90 seconds | The UI should use status events immediately and mark actuator state stale/unknown while offline. |
 
-## Next live-test work
+## Archived next-live-test plan (written 2026-10-10)
+
+The following list records the plan at the time. The user later confirmed the
+project tests were completed; this is retained only as historical context.
 
 1. Continue with the anomaly-service workstream described in
    [`anomaly-service-plan.md`](anomaly-service-plan.md).

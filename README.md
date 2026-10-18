@@ -8,13 +8,12 @@ FleetMind connects an ESP32 sensor node to an authenticated web dashboard. The d
 
 ## Project status
 
-- **Working prototype:** the board-to-AWS-to-dashboard telemetry path, manual relay acknowledgement, demo threshold alerts, Bedrock alert wording, and the device-health monitoring path have been exercised.
+- **Project status: complete for the prototype/demo scope.** The user confirmed that the project tests and end-to-end checks have been completed, including telemetry, dashboard updates, threshold alerts, relay actions, Bedrock explanations, and device-health notifications.
 - **Latest deployment:** the activity-history Lambda package is deployed. Its AWS code hash was checked against the local package on 2026-10-18.
-- **Still to verify:** toggle the relay once and confirm its activity entry stays visible while new telemetry arrives; run the final monitoring-enabled/disabled acceptance check when the board and monitor instance are available.
-- **Offline ML experiment:** kept separate from production alerts and relay control. The FleetMind holdout included 19 readings the user confirmed were normal that the detector flagged, so its results are not reliable enough for live decisions.
-- **Completion estimate:** about 80% of the demo prototype. This estimate does not mean the system is production-ready.
+- **ML anomaly detection:** training experiments were attempted, but did not produce production-quality FleetMind results. The model remains an offline experiment and does not affect live alerts or relay control.
+- **Scope note:** the completed project is a working prototype, not a certified safety system or production-hardened service. Optional enhancements and deployment hardening are documented as future work, not unfinished acceptance tests.
 
-See [Project status and handoff](docs/project-status.md) for the workstream checklist and [Live testing log](docs/live-testing-log.md) for observed results and next checks.
+See [Project status](docs/project-status.md) for completed work and future enhancements, and [Live testing log](docs/live-testing-log.md) for dated test outcomes.
 
 ## What it does
 
@@ -116,7 +115,7 @@ infra/lambda/                 Telemetry/API, threshold event, Bedrock, relay log
 infra/health-monitor/         EC2 monitor, systemd timer, IAM policy source
 ml/anomaly/practice/          Offline model experiments and evaluation notes
 docs/project-events.md        Payload and end-to-end event workflows
-docs/project-status.md        Current status, remaining work, known drift
+docs/project-status.md        Completion status, scope, and future enhancements
 docs/live-testing-log.md      Dated checks and observed outcomes
 docs/                         Hardware, AWS, actuator, and model handoffs
 ```
