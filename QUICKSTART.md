@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The local app needs the correct Cognito and FleetMind API values in the root `.env.local` to authenticate and display live AWS data. Use `.env.local.example` as the variable-name reference; copy actual values from the AWS deployment outputs or team handoff. Never commit `.env.local`, access tokens, or device credentials.
+Open `http://localhost:3000` for the introduction page. **Sign in securely** opens the existing Amazon Cognito sign-in flow; after sign-in, the callback opens `/monitoring`. With a valid session, **Enter the platform** opens Monitoring directly. The two browser previews show saved images of Monitoring and Analytics; the dashboards themselves use live data after sign-in. The local app needs the correct Cognito and FleetMind API values in the root `.env.local` to authenticate and display live AWS data. Use `.env.local.example` as the variable-name reference; copy actual values from the AWS deployment outputs or team handoff. Never commit `.env.local`, access tokens, or device credentials.
 
 The authentication callback is configured for `http://localhost:3000/auth/callback`. Do not replace localhost with a LAN IP or another port unless the Cognito callback and allowed origins are also updated.
 
@@ -29,7 +29,7 @@ The firmware samples every two seconds, publishes retained status about every 15
 
 ## 3. Confirm live data
 
-1. Sign in at `http://localhost:3000`.
+1. Sign in at `http://localhost:3000/monitoring`.
 2. Confirm the selected node appears and its status changes to online.
 3. Check the current values and moving chart.
 4. Use a safe synthetic test only when verifying threshold display; use a fresh timestamp and clearly identify the message as synthetic.

@@ -12,7 +12,7 @@ export default function AuthCallback() {
     if (started.current) return;
     started.current = true;
     completeCognitoLogin(new URL(window.location.href))
-      .then(() => router.replace("/"))
+      .then(() => router.replace("/monitoring"))
       .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Sign-in failed."));
   }, [router]);
   return <main className="min-h-screen bg-[#09090b] p-8 text-zinc-200">{error || "Finishing secure sign-in…"}</main>;

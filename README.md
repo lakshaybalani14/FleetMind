@@ -131,7 +131,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The live AWS dashboard requires the project environment values, Cognito sign-in configuration, and API/WebSocket outputs described in [Quick start](QUICKSTART.md). Local startup alone does not connect the ESP32 to AWS.
+Open [http://localhost:3000](http://localhost:3000) for the FleetMind introduction and Monitoring/Analytics preview images. **Sign in securely** opens Amazon Cognito, then returns to [Monitoring](http://localhost:3000/monitoring). With an existing valid session, **Enter the platform** opens Monitoring directly. [Analytics](http://localhost:3000/analysis) also requires sign-in. The live AWS dashboard requires the project environment values, Cognito sign-in configuration, and API/WebSocket outputs described in [Quick start](QUICKSTART.md). Local startup alone does not connect the ESP32 to AWS.
 
 ## Build and flash the ESP32
 

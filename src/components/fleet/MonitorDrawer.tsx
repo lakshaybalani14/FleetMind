@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Activity, AlertTriangle, X } from "lucide-react";
+import { AlertTriangle, X } from "lucide-react";
 import { ActionLog } from "@/components/fleet/ActionLog";
 import type { DashboardAlert } from "@/lib/telemetry-analysis";
 import type { ActionLogEntry } from "@/types/fleet";
@@ -78,7 +78,7 @@ export function MonitorDrawer({ open, activeAlerts, logs, onClose }: Props) {
         <header className="flex items-center justify-between border-b border-zinc-800 px-5 py-4 sm:px-6">
           <div>
             <h2 id="monitor-drawer-title" className="flex items-center gap-2 text-lg font-bold text-white">
-              <Activity className="h-5 w-5 text-blue-300" aria-hidden="true" />
+              <AlertTriangle className="h-5 w-5 text-blue-300" aria-hidden="true" />
               Alerts & activity
             </h2>
             <p className="mt-1 text-xs text-zinc-400">Pending alerts and recent fleet events</p>

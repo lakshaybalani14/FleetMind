@@ -3,6 +3,9 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 import { TelemetryPoint } from "@/types/fleet";
 import { Thermometer, Wind } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import ButtonGroup from "@/components/ui/primitive-button-group";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Props {
   data: TelemetryPoint[];
@@ -42,26 +45,22 @@ export function TelemetryChart({ data, nodeName, isLive }: Props) {
             </div>
             <CardDescription>{isLive ? "Live telemetry updates active" : "Waiting for live telemetry updates"} · MQ-2 is a prototype relative reading, not a CO measurement</CardDescription>
           </div>
-          <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
-            <button
-              onClick={() => setMetric("gasLevel")}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center space-x-1.5 ${
-                metric === "gasLevel" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
-              }`}
+          <ButtonGroup aria-label="Telemetry metric">
+            <Button
+              type="button" size="sm" variant={metric === "gasLevel" ? "default" : "ghost"} onClick={() => setMetric("gasLevel")} aria-pressed={metric === "gasLevel"}
+              className={cn("flex items-center gap-1.5", metric === "gasLevel" && "border border-blue-300/20 bg-blue-400/15 text-blue-100 shadow-sm hover:bg-blue-400/20")}
             >
               <Wind className="w-3.5 h-3.5" />
               <span>MQ-2 Level</span>
-            </button>
-            <button
-              onClick={() => setMetric("temperature")}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center space-x-1.5 ${
-                metric === "temperature" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-400 hover:text-zinc-200"
-              }`}
+            </Button>
+            <Button
+              type="button" size="sm" variant={metric === "temperature" ? "default" : "ghost"} onClick={() => setMetric("temperature")} aria-pressed={metric === "temperature"}
+              className={cn("flex items-center gap-1.5", metric === "temperature" && "border border-emerald-300/20 bg-emerald-400/15 text-emerald-100 shadow-sm hover:bg-emerald-400/20")}
             >
               <Thermometer className="w-3.5 h-3.5" />
               <span>Temperature</span>
-            </button>
-          </div>
+            </Button>
+          </ButtonGroup>
         </div>
       </CardHeader>
       <CardContent>

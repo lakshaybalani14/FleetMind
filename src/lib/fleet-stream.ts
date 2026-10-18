@@ -141,11 +141,17 @@ export function mergeNodeSnapshot(currentNodes: FleetNode[], snapshotNodes: Flee
       && (!Number.isFinite(snapshotTime) || currentTime >= snapshotTime);
     const preferred = liveIsCurrent ? current : snapshot;
     const other = liveIsCurrent ? snapshot : current;
+    const automationEnabled = current.automationEnabled ?? snapshot.automationEnabled;
+    const monitoringEnabled = current.monitoringEnabled ?? snapshot.monitoringEnabled;
+    if (
+      preferred.automationEnabled === automationEnabled
+      && preferred.monitoringEnabled === monitoringEnabled
+    ) return preferred;
     return {
       ...other,
       ...preferred,
-      automationEnabled: current.automationEnabled ?? snapshot.automationEnabled,
-      monitoringEnabled: current.monitoringEnabled ?? snapshot.monitoringEnabled,
+      automationEnabled,
+      monitoringEnabled,
     };
   });
   return [...merged, ...currentNodes.filter((node) => !snapshotIds.has(node.id))];

@@ -6,11 +6,13 @@ import { TelemetryChart } from "./TelemetryChart";
 import { MonitoringBento } from "./MonitoringBento";
 import { NodeSelector } from "./NodeSelector";
 import { FleetPageNavigation } from "./FleetPageNavigation";
-import { Activity, Cpu } from "lucide-react";
+import { AlertTriangle, BellRing, Cpu, ShieldCheck } from "lucide-react";
 import { beginCognitoLogin, clearCognitoSession, cognitoLogoutUrl, getCognitoIdToken } from "@/lib/cognito";
 import { HazardAlertOverlay } from "./HazardAlertOverlay";
 import { MonitorDrawer } from "./MonitorDrawer";
 import { dashboardAlertForNode, type DashboardAlert } from "@/lib/telemetry-analysis";
+import SquishSwitch from "@/components/ui/SquishSwitch";
+import { toast, ToastViewport } from "@/components/ui/toast";
 
 export default function FleetDashboard() {
   const [idToken, setIdToken] = useState<string | null>(null);
@@ -18,9 +20,6 @@ export default function FleetDashboard() {
   const [authError, setAuthError] = useState("");
   const [controlBusy, setControlBusy] = useState(false);
   const [pendingActionId, setPendingActionId] = useState("");
-  const [controlMessage, setControlMessage] = useState("");
-  const [controlError, setControlError] = useState("");
-  const [notificationError, setNotificationError] = useState("");
   const [dismissedAlertKeys, setDismissedAlertKeys] = useState<string[]>([]);
   const [pendingAlerts, setPendingAlerts] = useState<Record<string, DashboardAlert>>({});
   const [monitorDrawerOpen, setMonitorDrawerOpen] = useState(false);
@@ -62,9 +61,11 @@ export default function FleetDashboard() {
   useEffect(() => {
     if (pendingActionId && selectedNode?.lastActuatorActionId === pendingActionId) {
       setPendingActionId("");
-      setControlMessage(selectedNode.lastActuatorActionResult === "applied"
-        ? "Device confirmed the relay change."
-        : `Device reported: ${selectedNode.lastActuatorActionResult ?? "command failed"}.`);
+      const applied = selectedNode.lastActuatorActionResult === "applied";
+      toast.add({
+        title: applied ? "Relay change confirmed" : "Relay command needs attention",
+        description: applied ? "The device confirmed the new relay state." : `Device reported: ${selectedNode.lastActuatorActionResult ?? "command failed"}.`,
+      });
     }
   }, [pendingActionId, selectedNode?.lastActuatorActionId, selectedNode?.lastActuatorActionResult]);
 
@@ -72,7 +73,7 @@ export default function FleetDashboard() {
     if (!pendingActionId) return;
     const timeout = setTimeout(() => {
       setPendingActionId("");
-      setControlError("No device acknowledgement in 15 seconds. Check the node connection and IoT acknowledgement rule.");
+      toast.add({ title: "No device confirmation", description: "No acknowledgement arrived in 15 seconds. Check the node connection and IoT acknowledgement rule." });
     }, 15_000);
     return () => clearTimeout(timeout);
   }, [pendingActionId]);
@@ -84,10 +85,11 @@ export default function FleetDashboard() {
         <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-950 p-8 text-center">
           <Cpu className="mx-auto mb-4 h-8 w-8 text-blue-400" />
           <h1 className="text-2xl font-bold text-white">FleetMind Platform</h1>
-          <p className="mt-2 text-sm text-zinc-400">Sign in with your Cognito dashboard account to view live fleet data.</p>
+          <p className="mt-2 text-sm text-zinc-400">Sign in securely with Amazon Cognito to view live fleet data.</p>
           <button onClick={() => void beginCognitoLogin().catch((error: unknown) => setAuthError(error instanceof Error ? error.message : "Sign-in could not start."))}
-            className="mt-6 rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500">
-            Sign in
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500">
+            <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+            Sign in securely
           </button>
           {authError && <p className="mt-4 text-sm text-red-400">{authError}</p>}
         </div>
@@ -103,13 +105,11 @@ export default function FleetDashboard() {
   const toggleAutomation = async () => {
     if (!selectedNode) return;
     setControlBusy(true);
-    setControlError("");
-    setControlMessage("");
     try {
       const result = await setAutomationEnabled(!selectedNode.automationEnabled);
-      setControlMessage(result.controlMode === "automatic" ? "Automatic threshold control enabled." : "Manual control selected.");
+      toast.add({ title: result.controlMode === "automatic" ? "Automatic mode enabled" : "Manual mode enabled", description: "Control settings were updated for this device." });
     } catch (error) {
-      setControlError(error instanceof Error ? error.message : "Could not change control mode.");
+      toast.add({ title: "Could not update control mode", description: error instanceof Error ? error.message : "Please try again." });
     } finally {
       setControlBusy(false);
     }
@@ -118,14 +118,12 @@ export default function FleetDashboard() {
   const toggleRelay = async () => {
     if (!selectedNode) return;
     setControlBusy(true);
-    setControlError("");
-    setControlMessage("");
     try {
       const result = await sendRelayCommand(!selectedNode.actuatorState.relayActive);
       setPendingActionId(result.actionId);
-      setControlMessage("Command sent. Waiting for the device to confirm the relay state.");
+      toast.add({ title: "Relay command sent", description: "Waiting for the device to confirm the relay state." });
     } catch (error) {
-      setControlError(error instanceof Error ? error.message : "Could not send relay command.");
+      toast.add({ title: "Could not send relay command", description: error instanceof Error ? error.message : "Please try again." });
     } finally {
       setControlBusy(false);
     }
@@ -134,11 +132,11 @@ export default function FleetDashboard() {
   const toggleHealthMonitoring = async () => {
     if (!selectedNode) return;
     setControlBusy(true);
-    setNotificationError("");
     try {
       await setMonitoringEnabled(!selectedNode.monitoringEnabled);
+      toast.add({ title: selectedNode.monitoringEnabled ? "Device notifications disabled" : "Device notifications enabled", description: "The health notification setting was updated." });
     } catch (error) {
-      setNotificationError(error instanceof Error ? error.message : "Could not change health monitoring.");
+      toast.add({ title: "Could not update notifications", description: error instanceof Error ? error.message : "Please try again." });
     } finally {
       setControlBusy(false);
     }
@@ -149,18 +147,41 @@ export default function FleetDashboard() {
     <main className="min-h-screen bg-[#09090b] p-4 font-sans text-zinc-200 sm:p-8">
       <div className="mb-4 flex items-center justify-between gap-3" role="group" aria-label="Monitoring controls">
         <NodeSelector compact nodes={nodes} selectedNodeId={selectedNodeId} onChange={setSelectedNodeId} />
-        <button
-          type="button"
-          onClick={() => setMonitorDrawerOpen(true)}
-          className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-800 hover:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          aria-haspopup="dialog"
-          aria-expanded={monitorDrawerOpen}
-          aria-label={`Open alerts and activity${pendingAlertList.length ? `, ${pendingAlertList.length} pending alerts` : ""}`}
-          title="Alerts & activity"
-        >
-          <Activity className="h-5 w-5" aria-hidden="true" />
-          {pendingAlertList.length > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white">{pendingAlertList.length}</span>}
-        </button>
+        <div className="flex shrink-0 items-center gap-2.5">
+          <div className="flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.025] py-1 pl-2.5 pr-1.5" title="Device health notifications">
+            <BellRing className={`h-3.5 w-3.5 ${selectedNode?.monitoringEnabled ? "text-blue-200" : "text-zinc-500"}`} aria-hidden="true" />
+            <span className="hidden text-[10px] text-zinc-400 sm:inline">SNS</span>
+            <SquishSwitch
+              label="Enable device health notifications"
+              checked={selectedNode?.monitoringEnabled ?? false}
+              onChange={() => void toggleHealthMonitoring()}
+              disabled={!selectedNode || controlBusy}
+              width={48}
+              height={26}
+              radius={13}
+              speed={35}
+              stretch={12}
+              colorDuration={260}
+              trackColor="#3f3f46"
+              trackOnColor="#bfdbfe"
+              thumbColor="#a1a1aa"
+              thumbOnColor="#1e3a8a"
+              className="border-white/10"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setMonitorDrawerOpen(true)}
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center text-amber-300 transition hover:text-amber-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/70"
+            aria-haspopup="dialog"
+            aria-expanded={monitorDrawerOpen}
+            aria-label={`Open alerts and activity${pendingAlertList.length ? `, ${pendingAlertList.length} pending alerts` : ""}`}
+            title="Alerts & activity"
+          >
+            <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+            {pendingAlertList.length > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold leading-none text-white">{pendingAlertList.length}</span>}
+          </button>
+        </div>
       </div>
 
       {!selectedNode ? (
@@ -170,50 +191,19 @@ export default function FleetDashboard() {
       ) : <>
 
       <div className="mb-8">
-        <MonitoringBento node={selectedNode} telemetry={activeTelemetry} telemetryAge={telemetryAge} />
+        <MonitoringBento
+          node={selectedNode}
+          telemetry={activeTelemetry}
+          telemetryAge={telemetryAge}
+          automationEnabled={Boolean(selectedNode.automationEnabled)}
+          relayPending={Boolean(pendingActionId)}
+          controlsDisabled={controlBusy}
+          onToggleAutomation={() => void toggleAutomation()}
+          onToggleRelay={() => void toggleRelay()}
+        />
       </div>
 
-      <section className="mb-8 flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-white">Fan control</h2>
-          <p className="mt-1 text-xs text-zinc-400">
-            Mode: {selectedNode.automationEnabled ? "Automatic demo" : "Manual"}. Automatic demo uses prototype sensor thresholds; MQ-2 is not a CO alarm. A manual relay command switches it to manual.
-          </p>
-          {controlMessage && <p role="status" className="mt-2 text-xs text-emerald-300">{controlMessage}</p>}
-          {controlError && <p role="alert" className="mt-2 text-xs text-red-300">{controlError}</p>}
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => void toggleAutomation()}
-            disabled={controlBusy}
-            className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {selectedNode.automationEnabled ? "Switch to manual" : "Enable automatic"}
-          </button>
-          <button
-            onClick={() => void toggleRelay()}
-            disabled={controlBusy || Boolean(pendingActionId) || selectedNode.status !== "online" || selectedNode.actuatorStateStale}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {pendingActionId ? "Waiting for device…" : selectedNode.actuatorState.relayActive ? "Turn fan off" : "Turn fan on"}
-          </button>
-        </div>
-      </section>
-
-      <section className="mb-8 flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-950 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-sm font-semibold text-white">Device health notifications</h2>
-          <p className="mt-1 text-xs text-zinc-400">{selectedNode.monitoringEnabled
-            ? "On: SNS can alert after 180 seconds without a status heartbeat."
-            : "Off: intentional downtime will not send an SNS device alert."} Dashboard online/offline updates are unchanged.</p>
-          {notificationError && <p role="alert" className="mt-2 text-xs text-red-300">{notificationError}</p>}
-        </div>
-        <button type="button" onClick={() => void toggleHealthMonitoring()} disabled={controlBusy}
-          aria-pressed={selectedNode.monitoringEnabled === true}
-          className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50">
-          {selectedNode.monitoringEnabled ? "Pause notifications" : "Turn notifications on"}
-        </button>
-      </section>
+      <ToastViewport />
 
       <TelemetryChart
         data={activeTelemetry}

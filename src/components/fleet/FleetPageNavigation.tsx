@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { Activity, ChevronsLeft, ChevronsRight, Cpu, LogOut, Wifi } from "lucide-react";
+import { Activity, Cpu, LogOut, ScanSearch, Wifi } from "lucide-react";
 
 interface Props {
   current: "monitoring" | "analysis";
@@ -19,7 +19,7 @@ export function FleetPageNavigation({ current, streamState, onSignOut, children 
   }, []);
 
   const links = [
-    { href: "/", label: "Monitoring", icon: Cpu, key: "monitoring" as const },
+    { href: "/monitoring", label: "Monitoring", icon: ScanSearch, key: "monitoring" as const },
     { href: "/analysis", label: "Analysis", icon: Activity, key: "analysis" as const },
   ];
 
@@ -28,24 +28,20 @@ export function FleetPageNavigation({ current, streamState, onSignOut, children 
       <aside
         className={`sticky top-0 flex h-dvh shrink-0 flex-col border-r border-zinc-800 bg-[#0c0c0e] transition-[width] duration-200 ${collapsed ? "w-[68px]" : "w-[240px]"}`}
         aria-label="FleetMind sidebar"
+        onPointerEnter={(event) => { if (event.pointerType === "mouse") setCollapsed(false); }}
+        onPointerLeave={(event) => { if (event.pointerType === "mouse") setCollapsed(true); }}
+        onFocusCapture={() => setCollapsed(false)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setCollapsed(true);
+        }}
       >
-        <div className={`flex shrink-0 items-center border-b border-zinc-800 ${collapsed ? "h-[88px] flex-col justify-center gap-1 px-2" : "h-[68px] justify-between px-4"}`}>
-          <div className="flex min-w-0 items-center gap-3">
+        <div className={`flex h-[68px] shrink-0 items-center border-b border-zinc-800 ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
+          <Link href="/" aria-label="FleetMind home" className={`flex min-w-0 items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-500/10 text-blue-300" aria-hidden="true">
               <Cpu className="h-[18px] w-[18px]" />
             </span>
             {!collapsed && <span className="truncate text-sm font-semibold tracking-tight text-white">FleetMind Platform</span>}
-          </div>
-          {!collapsed && (
-            <button type="button" onClick={() => setCollapsed(true)} aria-label="Collapse sidebar" title="Collapse sidebar" className="rounded-md p-1.5 text-zinc-400 transition hover:bg-zinc-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-              <ChevronsLeft className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-          {collapsed && (
-            <button type="button" onClick={() => setCollapsed(false)} aria-label="Expand sidebar" title="Expand sidebar" className="rounded-md p-1 text-zinc-500 transition hover:bg-zinc-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
-              <ChevronsRight className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
+          </Link>
         </div>
 
         <nav className={`flex-1 space-y-1 overflow-y-auto py-5 ${collapsed ? "px-2" : "px-3"}`} aria-label="FleetMind pages">
@@ -56,7 +52,7 @@ export function FleetPageNavigation({ current, streamState, onSignOut, children 
               href={href}
               aria-current={current === key ? "page" : undefined}
               title={collapsed ? label : undefined}
-              className={`flex h-10 items-center gap-3 rounded-xl text-sm font-medium transition ${collapsed ? "justify-center px-0" : "px-3"} ${current === key ? "bg-zinc-800 text-white" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"}`}
+              className={`flex h-10 items-center gap-3 rounded-xl text-sm font-medium transition ${collapsed ? "justify-center px-0" : "px-3"} ${current === key ? "text-white" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"}`}
             >
               <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
               {!collapsed && <span className="truncate">{label}</span>}
