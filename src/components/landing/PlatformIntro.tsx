@@ -3,7 +3,6 @@ import { ArrowDown, ArrowUpRight, BellRing, BrainCircuit, ChartNoAxesCombined, C
 import Safari_01 from "@/components/ui/Safari_01";
 import CognitoEntryButton from "./CognitoEntryButton";
 import ParticleText from "./ParticleText";
-import { CinematicFooter } from "@/components/ui/motion-footer";
 
 const capabilities = [
   { kind: "bidirectional", icon: Waypoints, eyebrow: "Two way by design", title: "Commands out. Confirmation back.", body: "Send relay controls to the board and watch its reported state return through the same connected fleet." },
@@ -108,7 +107,7 @@ function CapabilityGraphic({ kind }: { kind: (typeof capabilities)[number]["kind
 export default function PlatformIntro() {
   return (
     <div className="relative isolate overflow-x-clip bg-[#080a10]">
-    <main className="platform-intro relative z-10 mb-[-280px] min-h-screen rounded-b-3xl bg-[#080a10] text-zinc-100 shadow-[0_30px_80px_rgba(0,0,0,0.58)]">
+    <main className="platform-intro relative z-10 w-full rounded-b-3xl border-b border-white/10 bg-[#080a10] text-zinc-100 shadow-[0_30px_80px_rgba(0,0,0,0.58)]">
       <a href="#intro" className="sr-only z-50 rounded-lg bg-white p-3 text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
       <header className="relative z-10 mx-auto flex h-24 max-w-[1320px] items-center justify-between gap-5 px-5 sm:px-8">
         <Link href="/" aria-label="FleetMind home" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
@@ -206,7 +205,6 @@ export default function PlatformIntro() {
       </section>
 
     </main>
-    <CinematicFooter />
     </div>
   );
 }
