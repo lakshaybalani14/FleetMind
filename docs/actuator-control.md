@@ -1,20 +1,26 @@
-# Relay control: manual, threshold, and model-triggered
+# Relay control: fan and buzzer
 
 ## What this adds
 
-The local code supports one bidirectional relay path:
+The local code controls the relay, which switches power to the fan and the 5 V active buzzer wired in parallel:
 
 ```text
 Dashboard (Cognito) → HTTP API → Lambda → IoT command topic → ESP32 relay
 Dashboard ← WebSocket ← Lambda ← IoT acknowledgement ← ESP32
+Threshold automation → relay command → relay contacts → fan + buzzer
 ```
 
 Manual mode lets an operator turn the relay on or off. Automatic mode uses
 configured gas/temperature thresholds (the baseline controller) and an
-`isAnomaly: true` prediction from the teammate's model can also request
-relay-on. Both use the same device command, acknowledgement, DynamoDB status,
-and dashboard update. Manual relay commands switch that node back to manual
-mode.
+firmware anomaly flag can also request relay-on. Both use the same device
+command, acknowledgement, DynamoDB status, and dashboard update. Manual relay
+commands switch that node back to manual mode. The experimental ML model is
+not connected to live control.
+
+The buzzer follows the physical relay state because it is wired in parallel
+with the fan on the relay-switched 5 V output. It sounds whenever the relay
+turns on, including during manual relay operation. The firmware does not drive
+the buzzer from a separate GPIO or MQTT topic.
 
 Automatic control is off by default. The MQ-2 value is a **relative prototype
 level**, not ppm and not a CO measurement. Firmware maps ADC 0–4095 linearly to
@@ -44,12 +50,12 @@ are only needed again if resources must be recreated or updated.
    ```powershell
    cd infra
    npm ci
-   New-Item -ItemType Directory -Force lambda-deploy-actuator | Out-Null
-   npx esbuild lambda/index.ts --bundle --platform=node --target=node22 --outfile=lambda-deploy-actuator/index.js
-   Compress-Archive -Path lambda-deploy-actuator/index.js -DestinationPath fleetmind-actuator-control.zip -Force
+   New-Item -ItemType Directory -Force lambda-deploy-buzzer-state | Out-Null
+   npx esbuild lambda/index.ts --bundle --platform=node --target=node22 --outfile=lambda-deploy-buzzer-state/index.js
+   Compress-Archive -Path lambda-deploy-buzzer-state/index.js -DestinationPath fleetmind-buzzer-state.zip -Force
    ```
 
-   Upload `infra/fleetmind-actuator-control.zip` to the existing telemetry/API
+   Upload `infra/fleetmind-buzzer-state.zip` to the existing telemetry/API
    Lambda that already handles IoT telemetry and dashboard HTTP requests. Its
    deployed code hash was verified to match this ZIP. Do not replace the
    separate WebSocket `$connect`/`$disconnect` functions.
@@ -72,18 +78,25 @@ are only needed again if resources must be recreated or updated.
    ```json
    {
      "Version": "2012-10-17",
-     "Statement": [{
-       "Sid": "PublishFleetMindNodeCommands",
-       "Effect": "Allow",
-       "Action": "iot:Publish",
-       "Resource": "arn:aws:iot:ap-southeast-2:467008425206:topic/fleetmind/node-*/commands"
-     }]
+   "Statement": [{
+     "Sid": "PublishFleetMindNodeCommands",
+     "Effect": "Allow",
+     "Action": "iot:Publish",
+     "Resource": "arn:aws:iot:ap-southeast-2:467008425206:topic/fleetmind/node-*/commands"
+   }, {
+     "Sid": "PublishFleetMindBuzzerState",
+     "Effect": "Allow",
+     "Action": "iot:Publish",
+     "Resource": "arn:aws:iot:ap-southeast-2:467008425206:topic/fleetmind/node-*/buzzer-state"
+   }]
    }
    ```
 
    This is only for cloud-to-device publish. The Thing certificate policy must
    separately allow each device to subscribe/receive its own command topic and
-   publish to its own `events` acknowledgement topic.
+   publish to its own `events` acknowledgement topic. The physical buzzer uses
+   the relay output and needs no device certificate permission for a separate
+   buzzer-state topic.
 
 4. **Create the acknowledgement IoT rule.** In AWS IoT Core → Message routing
    → Rules, create an enabled rule with SQL:
@@ -133,6 +146,13 @@ IoT rule.
 
 ### Batch B — baseline threshold automation
 
+With automatic control enabled and the buzzer wired in parallel with the fan on
+the relay-switched 5 V output, a reading that crosses the configured ON
+threshold turns both on. A later reading at or below both OFF thresholds turns
+both off. The ESP32 sends real readings about every two seconds, so its next
+ordinary reading can clear a one-off synthetic test alert. This is threshold
+behavior, not a timer. Manual relay operation switches both devices together.
+
 1. Confirm the demo is isolated from any life-safety function and uses only a
    harmless low-voltage load. No calibration gas is required for a software
    simulation; do not make smoke or release gas to test it.
@@ -170,7 +190,7 @@ IoT rule.
 Synthetic readings validate software routing and display behavior only. They
 are not calibrated sensor measurements or evidence of gas concentration.
 
-### Later — Isolation Forest model
+### Future — anomaly model
 
 When the model service is ready, connect its prediction output to the telemetry
 ingestion contract as `isAnomaly: true/false` (or update the contract with the

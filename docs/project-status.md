@@ -8,6 +8,10 @@ Last reviewed: **2026-10-18**.
 
 This completion status describes the prototype and its agreed demo scope. It does not mean the sensor thresholds are calibrated for safety use or that the service has completed production hardening.
 
+### Fan and buzzer output
+
+The final prototype check is complete. The 5 V active buzzer is wired in parallel with the fan on the relay-switched output, so manual and automatic relay commands operate both together. No separate buzzer GPIO is used. In automatic mode, the ESP32 continues publishing real readings about every two seconds; a subsequent normal reading can clear a one-off synthetic alert and turn both loads off. This is expected threshold behavior, not a timed shutoff.
+
 | Workstream | Completed outcome |
 | --- | --- |
 | ESP32 telemetry and device status | Board readings and status updates reach the AWS pipeline and appear in the dashboard. |
@@ -15,6 +19,7 @@ This completion status describes the prototype and its agreed demo scope. It doe
 | Dashboard | Authenticated live readings, node status, charts, alerts, and activity history are available. |
 | Threshold alerts | Demo threshold events are recorded and shown in the dashboard. |
 | Relay control | Manual relay commands and device acknowledgements are reflected in dashboard state and activity history. |
+| Fan and buzzer | Both loads switch together through the relay; the user confirmed the final hardware check. |
 | Bedrock explanations | Nova Micro can explain an already-triggered threshold alert; a fallback explanation is available. |
 | Device-health notifications | The monitoring switch, 180-second missing-status behavior, CloudWatch alarms, and SNS flow were configured and tested, as confirmed by the user. |
 | Project documentation | Hardware connections, event workflows, AWS components, testing notes, and limitations are documented. |

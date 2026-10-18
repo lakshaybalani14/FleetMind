@@ -62,6 +62,7 @@ interface DeviceStatusInput {
   readonly nodeId: string;
   readonly online: boolean;
   readonly relayOn?: boolean;
+  readonly buzzerActive?: boolean;
   readonly rssi?: number;
   readonly uptimeMs?: number;
   readonly commandQueueOverflow?: boolean;
@@ -529,6 +530,21 @@ async function publishRelayCommand(
   return actionId;
 }
 
+async function publishBuzzerState(nodeId: string, buzzerOn: boolean, reason: string): Promise<void> {
+  if (!iotData) throw new Error("IOT_DATA_ENDPOINT is not configured");
+  await iotData.send(new PublishCommand({
+    topic: `fleetmind/${nodeId}/buzzer-state`,
+    qos: 1,
+    retain: true,
+    payload: Buffer.from(JSON.stringify({
+      nodeId,
+      buzzerOn,
+      reason,
+      updatedAt: new Date().toISOString(),
+    })),
+  }));
+}
+
 async function requestManualRelay(nodeId: string, relayOn: boolean): Promise<APIGatewayProxyResultV2> {
   if (!iotData || !tableName) return response(503, { error: "Relay command service is not configured" });
   const node = await getNode(nodeId);
@@ -562,6 +578,14 @@ async function requestManualRelay(nodeId: string, relayOn: boolean): Promise<API
     return response(502, { error: "AWS IoT Core could not accept the relay command" });
   }
 
+  try {
+    // A manual relay action leaves automatic mode, so clear its retained buzzer
+    // state without changing the relay command or its acknowledgement flow.
+    await publishBuzzerState(nodeId, false, "manual-control");
+  } catch (error) {
+    console.error("Could not clear automatic buzzer state", { nodeId, error });
+  }
+
   await broadcastTelemetry({ type: "control-mode", nodeId, automationEnabled: false, timestamp: new Date().toISOString() });
   return response(202, { accepted: true, actionId, nodeId, relayOn, awaitingDeviceAck: true });
 }
@@ -590,12 +614,28 @@ async function setNodeAutomation(nodeId: string, enabled: boolean): Promise<APIG
 
   if (enabled) {
     const node = await getNode(nodeId);
+    const actuatorState = typeof node?.actuatorState === "object" && node.actuatorState !== null
+      ? node.actuatorState as Record<string, unknown>
+      : undefined;
+    try {
+      // Seed retained state on automatic-mode start; threshold evaluation below
+      // can immediately switch it if the latest values require a relay change.
+      await publishBuzzerState(nodeId, actuatorState?.relayActive === true, "automatic-mode");
+    } catch (error) {
+      console.error("Could not initialize automatic buzzer state", { nodeId, error });
+    }
     if (node && typeof node.gasLevel === "number" && typeof node.temperature === "number") {
       await evaluateThresholdAutomation(nodeId, {
         gasLevel: node.gasLevel,
         temperature: node.temperature,
         ...(typeof node.isAnomaly === "boolean" ? { isAnomaly: node.isAnomaly } : {}),
       });
+    }
+  } else {
+    try {
+      await publishBuzzerState(nodeId, false, "automatic-mode-disabled");
+    } catch (error) {
+      console.error("Could not clear automatic buzzer state", { nodeId, error });
     }
   }
   return response(200, { nodeId, automationEnabled: enabled, controlMode: enabled ? "automatic" : "manual" });
@@ -620,7 +660,7 @@ async function evaluateThresholdAutomation(nodeId: string, reading: Pick<Telemet
     ? cooldownSeconds
     : 10;
   const cutoff = new Date(now.getTime() - safeCooldownSeconds * 1000).toISOString();
-    const actionId = createActionId();
+  const actionId = createActionId();
   try {
     await ddb.send(new UpdateCommand({
       TableName: tableName,
@@ -651,6 +691,14 @@ async function evaluateThresholdAutomation(nodeId: string, reading: Pick<Telemet
       ExpressionAttributeValues: { ":actionId": actionId },
     }));
     console.error("Could not publish automatic relay command", { nodeId, actionId, error });
+    return;
+  }
+  try {
+    // Match the relay's automatic ON/OFF decision, including its hysteresis.
+    // A retained topic restores buzzer state when the board reconnects.
+    await publishBuzzerState(nodeId, desiredRelayOn, reading.isAnomaly ? "anomaly" : "threshold");
+  } catch (error) {
+    console.error("Could not publish automatic buzzer state", { nodeId, actionId, error });
   }
 }
 
@@ -674,7 +722,7 @@ async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void>
     values[":actuatorState"] = {
       relayActive: status.relayOn,
       fanActive: status.relayOn,
-      buzzerActive: false,
+      buzzerActive: status.buzzerActive ?? false,
     };
   }
   if (status.rssi !== undefined) {
@@ -709,6 +757,7 @@ async function storeAndBroadcastStatus(status: DeviceStatusInput): Promise<void>
     online: status.online,
     timestamp: receivedAt,
     ...(status.relayOn !== undefined ? { relayOn: status.relayOn } : {}),
+    ...(status.buzzerActive !== undefined ? { buzzerActive: status.buzzerActive } : {}),
     ...(status.rssi !== undefined ? { rssi: status.rssi } : {}),
     ...(status.uptimeMs !== undefined ? { uptimeMs: status.uptimeMs } : {}),
     ...(status.commandQueueOverflow !== undefined ? { commandQueueOverflow: status.commandQueueOverflow } : {}),
@@ -719,10 +768,14 @@ async function storeAndBroadcastActuatorAck(ack: ActuatorAckInput): Promise<void
   if (!tableName) throw new Error("Fleet table is not configured");
   const receivedAt = new Date().toISOString();
   const expiresAt = Math.floor(Date.now() / 1000) + ttlDays * 24 * 60 * 60;
+  const currentNode = await getNode(ack.nodeId);
+  const previousActuatorState = typeof currentNode?.actuatorState === "object" && currentNode.actuatorState !== null
+    ? currentNode.actuatorState as Record<string, unknown>
+    : undefined;
   const actuatorState = {
     relayActive: ack.relayOn,
     fanActive: ack.relayOn,
-    buzzerActive: false,
+    buzzerActive: previousActuatorState?.buzzerActive === true,
   };
   const actionLog = {
     PK: "FLEET",
@@ -789,12 +842,13 @@ function parseDeviceActuatorAck(record: Record<string, unknown>): ActuatorAckInp
 }
 
 function parseDeviceStatus(record: Record<string, unknown>): DeviceStatusInput | undefined {
-  const { nodeId, online, relayOn, rssi, uptimeMs, commandQueueOverflow } = record;
+  const { nodeId, online, relayOn, buzzerActive, rssi, uptimeMs, commandQueueOverflow } = record;
   const validNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
   if (
     typeof nodeId !== "string" || !/^node-[a-zA-Z0-9-]{1,40}$/.test(nodeId) ||
     typeof online !== "boolean" ||
     (relayOn !== undefined && typeof relayOn !== "boolean") ||
+    (buzzerActive !== undefined && typeof buzzerActive !== "boolean") ||
     (rssi !== undefined && !validNumber(rssi)) ||
     (uptimeMs !== undefined && (!validNumber(uptimeMs) || uptimeMs < 0)) ||
     (commandQueueOverflow !== undefined && typeof commandQueueOverflow !== "boolean")
@@ -804,6 +858,7 @@ function parseDeviceStatus(record: Record<string, unknown>): DeviceStatusInput |
     nodeId,
     online,
     ...(typeof relayOn === "boolean" ? { relayOn } : {}),
+    ...(typeof buzzerActive === "boolean" ? { buzzerActive } : {}),
     ...(validNumber(rssi) ? { rssi } : {}),
     ...(validNumber(uptimeMs) ? { uptimeMs } : {}),
     ...(typeof commandQueueOverflow === "boolean" ? { commandQueueOverflow } : {}),

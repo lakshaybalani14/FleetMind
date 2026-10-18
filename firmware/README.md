@@ -1,6 +1,6 @@
 # FleetMind ESP32 firmware
 
-This folder supplies the embedded side of FleetMind: an ESP32 reads DHT22 and MQ-2 data, filters insignificant changes at the edge, publishes MQTT telemetry securely to AWS IoT Core, receives cloud commands, operates a relay-controlled fan, and publishes an acknowledgement and its device-shadow state.
+This folder supplies the embedded side of FleetMind: an ESP32 reads DHT22 and MQ-2 data, filters insignificant changes at the edge, publishes MQTT telemetry securely to AWS IoT Core, receives cloud commands, operates a relay-controlled fan and an automatic alert buzzer, and publishes relay acknowledgement and device-shadow state.
 
 For a bench test that needs no AWS credentials, use the separate [hardware-test project](hardware-test/README.md). It prints DHT22/MQ-2 readings over Serial and lets you switch the relay manually.
 
@@ -10,9 +10,9 @@ For a bench test that needs no AWS credentials, use the separate [hardware-test 
 | --- | --- | --- |
 | DHT22 data | GPIO 4 | Add a 4.7k–10k pull-up to 3.3V if your breakout does not include one. |
 | MQ-2 analog out | GPIO 34 | ADC1 input; power the sensor according to the breakout's specification. Its output must not exceed 3.3V. |
-| Relay input | GPIO 26 | Relay switches the fan. Set `RELAY_ACTIVE_HIGH` correctly for the board. |
+| Relay input | GPIO 26 | Relay switches the fan and buzzer; firmware configures this module as active-low. |
+| Active 5 V buzzer | Relay output, in parallel with fan | Connect buzzer positive to the switched positive lead and buzzer negative to load ground. It sounds whenever the relay supplies power to the fan; it does not use a GPIO pin. |
 | Status LED | GPIO 2 | Built-in LED on many ESP32 dev boards. |
-| Unused | GPIO 27 | Reserved/free; no button is configured in the current firmware. |
 
 ![FleetMind ESP32 logical GPIO wiring map](../docs/diagrams/esp32-logical-pin-map.svg)
 
@@ -23,7 +23,7 @@ The picture shows logical signal assignments. It is **not** a physical ESP32 Dev
 - GPIO 34 is input-only and must never receive more than 3.3 V. MQ-2 modules commonly use a 5 V heater and their analog output may exceed the ESP32 input limit. Check the module output and use a correctly sized voltage divider when needed.
 - Power the DHT22, MQ-2, and relay module according to their exact datasheets. Use common ground for non-isolated signal modules.
 - GPIO 26 drives only the relay module's logic input. Do not power the relay coil, fan, or other load from an ESP32 pin. For the demo, use a suitable isolated/rated relay and low-voltage load; no mains wiring.
-- The current connected firmware has a relay output and status LED; it does not configure a separate buzzer GPIO.
+- Connect the confirmed 5 V active buzzer in parallel with the 5 V fan on the relay-switched output: ESP32 5 V/VIN goes to relay COM; relay NO goes to both the fan positive and buzzer positive; both negative leads go to GND. Leave relay NC unused. The buzzer sounds whenever the relay turns on, including manual relay operation. It has no separate GPIO or MQTT control path.
 
 ## Setup and flash
 
@@ -64,7 +64,7 @@ Give each Thing certificate only the minimum rights to connect as its own client
 | `TaskWiFiMQTT` | 3 / 0 | Connects Wi-Fi and TLS MQTT, synchronizes time, receives MQTT packets, and reconnects with exponential backoff. |
 | `TaskSensorRead` | 2 / 1 | Samples DHT22/MQ-2 every two seconds, queues meaningful changes immediately, and sends unchanged readings on the same two-second cadence. |
 | `TaskPublish` | 2 / 1 | Serializes queued telemetry as JSON and publishes it without slowing sampling. |
-| `TaskActuator` | 2 / 1 | Applies cloud commands, emits an acknowledgement and shadow report, then publishes retained node/relay status immediately. |
+| `TaskActuator` | 2 / 1 | Applies relay commands, emits an acknowledgement and shadow report, then publishes retained node/relay status immediately. |
 | `TaskHeartbeat` | 1 / 1 | Publishes retained connectivity state every 15 seconds and feeds the watchdog. |
 
 GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate from network and sensor work.
@@ -74,4 +74,5 @@ GPIO changes and MQTT calls happen in tasks, keeping actuator handling separate 
 - MQ-2 output is a relative prototype level mapped linearly from ADC 0–4095 to 0–1000; it is not calibrated ppm and does not identify CO. Do not use it for life-safety protection.
 - The source does not store unsent telemetry durably. Add LittleFS/NVS buffering if offline data retention is required.
 - Live `node-01` telemetry and the separate retained status heartbeat/Last Will topic are routed through Lambda; the dashboard uses an authenticated WebSocket. Local dashboard control now sends commands to `fleetmind/{nodeId}/commands`, while the device reports `actuator_ack` on its events topic. See [`../docs/actuator-control.md`](../docs/actuator-control.md) for the AWS setup and board test.
+- The physical buzzer follows the relay output, so firmware reports `buzzerActive` from the relay state and does not need a separate buzzer GPIO or MQTT subscription.
 - `MAX_TELEMETRY_SILENCE_MS` now matches the 2-second sensor sample interval, so the live dashboard receives steady readings without waiting for a larger change. Relay commands publish status immediately rather than waiting for the 15-second heartbeat. Build and upload the firmware before these changes take effect on the board. See [`../docs/live-testing-log.md`](../docs/live-testing-log.md) for the validation checklist.

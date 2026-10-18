@@ -11,6 +11,7 @@ FleetMind connects an ESP32 sensor node to an authenticated web dashboard. The d
 - **Project status: complete for the prototype/demo scope.** The user confirmed that the project tests and end-to-end checks have been completed, including telemetry, dashboard updates, threshold alerts, relay actions, Bedrock explanations, and device-health notifications.
 - **Latest deployment:** the activity-history Lambda package is deployed. Its AWS code hash was checked against the local package on 2026-10-18.
 - **ML anomaly detection:** training experiments were attempted, but did not produce production-quality FleetMind results. The model remains an offline experiment and does not affect live alerts or relay control.
+- **Buzzer and fan:** final prototype check is complete. The 5 V active buzzer is wired in parallel with the fan on the relay-switched output, so both turn on and off together.
 - **Scope note:** the completed project is a working prototype, not a certified safety system or production-hardened service. Optional enhancements and deployment hardening are documented as future work, not unfinished acceptance tests.
 
 See [Project status](docs/project-status.md) for completed work and future enhancements, and [Live testing log](docs/live-testing-log.md) for dated test outcomes.
@@ -22,6 +23,7 @@ See [Project status](docs/project-status.md) for completed work and future enhan
 - Stores readings and activity in DynamoDB and ingested telemetry JSON in S3.
 - Streams current readings, status, and relay acknowledgements to a Next.js dashboard over API Gateway WebSockets.
 - Shows threshold alerts based on configured prototype limits; optional automatic relay behavior remains explicitly controlled by the app configuration.
+- The relay switches the fan and buzzer together. In automatic mode, a later normal live board reading can turn both off; the ESP32 publishes live readings every two seconds. Manual relay control keeps them in the selected state until another command or mode change.
 - Adds a short Bedrock explanation to an already-triggered threshold alert, with a rule-based fallback. Bedrock does not choose alert state or control the relay.
 - Lets an operator enable device-health monitoring for a node. The EC2 monitor checks the last online status heartbeat against a 180-second window and publishes CloudWatch metrics; configured alarms notify through SNS.
 - Includes a separate offline anomaly-model exercise for evaluation only.
@@ -34,7 +36,7 @@ flowchart LR
     DHT[DHT22<br/>temperature + humidity]
     MQ[MQ-2<br/>raw ADC + relative level]
     FW[Firmware tasks<br/>sample, publish, heartbeat]
-    ACT[Relay and fan output]
+    ACT[Relay-switched output<br/>fan + buzzer]
     DHT --> FW
     MQ --> FW
     FW --> ACT
@@ -98,7 +100,7 @@ The event map, payload examples, and lifecycle of each supported feature are doc
 | Event / feature | Flow | Dashboard or AWS result |
 | --- | --- | --- |
 | Normal sensor reading | ESP32 → IoT telemetry topic → Lambda | DynamoDB/S3 record and live chart/tile update |
-| Threshold crossing | Telemetry → existing threshold rules → event record | Persistent alert/activity item; optional Bedrock explanation |
+| Threshold crossing | Telemetry → existing threshold rules → event record | Persistent alert/activity item; optional Bedrock explanation; automatic relay switches the fan and buzzer together when enabled |
 | Manual relay command | Dashboard → authenticated API → IoT command → ESP32 → ACK | Confirmed relay state and activity entry |
 | Device online/offline | Retained MQTT status + Last Will → Lambda → WebSocket | Near-real-time dashboard status; UI freshness window is 90 seconds |
 | Missing status while monitoring is armed | Monitoring switch → DynamoDB flag → EC2 monitor → CloudWatch alarm → SNS | Device-health email after the 180-second status window and alarm evaluation |
@@ -168,6 +170,7 @@ The firmware reports `gasAdc` as the raw 0–4095 ADC count and `gasLevelEstimat
 - Bedrock explains the rule that already fired. A fixed explanation is used if the model call fails or returns unsuitable text.
 - The ML prototype has no reviewed FleetMind anomaly dataset and produced false positives on confirmed normal holdout readings. It stays offline.
 - Do not use the fan relay as a certified safety control. Keep independent certified alarms and use safe, controlled test payloads.
+- The buzzer is a prototype indicator that follows relay threshold logic; it is not a certified gas or CO alarm.
 
 ## Project lessons captured during development
 

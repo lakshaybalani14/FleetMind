@@ -2,7 +2,7 @@
  * FleetMind ESP32 edge node
  *
  * Hardware: DHT22 (temperature/humidity), MQ-2 (gas/smoke), relay-controlled
- * exhaust fan, and status LED.
+ * exhaust fan, alert buzzer, and status LED.
  *
  * Tasks are pinned deliberately: Wi-Fi/MQTT stays responsive on core 0; sensor,
  * publisher, actuator, and heartbeat work run on core 1.  Queues prevent a slow
@@ -26,7 +26,7 @@
 #define DHT22_PIN 4
 #define RELAY_PIN 26
 #define STATUS_LED_PIN 2
-#define RELAY_ACTIVE_HIGH true  // Set false for common active-low relay boards.
+#define RELAY_ACTIVE_HIGH false // This relay module's IN input is configured active-low.
 
 // Prototype-only scale: this is a linear mapping of ADC voltage to a relative
 // level, not a gas concentration or CO measurement. Never use it for safety.
@@ -131,6 +131,8 @@ void publishDeviceStatus() {
   document["rssi"] = WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : 0;
   document["uptimeMs"] = millis();
   document["relayOn"] = relayOn;
+  // The active 5 V buzzer is wired in parallel with the relay-switched fan.
+  document["buzzerActive"] = relayOn;
   document["commandQueueOverflow"] = commandQueueOverflow;
   publishJson(TOPIC_STATUS, document, true);
   commandQueueOverflow = false;

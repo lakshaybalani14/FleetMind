@@ -34,6 +34,8 @@ Important timestamp behavior: the board timestamp may be zero before NTP sync; t
 
 The Lambda checks each accepted reading against the prototype thresholds currently in code: MQ-2 relative level `>= 400 / 1000` or temperature `>= 60 °C`. A firmware `isAnomaly: true` flag also records an alert. These are demo conditions, not calibrated gas limits.
 
+When automatic control is enabled, the existing relay controller applies its configured ON/OFF thresholds and hysteresis. The relay contacts switch power to the fan and 5 V active buzzer wired in parallel, so both loads follow the same relay state. The buzzer has no separate GPIO control. The ESP32 publishes live sensor readings about every two seconds; therefore, a normal live reading after a one-off synthetic alert can turn both loads off. Manual control keeps the commanded relay state until another command or a mode change.
+
 ```mermaid
 sequenceDiagram
   participant Board as ESP32

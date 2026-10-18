@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="720" viewBox="0 0 1120 720" role="img" aria-labelledby="title desc">
   <title id="title">FleetMind ESP32 logical GPIO wiring map</title>
-  <desc id="desc">Logical wiring for DHT22 on GPIO 4, MQ-2 analog output on GPIO 34, relay input on GPIO 26, and onboard LED on GPIO 2. This is not a physical ESP32 board layout.</desc>
+  <desc id="desc">Logical wiring for DHT22 on GPIO 4, MQ-2 analog output on GPIO 34, relay input on GPIO 26, and onboard LED on GPIO 2. The fan and buzzer share the relay-switched load output. This is not a physical ESP32 board layout.</desc>
   <defs>
     <style>
       .bg{fill:#f8fafc}.board{fill:#172554;stroke:#0f172a;stroke-width:4}.module{fill:#fff;stroke:#94a3b8;stroke-width:2}.title{font:700 27px Arial,sans-serif;fill:#0f172a}.sub{font:16px Arial,sans-serif;fill:#475569}.boardTitle{font:700 22px Arial,sans-serif;fill:#fff}.pin{font:700 16px Arial,sans-serif;fill:#e2e8f0}.label{font:700 18px Arial,sans-serif;fill:#0f172a}.body{font:15px Arial,sans-serif;fill:#334155}.small{font:13px Arial,sans-serif;fill:#475569}.wireData{stroke:#2563eb;stroke-width:5;fill:none}.wirePower{stroke:#dc2626;stroke-width:5;fill:none}.wireGround{stroke:#475569;stroke-width:5;fill:none}.wireAct{stroke:#16a34a;stroke-width:5;fill:none}.wireLed{stroke:#a855f7;stroke-width:5;fill:none}.gpio{fill:#f8fafc;stroke:#60a5fa;stroke-width:2}.warn{fill:#fff7ed;stroke:#fb923c;stroke-width:2}.warnText{font:700 14px Arial,sans-serif;fill:#9a3412}
@@ -41,19 +41,19 @@
   <text class="small" x="840" y="348">Separate rated supply for load</text>
 
   <rect class="module" x="816" y="440" width="250" height="138" rx="14"/>
-  <text class="label" x="840" y="476">Onboard LED</text>
-  <text class="body" x="840" y="506">GPIO 2</text>
-  <text class="body" x="840" y="532">Board-dependent indicator</text>
-  <text class="small" x="840" y="558">No external LED required in firmware</text>
+  <text class="label" x="840" y="476">Fan + 5 V active buzzer</text>
+  <text class="body" x="840" y="506">Both positive leads → relay NO</text>
+  <text class="body" x="840" y="532">Both negative leads → load GND</text>
+  <text class="small" x="840" y="558">Both turn on with relay output</text>
 
   <path class="wireData" d="M304 292 H350 V371 H385"/>
   <path class="wireData" d="M304 506 H340 V431 H385"/>
   <path class="wireAct" d="M735 371 H780 V292 H816"/>
-  <path class="wireLed" d="M735 431 H780 V506 H816"/>
+  <path class="wirePower" d="M1066 342 H1090 V510 H1066"/>
   <text x="330" y="282" font="12px Arial" fill="#1d4ed8">DATA</text>
   <text x="328" y="498" font="12px Arial" fill="#1d4ed8">ANALOG</text>
   <text x="766" y="282" font="12px Arial" fill="#15803d">CONTROL</text>
-  <text x="765" y="498" font="12px Arial" fill="#7e22ce">LED</text>
+  <text x="1092" y="430" font="12px Arial" fill="#b91c1c" transform="rotate(90 1092 430)">RELAY CONTACT OUTPUT</text>
 
   <rect class="warn" x="340" y="610" width="726" height="72" rx="12"/>
   <text class="warnText" x="364" y="640">Electrical safety:</text>

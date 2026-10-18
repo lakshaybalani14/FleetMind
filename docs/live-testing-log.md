@@ -6,7 +6,14 @@
   prototype is complete for its agreed demo scope.
 - This includes the ESP32 telemetry/dashboard flow, threshold alert and activity
   history behavior, relay control, Bedrock explanations, and device-health
-  monitoring with CloudWatch/SNS notifications.
+  monitoring with CloudWatch/SNS notifications, plus the final fan/buzzer
+  actuator check.
+- The user confirmed the 5 V active buzzer and fan both operate from the relay
+  output. They are wired in parallel and switch together; there is no separate
+  buzzer GPIO. During automatic mode, the board keeps sending real readings
+  every two seconds, so the next normal reading can clear a one-off synthetic
+  alert and turn both loads off. This is the configured threshold behavior,
+  not a timer.
 - The anomaly-detection model remains an offline experiment. Training was
   attempted, but the available FleetMind examples did not yield production-
   quality results; it is not part of the live alert path.

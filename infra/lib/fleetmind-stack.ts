@@ -190,13 +190,22 @@ export class FleetMindStack extends cdk.Stack {
       actions: ["s3:PutObject"],
       resources: [historyBucket.arnForObjects("telemetry/*")],
     }));
-    // Limit cloud-to-device publishing to the command topic namespace only.
+    // Limit cloud-to-device publishing to the node command and buzzer-state topics.
     handler.addToRolePolicy(new iam.PolicyStatement({
       actions: ["iot:Publish"],
       resources: [this.formatArn({
         service: "iot",
         resource: "topic",
         resourceName: "fleetmind/node-*/commands",
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+      })],
+    }));
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["iot:Publish"],
+      resources: [this.formatArn({
+        service: "iot",
+        resource: "topic",
+        resourceName: "fleetmind/node-*/buzzer-state",
         arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
       })],
     }));

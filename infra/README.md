@@ -5,10 +5,10 @@
 The HTTP API, Cognito authentication, WebSocket API, telemetry Lambda, DynamoDB,
 S3, AWS IoT rules, EC2 health monitor, CloudWatch alarms, SNS notifications,
 and Bedrock alert explanations have been configured or exercised in
-`ap-southeast-2`. The user reported the health-notification flow and synthetic
-Bedrock explanation working. On 2026-10-18, the Lambda activity-history package
-was deployed; its AWS code hash matched the local `fleetmind-activity-history`
-ZIP. One post-deployment relay-history check remains.
+`ap-southeast-2`. The user reported the health-notification flow, synthetic
+Bedrock explanation, relay, fan, and buzzer checks working. On 2026-10-18, the
+Lambda activity-history package was deployed; its AWS code hash matched the
+local `fleetmind-activity-history` ZIP.
 
 A previous `403 AccessDeniedException` on WebSocket callback delivery was fixed
 by scoping the Lambda role's `execute-api:ManageConnections` permission to the
@@ -38,7 +38,7 @@ CDK stack. Their current behavior and operating guide are in
 - Node.js 22 Lambda handlers for API requests, IoT telemetry ingestion, WebSocket authorization, and connection lifecycle.
 - Optional scoped Bedrock `InvokeModel` permission when the explanation context is enabled and a model ARN is supplied.
 - AWS IoT Core rules routing `fleetmind/+/telemetry`, `fleetmind/+/status`, and `actuator_ack` events on `fleetmind/+/events` to the ingestion Lambda.
-- A narrowly scoped Lambda permission to publish relay commands to `fleetmind/node-*/commands`.
+- Narrowly scoped Lambda permissions to publish relay commands and a retained buzzer-state mirror. The physical buzzer itself follows the relay-switched output and does not subscribe to that topic.
 - CloudWatch log groups with 30-day retention.
 
 All regional resources are pinned to `ap-southeast-2`. The Managed Login app client uses authorization code with PKCE and a local callback at `http://localhost:3000/auth/callback`; the frontend stores the verifier in session storage and exchanges the authorization code. The default API browser origin is `http://localhost:3000`; set `-c appOrigin=https://your-dashboard.example` on a later synth/deploy for the deployed frontend origin.
